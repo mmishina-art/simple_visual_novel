@@ -185,7 +185,8 @@ button.link {
 .message-window {
   position: absolute;
   inset: 0;
-  padding: 22px 20px;
+  /* 下端は三角（◀ ▶）がいる帯。本文はその上で止まるよう、下の余白を広めに取る */
+  padding: 22px 20px 42px;
   cursor: pointer;
 }
 
