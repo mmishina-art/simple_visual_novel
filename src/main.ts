@@ -3,7 +3,7 @@ import {
   advance, backToCheckpoint, choose, endingsOf, isEnding, nodeOf, startState,
   type PlayState, type SceneBg, type Story,
 } from './logic';
-import { COMING_SOON, STORIES, storyById, type DummyBook } from './stories';
+import { STORIES, storyById } from './stories';
 import { setupDebug } from './debug';
 import { setupInstallGuide } from './install';
 import { applyUpdate, checkForUpdate, onUpdateAvailable, setupPwa } from './pwa';
@@ -195,14 +195,6 @@ function renderShelf(): void {
     list.append(card);
   }
 
-  // 近日公開のダミー（開けない）
-  for (const item of COMING_SOON) {
-    const card = document.createElement('div');
-    card.className = 'book-dummy';
-    const cover = buildCover(item as DummyBook & { cover?: SceneBg });
-    card.append(cover, spanOf('book-meta muted', `近日公開 ／ 読了目安 ${item.length}`));
-    list.append(card);
-  }
 }
 
 /** 本棚で作品を選んだとき。本編の画面へ移る */

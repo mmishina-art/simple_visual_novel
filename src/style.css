@@ -247,8 +247,7 @@ button.link {
 }
 
 /* 本のカード。カード全体がボタンで、選ぶと本編が始まる */
-.book-card,
-.book-dummy {
+.book-card {
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -261,10 +260,6 @@ button.link {
   border-bottom: 6px solid #6a4525;
   border-radius: 0;
   box-shadow: 0 14px 10px -12px rgba(0, 0, 0, 0.8);
-}
-
-.book-dummy .book-cover-img {
-  filter: saturate(0.55) brightness(0.8);
 }
 
 /* 表紙: 単行本の装丁（右綴じ）。背の陰影は右、題字は縦書き、
