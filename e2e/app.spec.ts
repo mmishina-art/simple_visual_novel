@@ -178,6 +178,13 @@ test('読み返しは、いちばん新しい文章から表示される', async
 
 test('結末は文章だけが先に表示され、もう一度押すとパネルが出る', async ({ page }) => {
   await page.goto('/');
+  await page.evaluate(() => {
+    (window as unknown as { __uiSounds: string[] }).__uiSounds = [];
+    document.addEventListener('app:sound', (e) => {
+      const ui = (e as CustomEvent<{ ui?: string }>).detail?.ui;
+      if (ui) (window as unknown as { __uiSounds: string[] }).__uiSounds.push(ui);
+    });
+  });
   await page.getByRole('button', { name: 'はじめから' }).click();
   const labels = ['懐中電灯', '音楽室', '返事をせず', '裏口へ走る'];
   let revealed = false;
@@ -190,11 +197,20 @@ test('結末は文章だけが先に表示され、もう一度押すとパネ�
     }
     const before = await page.locator('#story-text').textContent();
     const panelWasHidden = await page.locator('#ending-panel').isHidden();
+    const soundsBefore = await page.evaluate(
+      () => (window as unknown as { __uiSounds: string[] }).__uiSounds,
+    );
     await page.locator('#message-window').click();
     if (await page.locator('#ending-panel').isVisible()) {
       // パネルが出る直前は、結末の文章だけが表示されていたこと
       expect(panelWasHidden).toBe(true);
       expect(before).toContain('家に帰り着いたのは');
+      // ハッピーエンドの効果音も、パネルが出る瞬間に鳴る
+      expect(soundsBefore).not.toContain('ending-happy');
+      const soundsAfter = await page.evaluate(
+        () => (window as unknown as { __uiSounds: string[] }).__uiSounds,
+      );
+      expect(soundsAfter).toContain('ending-happy');
       revealed = true;
     }
   }

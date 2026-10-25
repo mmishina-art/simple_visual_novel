@@ -219,9 +219,8 @@ function renderGame(): void {
     if (node.se) playSceneSound(node.se);
     if (node.ending) {
       recordEnding();
-      // ハッピーのジングルは文章の表示と一緒に。バッドの悲鳴は、
-      // パネルが出る瞬間に鳴らす（そちらは操作ハンドラ側）
-      if (node.ending.kind === 'happy') playEndingJingle('happy');
+      // 効果音（ジングル／悲鳴）は、結末パネルが出る瞬間に鳴らす
+      // （そちらは操作ハンドラ側）。ここではBGMだけ切り替える
       startBgm(node.ending.kind);
     }
   }
@@ -271,8 +270,7 @@ $('message-window').addEventListener('click', () => {
   const ending = nodeOf(story, state).ending;
   if (ending && !endingRevealed) {
     endingRevealed = true;
-    if (ending.kind === 'bad') playEndingJingle('bad');
-    else playAdvanceSound();
+    playEndingJingle(ending.kind);
     render();
     return;
   }
