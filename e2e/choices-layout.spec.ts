@@ -1,11 +1,15 @@
 import { expect, test, type Page } from '@playwright/test';
 
-/** 選択肢の文字が帯からはみ出していないか、文字の矩形で機械的に確認する */
+/** 選択肢の文字と帯（枠）が、ステージと帯の中に収まっているか、矩形で機械的に確認する */
 async function expectChoicesFullyVisible(page: Page) {
   const problems = await page.evaluate(() => {
     const out: string[] = [];
+    const stage = document.querySelector('.stage')?.getBoundingClientRect();
     for (const b of document.querySelectorAll<HTMLElement>('.choices button')) {
       const br = b.getBoundingClientRect();
+      if (stage && (br.top < stage.top - 1 || br.bottom > stage.bottom + 1 || br.left < stage.left - 1 || br.right > stage.right + 1)) {
+        out.push(`「${b.textContent}」の帯がステージの外に出ています`);
+      }
       const range = document.createRange();
       range.selectNodeContents(b);
       for (const r of range.getClientRects()) {

@@ -327,7 +327,9 @@ button.link {
   inset: 0;
   display: flex;
   flex-direction: row-reverse;
-  align-items: center;
+  /* 帯の高さは％指定でなく余白（padding）基準で決める。％指定だと
+     Safari で枠がステージからはみ出すことがあるため、引き伸ばして収める */
+  align-items: stretch;
   justify-content: center;
   gap: 14px;
   padding: 18px;
@@ -343,7 +345,6 @@ button.link {
   justify-content: flex-start;
   align-content: center;
   writing-mode: vertical-rl;
-  height: 90%;
   max-width: 46%;
   margin: 0;
   padding: 14px 8px;
