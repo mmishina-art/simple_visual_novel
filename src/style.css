@@ -157,23 +157,35 @@ button.link {
   text-align: center;
 }
 
-.scene {
+/* ステージ: 背景イラストの上に文章を重ねる。本編はこの中で完結させる */
+.stage {
   position: relative;
+  aspect-ratio: 4 / 5;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  background: var(--surface);
 }
 
-/* 本編の文章は縦書き（小説風）。場面の絵は細めにして、読む場所を広く取る */
-#game-screen .scene-art {
-  aspect-ratio: 2 / 1;
+.stage-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 文章が読めるよう、右（縦書きの読み始め）から左へ暗くする幕 */
+.stage-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to left, rgb(3 5 9 / 0.82), rgb(3 5 9 / 0.55) 58%, rgb(3 5 9 / 0.28));
 }
 
 .message-window {
-  position: relative;
-  margin-top: 12px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 20px 18px;
-  height: 380px;
+  position: absolute;
+  inset: 0;
+  padding: 22px 20px;
   cursor: pointer;
 }
 
@@ -219,35 +231,57 @@ button.link {
   50% { opacity: 1; }
 }
 
+/* 選択肢は縦書きの帯にして、背景の上に右から左へ並べる */
 .choices {
-  margin-top: 12px;
+  position: absolute;
+  inset: 0;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 18px;
+  background: rgb(3 5 9 / 0.45);
 }
 
 .choices button {
-  width: 100%;
+  writing-mode: vertical-rl;
+  height: 86%;
+  max-width: 46%;
   margin: 0;
-  padding: 12px 16px;
-  text-align: left;
-  background: var(--surface-2);
+  padding: 16px 10px;
+  text-align: start;
+  font-size: 1rem;
+  line-height: 1.9;
+  letter-spacing: 0.06em;
+  background: rgb(10 15 22 / 0.92);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow-x: auto;
 }
 
+.choices button:hover, .choices button:focus-visible {
+  border-color: var(--accent);
+}
+
+/* 結末パネルはステージの下部に重ねる */
 .ending-panel {
-  margin-top: 16px;
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
   text-align: center;
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 16px;
-  background: var(--surface);
+  padding: 14px;
+  background: rgb(13 18 26 / 0.94);
 }
 
 .ending-title {
   font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  margin: 0 0 12px;
+  margin: 0 0 10px;
 }
 
 .ending-panel button {

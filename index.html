@@ -56,20 +56,22 @@
           <button id="sound-button-game" type="button" class="icon-button" aria-label="音" aria-pressed="true">🔊</button>
         </header>
 
-        <div class="scene">
-          <img id="scene-img" class="scene-art" alt="" />
-        </div>
-        <div id="message-window" class="message-window" role="button" tabindex="0" aria-label="次へ進む">
-          <p id="speaker" class="speaker"></p>
-          <p id="story-text" class="story-text" aria-live="polite"></p>
-          <p id="next-hint" class="next-hint" aria-hidden="true">◀</p>
-        </div>
-        <div id="choices" class="choices" hidden></div>
+        <!-- ステージ: 背景の上に、文章・選択肢・結末を重ねて表示する -->
+        <div class="stage">
+          <img id="scene-img" class="stage-bg" alt="" />
+          <div class="stage-shade" aria-hidden="true"></div>
+          <div id="message-window" class="message-window" role="button" tabindex="0" aria-label="次へ進む">
+            <p id="speaker" class="speaker"></p>
+            <p id="story-text" class="story-text" aria-live="polite"></p>
+            <p id="next-hint" class="next-hint" aria-hidden="true">◀</p>
+          </div>
+          <div id="choices" class="choices" hidden></div>
 
-        <div id="ending-panel" class="ending-panel" hidden>
-          <p id="ending-title" class="ending-title" aria-live="polite"></p>
-          <button id="retry-button" type="button" class="primary">最後の選択からやり直す</button>
-          <button id="ending-title-button" type="button">タイトルへ</button>
+          <div id="ending-panel" class="ending-panel" hidden>
+            <p id="ending-title" class="ending-title" aria-live="polite"></p>
+            <button id="retry-button" type="button" class="primary">最後の選択からやり直す</button>
+            <button id="ending-title-button" type="button">タイトルへ</button>
+          </div>
         </div>
 
         <button id="to-title-button" type="button" class="link">タイトルへ（進行は自動で保存されます）</button>

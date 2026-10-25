@@ -14,7 +14,10 @@ const SCREENS = [
     name: 'choice',
     open: async (page) => {
       await page.click('#start-button');
-      for (let i = 0; i < 6; i++) await page.click('#message-window');
+      // 選択肢が出たら、そこから先は本文をタップできない（選ぶ必要がある）ので止める
+      for (let i = 0; i < 10 && !(await page.locator('#choices').isVisible()); i++) {
+        await page.click('#message-window');
+      }
     },
   },
   { name: 'install', open: async (page) => page.click('#install-open') },

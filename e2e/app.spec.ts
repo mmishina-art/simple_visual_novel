@@ -104,6 +104,30 @@ test('本文は縦書き（小説風）で表示される', async ({ page }) => 
   await expect(page.locator('#story-text .tcy').first()).toHaveText('11');
 });
 
+test('文章は背景の上に重なり、選択肢は縦書きで選べる', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'はじめから' }).click();
+  // 文章が背景イラストの上に重なっている
+  const overlap = await page.evaluate(() => {
+    const bg = document.getElementById('scene-img')!.getBoundingClientRect();
+    const text = document.getElementById('story-text')!.getBoundingClientRect();
+    return Math.min(bg.right, text.right) - Math.max(bg.left, text.left) > 0
+      && Math.min(bg.bottom, text.bottom) - Math.max(bg.top, text.top) > 0;
+  });
+  expect(overlap).toBe(true);
+  // 最初の選択肢まで進める。選択肢は縦書きの帯（高さ > 幅）で、実際に選べる
+  for (let i = 0; i < 12 && !(await page.locator('#choices').isVisible()); i++) {
+    await page.locator('#message-window').click();
+  }
+  const firstChoice = page.locator('#choices button').first();
+  const writingMode = await firstChoice.evaluate((el) => getComputedStyle(el).writingMode);
+  expect(writingMode).toBe('vertical-rl');
+  const box = await firstChoice.boundingBox();
+  expect(box!.height).toBeGreaterThan(box!.width);
+  await firstChoice.click();
+  await expect(page.locator('#story-text')).toContainText('懐中電灯');
+});
+
 test('音のオン/オフを切り替えられる', async ({ page }) => {
   await page.goto('/');
   const button = page.locator('#sound-button');
