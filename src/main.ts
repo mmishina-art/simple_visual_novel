@@ -172,20 +172,20 @@ function renderShelf(): void {
     coverTitle.className = 'book-cover-title';
     coverTitle.textContent = item.title;
     band.append(coverTitle);
+    // あらすじは、表紙の中にカバーコピーとして入れる。
+    // 本文と同じ縦書きで、右から左へ読む並びにする
+    const copy = buildSegment(item.description, 'book-cover-copy');
     const colophon = document.createElement('span');
     colophon.className = 'book-colophon';
     colophon.textContent = 'サウンドノベル';
-    cover.append(img, band, colophon);
-    const desc = document.createElement('span');
-    desc.className = 'book-desc';
-    desc.textContent = item.description;
+    cover.append(img, band, copy, colophon);
     const meta = document.createElement('span');
     meta.className = 'book-meta muted';
     meta.textContent = `読了目安 ${item.length} ／ 到達した結末: ${endings.length} / ${endingsOf(item).length}`;
     const action = document.createElement('span');
     action.className = 'book-action';
     action.textContent = resume ? 'つづきから読む' : 'この物語を読む';
-    card.append(cover, desc, meta, action);
+    card.append(cover, meta, action);
     if (resume) {
       const restart = document.createElement('span');
       restart.className = 'book-restart';

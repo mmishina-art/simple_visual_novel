@@ -134,9 +134,16 @@ button.link {
 
 .shelf-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
+  grid-template-columns: 1fr;
   gap: 26px 18px;
   margin: 16px 0;
+}
+
+/* 広い画面では、本を横に並べる */
+@media (min-width: 620px) {
+  .shelf-list {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
 }
 
 /* 本のカード。カード全体がボタンで、選ぶと本編が始まる */
@@ -223,10 +230,26 @@ button.link {
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
 }
 
-.book-desc {
-  font-size: 0.88rem;
-  line-height: 1.6;
-  margin-top: 6px;
+.book-cover-copy {
+  position: absolute;
+  top: 78px;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  writing-mode: vertical-rl;
+  max-width: calc(100% - 18px);
+  padding: 8px 16px 16px 36px;
+  background: linear-gradient(to left, rgba(4, 6, 11, 0.88), rgba(4, 6, 11, 0.5) 62%, transparent);
+  font-family: 'Hiragino Mincho ProN', 'Hiragino Mincho Pro', 'Yu Mincho', 'YuMincho', serif;
+  font-size: 0.82rem;
+  line-height: 2;
+  letter-spacing: 0.06em;
+  color: #ece4d1;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.9);
+}
+
+.book-meta {
+  margin-top: 8px;
 }
 
 .book-action {
