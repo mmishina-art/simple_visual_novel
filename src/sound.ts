@@ -286,10 +286,46 @@ export function playEndingJingle(kind: 'happy' | 'bad'): void {
   if (!enabled) return;
   try {
     if (kind === 'bad') {
-      tone(64, 1.6, 'sine', 0.32, 0, 30);
-      tone(220, 1.4, 'triangle', 0.07, 0.05);
-      tone(233.08, 1.4, 'triangle', 0.07, 0.05);
-      noise(1.1, 300, 0.1);
+      // 悲鳴のような音：高音から滑り落ちる鋸波を、声のフォルマント風の
+      // バンドパスと震え（振幅・周波数の揺れ）で声らしくし、立ち上がりを
+      // 急にして驚かせる。バッドエンドのパネルが出る瞬間に鳴らす。
+      const c = ac();
+      const t = c.currentTime;
+      const bp = c.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.Q.value = 1.1;
+      bp.frequency.setValueAtTime(1900, t);
+      bp.frequency.exponentialRampToValueAtTime(650, t + 0.85);
+      const g = c.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.24, t + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.95);
+      const tremolo = c.createOscillator();
+      tremolo.frequency.value = 27;
+      const tremoloGain = c.createGain();
+      tremoloGain.gain.value = 0.09;
+      tremolo.connect(tremoloGain).connect(g.gain);
+      bp.connect(g).connect(c.destination);
+      for (const mult of [1, 1.007, 0.5]) {
+        const o = c.createOscillator();
+        o.type = 'sawtooth';
+        o.frequency.setValueAtTime(1250 * mult, t);
+        o.frequency.exponentialRampToValueAtTime(420 * mult, t + 0.85);
+        const vib = c.createOscillator();
+        vib.frequency.value = 11;
+        const vibGain = c.createGain();
+        vibGain.gain.value = 18 * mult;
+        vib.connect(vibGain).connect(o.frequency);
+        o.connect(bp);
+        o.start(t);
+        o.stop(t + 1);
+        vib.start(t);
+        vib.stop(t + 1);
+      }
+      tremolo.start(t);
+      tremolo.stop(t + 1);
+      noise(0.16, 2600, 0.1, 0, 'highpass');
+      tone(66, 0.7, 'sine', 0.22, 0, 34);
     } else {
       tone(523.25, 1.6, 'sine', 0.06, 0);
       tone(659.25, 1.6, 'sine', 0.06, 0.14);

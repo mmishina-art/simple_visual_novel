@@ -104,7 +104,7 @@ test('文章を進めると操作音が鳴る', async ({ page }) => {
   expect(sounds).toContain('advance');
 });
 
-test('バッドエンドでは効果音が鳴り、BGMが不穏なものに変わる', async ({ page }) => {
+test('バッドエンドの効果音は、文章のあとパネルが出る瞬間に鳴る', async ({ page }) => {
   await page.goto('/');
   await page.evaluate(() => {
     (window as unknown as { __uiSounds: string[] }).__uiSounds = [];
@@ -114,13 +114,32 @@ test('バッドエンドでは効果音が鳴り、BGMが不穏なものに変�
     });
   });
   await page.getByRole('button', { name: 'はじめから' }).click();
-  await playToEnding(page, ['懐中電灯', '音楽室', '返事をする']);
+  const labels = ['懐中電灯', '音楽室', '返事をする'];
+  const readSounds = () =>
+    page.evaluate(() => (window as unknown as { __uiSounds: string[] }).__uiSounds);
+  let revealed = false;
+  for (let i = 0; i < 80 && !revealed; i++) {
+    if (await page.locator('#choices').isVisible()) {
+      const label = labels.shift();
+      if (label === undefined) throw new Error('選択肢の指定が足りません');
+      await page.locator('#choices button', { hasText: label }).first().click();
+      continue;
+    }
+    const beforeText = await page.locator('#story-text').textContent();
+    const beforeSounds = await readSounds();
+    await page.locator('#message-window').click();
+    if (await page.locator('#ending-panel').isVisible()) {
+      // パネルが出る直前（結末の文章の表示中）は、まだ鳴っていない
+      expect(beforeText).toContain('冷たい手が私の肩に');
+      expect(beforeSounds).not.toContain('ending-bad');
+      // パネルが出た瞬間に鳴る
+      expect(await readSounds()).toContain('ending-bad');
+      revealed = true;
+    }
+  }
+  expect(revealed).toBe(true);
   await expect(page.locator('#ending-title')).toContainText('バッドエンド');
   await expect(page.locator('body')).toHaveAttribute('data-bgm-mood', 'bad');
-  const sounds = await page.evaluate(
-    () => (window as unknown as { __uiSounds: string[] }).__uiSounds,
-  );
-  expect(sounds).toContain('ending-bad');
 });
 
 test('ハッピーエンドではBGMが明るいものに変わる', async ({ page }) => {
