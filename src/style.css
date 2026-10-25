@@ -119,12 +119,23 @@ button.link {
   font-size: 0.9rem;
 }
 
+/* ---- 設定の画面 ---- */
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 4px;
+  margin: 8px 0 16px;
+  border-bottom: 1px solid var(--border);
+}
+
 /* ---- 本棚の画面 ---- */
 
 .shelf-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
+  gap: 26px 18px;
   margin: 16px 0;
 }
 
@@ -132,30 +143,96 @@ button.link {
 .book-card {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 6px;
-  width: 100%;
   margin: 0;
-  padding: 16px 18px;
+  padding: 0 2px 12px;
   text-align: left;
-  border-left: 4px solid var(--primary);
+  background: transparent;
+  border: 0;
+  border-bottom: 5px solid #43301f;
+  border-radius: 0;
+  box-shadow: 0 14px 10px -12px rgba(0, 0, 0, 0.8);
 }
 
-.book-title {
-  font-size: 1.15rem;
+/* 表紙: 単行本の装丁。左に背（綴じ側）の陰影、上に題字の帯、下に奥付 */
+.book-cover {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  border-radius: 2px 7px 7px 2px;
+  overflow: hidden;
+  background: #10151d;
+  box-shadow:
+    0 12px 26px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+.book-cover::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 13px;
+  z-index: 2;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.6), rgba(255, 255, 255, 0.12) 45%, rgba(0, 0, 0, 0.4));
+}
+
+.book-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(105deg, transparent 55%, rgba(255, 255, 255, 0.06));
+}
+
+.book-cover-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.book-cover-band {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  padding: 16px 12px 22px 24px;
+  background: linear-gradient(rgba(4, 6, 11, 0.9), rgba(4, 6, 11, 0.55) 65%, transparent);
+}
+
+.book-cover-title {
+  font-family: 'Hiragino Mincho ProN', 'Hiragino Mincho Pro', 'Yu Mincho', 'YuMincho', serif;
+  font-size: 1.08rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.14em;
+  color: #f2e9d8;
+  border-bottom: 2px solid var(--primary);
+  padding-bottom: 5px;
+}
+
+.book-colophon {
+  position: absolute;
+  left: 24px;
+  bottom: 10px;
+  z-index: 3;
+  font-size: 0.62rem;
+  letter-spacing: 0.34em;
+  color: rgba(242, 233, 216, 0.78);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
 }
 
 .book-desc {
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   line-height: 1.6;
+  margin-top: 6px;
 }
 
 .book-action {
   color: var(--primary);
   font-weight: 700;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 .book-restart {

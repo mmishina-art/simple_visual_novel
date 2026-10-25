@@ -38,6 +38,8 @@ export interface Story {
   description: string;
   /** 読了の目安（例: '5〜10分'） */
   length: string;
+  /** 本棚で表紙に使う背景（省略時は 'classroom'） */
+  cover?: SceneBg;
   start: string;
   nodes: Record<string, StoryNode>;
 }

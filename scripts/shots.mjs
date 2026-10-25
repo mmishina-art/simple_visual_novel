@@ -26,8 +26,24 @@ const SCREENS = [
       }
     },
   },
-  { name: 'install', open: async (page) => page.click('#install-open') },
-  { name: 'backup', open: async (page) => page.click('.backup summary') },
+  {
+    name: 'settings',
+    open: async (page) => page.click('#settings-button'),
+  },
+  {
+    name: 'install',
+    open: async (page) => {
+      await page.click('#settings-button');
+      await page.click('#install-open');
+    },
+  },
+  {
+    name: 'backup',
+    open: async (page) => {
+      await page.click('#settings-button');
+      await page.click('.backup summary');
+    },
+  },
 ];
 
 /** 撮る大きさ。dark はダークモード（端末設定に従う配色のアプリで確認する）。 */

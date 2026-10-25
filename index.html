@@ -21,16 +21,28 @@
   <body>
     <main id="app">
       <!-- タイトル画面（本編の画面とは分けた、独立した画面）。
-           インストール方法の入口・バージョン表示・記録のバックアップは、この画面にだけ置く -->
+           この画面には「はじめる」「設定」「バージョン表示」だけを置く -->
       <section id="title-screen" class="screen">
         <header class="header">
           <h1>サウンドノベル</h1>
-          <button id="sound-button" type="button" class="icon-button" aria-label="音" aria-pressed="true">🔊</button>
         </header>
 
-        <img id="title-art" class="scene-art" alt="" />
-        <p class="story-lead">物語と音でつづる、短編小説集。<br />選択で、結末が変わります。</p>
         <button id="start-button" type="button" class="primary big">はじめる</button>
+        <button id="settings-button" type="button" class="big">設定</button>
+
+        <p class="muted version" id="version-line">v<span id="version"></span></p>
+      </section>
+
+      <!-- 設定の画面。音のオン／オフ、記録のバックアップ、インストール方法はここに置く -->
+      <section id="settings-screen" class="screen" hidden>
+        <header class="header">
+          <h1>設定</h1>
+        </header>
+
+        <div class="settings-row">
+          <span>音</span>
+          <button id="sound-button" type="button" class="icon-button" aria-label="音" aria-pressed="true">🔊</button>
+        </div>
 
         <details class="backup">
           <summary>記録のバックアップ</summary>
@@ -42,7 +54,7 @@
 
         <button id="install-open" type="button" class="link">📲 アプリとしてインストールする方法</button>
 
-        <p class="muted version" id="version-line">v<span id="version"></span></p>
+        <button id="settings-back" type="button" class="link">タイトルに戻る</button>
       </section>
 
       <!-- 本棚の画面。作品を選ぶと本編が始まる（作品は src/stories/ の一覧から作る） -->

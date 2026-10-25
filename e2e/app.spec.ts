@@ -267,10 +267,17 @@ test('ボタンを押すと操作音が鳴る', async ({ page }) => {
 
 test('タイトル画面と本編の画面が分かれている', async ({ page }) => {
   await page.goto('/');
-  // タイトル画面: 本編は出ず、バックアップやインストール方法がここにある
+  // トップ画面: 本編は出ず、あるのは「はじめる」「設定」「バージョン」だけ
   await expect(page.locator('#title-screen')).toBeVisible();
   await expect(page.locator('#game-screen')).toBeHidden();
+  await expect(page.locator('.backup')).toBeHidden();
+  // 設定の画面に、バックアップとインストール方法がある
+  await page.getByRole('button', { name: '設定' }).click();
+  await expect(page.locator('#settings-screen')).toBeVisible();
   await expect(page.locator('.backup')).toBeVisible();
+  await expect(page.locator('#install-open')).toBeVisible();
+  await page.getByRole('button', { name: 'タイトルに戻る' }).click();
+  await expect(page.locator('#title-screen')).toBeVisible();
   await beginStory(page);
   // 本編の画面: タイトル画面の要素（バックアップ・インストール・バージョン）は出ない
   await expect(page.locator('#game-screen')).toBeVisible();
@@ -396,6 +403,7 @@ test('文章は背景の上に重なり、選択肢は縦書きで選べる', as
 
 test('音のオン/オフを切り替えられる', async ({ page }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: '設定' }).click();
   const button = page.locator('#sound-button');
   await expect(button).toHaveAttribute('aria-pressed', 'true');
   await button.click();
@@ -418,8 +426,9 @@ test('更新バナーは通常は隠れている', async ({ page }) => {
   await expect(page.locator('#update-banner')).toBeHidden();
 });
 
-test('最初の画面からインストール方法を開ける（使っている端末の説明が開いている）', async ({ page }) => {
+test('設定の画面からインストール方法を開ける（使っている端末の説明が開いている）', async ({ page }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: '設定' }).click();
   await page.getByRole('button', { name: /インストールする方法/ }).click();
   const dialog = page.locator('#install-dialog');
   await expect(dialog).toBeVisible();
@@ -442,6 +451,7 @@ test('記録をファイルに書き出し、消えたあとに読み込んで�
   await page.locator('#message-window').click();
   await page.locator('#to-title-button').click();
   await page.getByRole('button', { name: 'タイトルに戻る' }).click();
+  await page.getByRole('button', { name: '設定' }).click();
   await page.getByText('記録のバックアップ').click();
 
   const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'ファイルに書き出す' }).click()]);
@@ -457,6 +467,7 @@ test('記録をファイルに書き出し、消えたあとに読み込んで�
   await page.getByRole('button', { name: 'はじめる' }).click();
   await expect(page.locator('.book-card')).not.toContainText('つづきから読む');
   await page.getByRole('button', { name: 'タイトルに戻る' }).click();
+  await page.getByRole('button', { name: '設定' }).click();
   await page.getByText('記録のバックアップ').click();
   await page.locator('#backup-import').setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(text) });
   await expect(page.locator('#backup-message')).toContainText('読み込みました');
@@ -466,6 +477,7 @@ test('記録をファイルに書き出し、消えたあとに読み込んで�
 
 test('おかしいバックアップファイルは、理由を表示して読み込まない', async ({ page }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: '設定' }).click();
   await page.getByText('記録のバックアップ').click();
   await page.locator('#backup-import').setInputFiles({ name: 'bad.json', mimeType: 'application/json', buffer: Buffer.from('{"app":"other"}') });
   await expect(page.locator('#backup-message')).toContainText('このアプリのバックアップではありません');

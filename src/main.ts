@@ -32,7 +32,7 @@ migrateStorage();
 // 進行・読み返し・到達した結末は作品ごとに分けて保存する。
 let story: Story = STORIES[0];
 
-let screen: 'title' | 'shelf' | 'game' | 'backlog' = 'title';
+let screen: 'title' | 'shelf' | 'settings' | 'game' | 'backlog' = 'title';
 const skey = (base: string, target: Story = story): string => `story:${target.id}:${base}`;
 let state: PlayState | null = null;
 let seenEndings: string[] = [];
@@ -149,7 +149,7 @@ function renderTitle(): void {
   }
 }
 
-/** 本棚の画面。STORIES の作品をカード（本）として並べ、選ぶと本編が始まる */
+/** 本棚の画面。STORIES の作品を単行本の装丁で並べ、選ぶと本編が始まる */
 function renderShelf(): void {
   const list = $('shelf-list');
   list.replaceChildren();
@@ -159,19 +159,33 @@ function renderShelf(): void {
     card.className = 'book-card';
     const resume = savedProgressOf(item) !== null;
     const endings = load<string[]>(skey('endings', item), []);
-    const heading = document.createElement('span');
-    heading.className = 'book-title';
-    heading.textContent = item.title;
+    // 表紙: 背景イラストの上に、題字の帯と奥付を載せて単行本らしくする
+    const cover = document.createElement('span');
+    cover.className = 'book-cover';
+    const img = document.createElement('img');
+    img.className = 'book-cover-img';
+    img.src = SCENES[item.cover ?? 'classroom'];
+    img.alt = '';
+    const band = document.createElement('span');
+    band.className = 'book-cover-band';
+    const coverTitle = document.createElement('span');
+    coverTitle.className = 'book-cover-title';
+    coverTitle.textContent = item.title;
+    band.append(coverTitle);
+    const colophon = document.createElement('span');
+    colophon.className = 'book-colophon';
+    colophon.textContent = 'サウンドノベル';
+    cover.append(img, band, colophon);
     const desc = document.createElement('span');
     desc.className = 'book-desc';
     desc.textContent = item.description;
     const meta = document.createElement('span');
     meta.className = 'book-meta muted';
-    meta.textContent = `読了目安 ${item.length} ／ 結末は全${endingsOf(item).length}通り ／ 到達した結末: ${endings.length} / ${endingsOf(item).length}`;
+    meta.textContent = `読了目安 ${item.length} ／ 到達した結末: ${endings.length} / ${endingsOf(item).length}`;
     const action = document.createElement('span');
     action.className = 'book-action';
     action.textContent = resume ? 'つづきから読む' : 'この物語を読む';
-    card.append(heading, desc, meta, action);
+    card.append(cover, desc, meta, action);
     if (resume) {
       const restart = document.createElement('span');
       restart.className = 'book-restart';
@@ -291,6 +305,7 @@ function renderGame(): void {
 function render(): void {
   $('title-screen').hidden = screen !== 'title';
   $('shelf-screen').hidden = screen !== 'shelf';
+  $('settings-screen').hidden = screen !== 'settings';
   $('game-screen').hidden = screen !== 'game';
   $('backlog-screen').hidden = screen !== 'backlog';
   renderTitle();
@@ -329,6 +344,14 @@ $('start-button').addEventListener('click', () => {
   render();
 });
 $('shelf-back').addEventListener('click', () => {
+  screen = 'title';
+  render();
+});
+$('settings-button').addEventListener('click', () => {
+  screen = 'settings';
+  render();
+});
+$('settings-back').addEventListener('click', () => {
   screen = 'title';
   render();
 });
@@ -402,7 +425,6 @@ $<HTMLInputElement>('backup-import').addEventListener('change', async (e) => {
   input.value = '';
 });
 
-$<HTMLImageElement>('title-art').src = SCENES.classroom;
 document.querySelector('.game-title')!.textContent = story.title;
 $('version').textContent = __APP_VERSION__;
 // デバッグモード: バージョンの表示を続けて 5 回タップで切り替え
