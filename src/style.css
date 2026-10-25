@@ -524,19 +524,3 @@ button.link {
   color: var(--debug-text);
 }
 
-/* タイトル画面に出す更新案内（新しいバージョンがあるときだけ） */
-.title-update {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 14px 0 4px;
-  padding: 10px 12px;
-  border: 1px solid var(--accent);
-  border-radius: 12px;
-  background: var(--surface);
-}
-
-.title-update[hidden] {
-  display: none;
-}

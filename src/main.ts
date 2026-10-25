@@ -354,10 +354,8 @@ setupPwa();
 setTimeout(() => checkForUpdate(), 5000);
 onUpdateAvailable(() => {
   $('update-banner').hidden = false;
-  $('title-update').hidden = false;
 });
 $('update-button').addEventListener('click', applyUpdate);
-$('title-update-button').addEventListener('click', applyUpdate);
 setupInstallGuide($<HTMLButtonElement>('install-open'), $<HTMLDialogElement>('install-dialog'), $<HTMLButtonElement>('install-now'));
 render();
 
