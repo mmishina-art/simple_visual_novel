@@ -335,19 +335,26 @@ button.link {
 }
 
 .choices button {
+  /* ボタンの既定の中央寄せ（Safari）だと、はみ出した文字が上から見切れる。
+     フレックスで開始位置（上）から流し、収まらない分は左へ段を増やす */
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: center;
   writing-mode: vertical-rl;
-  height: 86%;
+  height: 90%;
   max-width: 46%;
   margin: 0;
-  padding: 16px 10px;
+  padding: 14px 8px;
   text-align: start;
   font-size: 1rem;
   line-height: 1.9;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.03em;
   background: rgb(10 15 22 / 0.92);
   border: 1px solid var(--border);
   border-radius: 10px;
-  overflow-x: auto;
+  overflow: hidden;
 }
 
 .choices button:hover, .choices button:focus-visible {

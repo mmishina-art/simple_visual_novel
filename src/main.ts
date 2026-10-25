@@ -7,7 +7,7 @@ import { STORIES, storyById } from './stories';
 import { setupDebug } from './debug';
 import { setupInstallGuide } from './install';
 import { setupUpdateBanner } from './pwa';
-import { isSoundOn, playSceneSound, setSound } from './sound';
+import { isSoundOn, playAdvanceSound, playSceneSound, setSound, startBgm, stopBgm } from './sound';
 import { exportBackup, importBackup, load, migrateStorage, remove, requestPersist, save } from './storage';
 
 import classroom from './assets/scenes/classroom.svg';
@@ -125,6 +125,24 @@ function renderTitle(): void {
   }
 }
 
+/**
+ * 選択肢の文字が帯の中で見切れないよう、収まるまで文字を少しずつ小さくする。
+ * 端末やフォントの差で1行に収まる文字数が変わるため、実測で合わせる。
+ */
+function fitChoiceButtons(container: HTMLElement): void {
+  for (const b of container.querySelectorAll('button')) {
+    b.style.fontSize = '';
+    let size = 1;
+    while (
+      (b.scrollHeight > b.clientHeight + 1 || b.scrollWidth > b.clientWidth + 1) &&
+      size > 0.68
+    ) {
+      size -= 0.04;
+      b.style.fontSize = `${size}rem`;
+    }
+  }
+}
+
 function renderGame(): void {
   $('game-screen').hidden = screen !== 'game';
   if (screen !== 'game' || !state) return;
@@ -175,6 +193,7 @@ function renderGame(): void {
     });
     choicesEl.append(b);
   });
+  if (node.choices) fitChoiceButtons(choicesEl);
 
   const endingPanel = $('ending-panel');
   endingPanel.hidden = !node.ending;
@@ -208,6 +227,7 @@ function startGame(fromState: PlayState, resume = false): void {
   currentBg = 'classroom';
   screen = 'game';
   persist();
+  startBgm();
   render();
 }
 
@@ -231,6 +251,7 @@ $('message-window').addEventListener('click', () => {
   const next = advance(story, state);
   if (next !== state) {
     state = next;
+    playAdvanceSound();
     persist();
     render();
   }
@@ -239,6 +260,7 @@ $('retry-button').addEventListener('click', () => {
   if (state) startGame(backToCheckpoint(story, state));
 });
 const toTitle = (): void => {
+  stopBgm();
   screen = 'title';
   render();
 };
