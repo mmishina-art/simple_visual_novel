@@ -113,10 +113,14 @@ function renderBacklog(): void {
     );
   }
   // 開いたときは先頭（右端）ではなく、いちばん新しい文章（左端）から表示する。
-  // row-reverse のはみ出し方向は左で、scrollLeft は負方向に進む
-  el.scrollLeft = -el.scrollWidth;
-  // 開いたときは最初（右端）から読める位置にする
-  requestAnimationFrame(() => { el.scrollLeft = 0; });
+  // row-reverse のはみ出し方向は左で、scrollLeft は負方向に進む。
+  // フォント読み込みで幅が変わることがあるので、落ち着いてからも合わせ直す
+  const toNewest = (): void => {
+    el.scrollLeft = -el.scrollWidth;
+  };
+  toNewest();
+  requestAnimationFrame(toNewest);
+  void document.fonts?.ready.then(toNewest);
 }
 
 function renderTitle(): void {

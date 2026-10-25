@@ -169,7 +169,9 @@ test('読み返しは、いちばん新しい文章から表示される', async
       newestText: newest?.textContent ?? '',
     };
   });
-  expect(state?.scrollLeft).toBeLessThan(0);
+  await expect
+    .poll(async () => page.evaluate(() => document.querySelector('#backlog-text')?.scrollLeft ?? 0))
+    .toBeLessThan(0);
   expect(state?.newestVisible).toBe(true);
   expect(state?.newestText).toContain('スマホの電池は残り');
 });
