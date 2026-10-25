@@ -225,6 +225,22 @@ test('新しい版があると、画面下のバナーが出る', async ({ page 
   await expect(page.locator('#update-banner')).toBeVisible();
 });
 
+test('ボタンを押すと操作音が鳴る', async ({ page }) => {
+  await page.goto('/');
+  await page.evaluate(() => {
+    (window as unknown as { __uiSounds: string[] }).__uiSounds = [];
+    document.addEventListener('app:sound', (e) => {
+      const ui = (e as CustomEvent<{ ui?: string }>).detail?.ui;
+      if (ui) (window as unknown as { __uiSounds: string[] }).__uiSounds.push(ui);
+    });
+  });
+  await page.getByRole('button', { name: 'はじめから' }).click();
+  const sounds = await page.evaluate(
+    () => (window as unknown as { __uiSounds: string[] }).__uiSounds,
+  );
+  expect(sounds).toContain('button');
+});
+
 test('タイトル画面と本編の画面が分かれている', async ({ page }) => {
   await page.goto('/');
   // タイトル画面: 本編は出ず、バックアップやインストール方法がここにある

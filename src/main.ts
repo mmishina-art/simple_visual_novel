@@ -7,7 +7,7 @@ import { STORIES, storyById } from './stories';
 import { setupDebug } from './debug';
 import { setupInstallGuide } from './install';
 import { applyUpdate, checkForUpdate, onUpdateAvailable, setupPwa } from './pwa';
-import { isSoundOn, playAdvanceSound, playEndingJingle, playSceneSound, setSound, startBgm, stopBgm } from './sound';
+import { isSoundOn, playAdvanceSound, playButtonSound, playEndingJingle, playSceneSound, setSound, startBgm, stopBgm } from './sound';
 import { exportBackup, importBackup, load, migrateStorage, remove, requestPersist, save } from './storage';
 
 import classroom from './assets/scenes/classroom.svg';
@@ -247,6 +247,18 @@ function startGame(fromState: PlayState, resume = false): void {
   startBgm('normal');
   render();
 }
+
+// ボタンを押したときの操作音。個別のボタンに足すのではなく、
+// まとめて拾う（音のオン/オフ、更新、復旧、デバッグのボタンは除く）
+document.addEventListener('click', (e) => {
+  const target = e.target as HTMLElement;
+  const button = target.closest('button');
+  if (!button) return;
+  if (button.id === 'sound-button' || button.id === 'sound-button-game') return;
+  if (button.id === 'update-button' || button.id === 'boot-repair') return;
+  if (button.closest('#debug-panel')) return;
+  playButtonSound();
+});
 
 $('start-button').addEventListener('click', () => {
   cheated = false;

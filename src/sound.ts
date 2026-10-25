@@ -88,6 +88,21 @@ export function playSceneSound(key: SceneSound): void {
   }
 }
 
+/**
+ * ボタンを押したときの音。全体の静かな雰囲気に合わせ、
+ * 木を軽く打つような、短く小さな音にする
+ */
+export function playButtonSound(): void {
+  if (!enabled) return;
+  try {
+    noise(0.05, 750, 0.05, 0, 'bandpass');
+    tone(392, 0.07, 'sine', 0.035);
+    document.dispatchEvent(new CustomEvent('app:sound', { detail: { ui: 'button' } }));
+  } catch {
+    // 音が出せなくても続行する
+  }
+}
+
 /** 文章を進める操作の音（紙をめくるような、短く柔らかい音） */
 export function playAdvanceSound(): void {
   if (!enabled) return;
@@ -291,14 +306,17 @@ export function playEndingJingle(kind: 'happy' | 'bad'): void {
   if (!enabled) return;
   try {
     if (kind === 'bad') {
-      // 低い鐘の余韻（基音＋弱い倍音を長く減衰させる）
-      tone(98, 5.0, 'sine', 0.15);
-      tone(196, 4.0, 'sine', 0.045);
-      tone(294.5, 3.0, 'sine', 0.018);
-      // 少し遅れて、半音ずれた薄いうなりが重なって消えていく
-      tone(116.54, 4.2, 'sine', 0.032, 0.5);
-      // 風がひと吹き、遠くで鳴る感じに
-      noise(2.6, 240, 0.028);
+      // 低い鐘。打ち始めをはっきりさせ、倍音を足して輪郭を出す。
+      // 余韻は長く、少し遅れて半音のうなりと、弱い2打目が重なる
+      noise(0.06, 900, 0.05, 0, 'bandpass');
+      tone(98, 5.5, 'sine', 0.22);
+      tone(196, 4.5, 'sine', 0.08);
+      tone(297, 3.0, 'sine', 0.05);
+      tone(392, 2.0, 'sine', 0.028);
+      tone(116.54, 4.5, 'sine', 0.05, 0.5);
+      tone(98, 4.0, 'sine', 0.1, 2.2);
+      tone(196, 3.0, 'sine', 0.032, 2.2);
+      noise(3.0, 240, 0.04);
     } else {
       // オルゴール風：小さな音を間を置いて昇らせ、最後の音に薄い残響を添える
       tone(261.63, 3.4, 'triangle', 0.028);
