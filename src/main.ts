@@ -223,16 +223,14 @@ function renderShelf(): void {
   if (first) {
     const note = document.createElement('p');
     note.className = 'shelf-note muted span-all';
-    note.textContent = '『午前0時の校舎』の装丁候補（B〜Dは表示だけです）';
+    note.textContent = '『午前0時の校舎』の装丁候補（Bは表示だけです）';
     list.append(note);
     const candidates: { design: CoverDesign; caption: string }[] = [
-      { design: 'b', caption: '候補B：帯のデザイン（縦書きの題字＋赤い帯にあらすじ）' },
-      { design: 'c', caption: '候補C：金枠と文字組み（絵を薄くして、題字を中央に）' },
-      { design: 'd', caption: '候補D：紙のラベル（生成りのラベルに題字と判子）' },
+      { design: 'b', caption: '候補B：帯のデザイン' },
     ];
     for (const c of candidates) {
       const card = document.createElement('div');
-      card.className = 'book-candidate span-all';
+      card.className = 'book-candidate';
       const cover = buildCover(first, c.design);
       card.append(cover, spanOf('book-caption muted', c.caption));
       list.append(card);
