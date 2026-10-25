@@ -45,6 +45,9 @@ test('選択を誤るとバッドエンドになり、最後の選択からや�
   await page.getByRole('button', { name: 'はじめから' }).click();
   await playToEnding(page, ['そのまま出る', '急ぐ', '返事をする']);
   await expect(page.locator('#ending-title')).toContainText('バッドエンド');
+  // 結末の本文は独立したページに出る（直前の文章と重なって読めなくならない）
+  await expect(page.locator('#story-text')).toContainText('冷たい手が私の肩に');
+  await expect(page.locator('#story-text')).not.toContainText('振り返った先');
   await page.getByRole('button', { name: '最後の選択からやり直す' }).click();
   // 声の選択肢まで戻っている
   await expect(page.locator('#choices')).toBeVisible();
@@ -149,6 +152,11 @@ test('読み返しで、前のページや、選んだ選択肢だけをさか�
   for (let i = 0; i < 12 && !(await page.locator('#choices').isVisible()); i++) {
     await page.locator('#message-window').click();
   }
+  // 選択肢が出ている最中でも、右端の三角から読み返しを開ける
+  await page.getByRole('button', { name: '読み返す' }).click();
+  await expect(page.locator('#backlog-screen')).toBeVisible();
+  await page.getByRole('button', { name: '閉じる' }).click();
+  await expect(page.locator('#choices')).toBeVisible();
   await page.getByRole('button', { name: '懐中電灯を持っていく' }).click();
   await page.getByRole('button', { name: '読み返す' }).click();
   // 読み返しに残るのは、選んだ選択肢だけ（選ばなかった方は出てこない）

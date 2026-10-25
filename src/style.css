@@ -237,12 +237,6 @@ button.link {
   text-combine-upright: all;
 }
 
-.game-head-actions {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-
 /* 読み返し画面 */
 .backlog-screen {
   text-align: left;
@@ -290,6 +284,27 @@ button.link {
 .backlog-text .segment.choice-entry {
   color: var(--accent);
   text-indent: 0;
+}
+
+/* 読み返しへの入口。進む合図（左下の◀）と対になる、右端の三角 */
+.backlog-hint {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  padding: 14px 8px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  animation: hint-back 1.6s ease-in-out infinite;
+}
+
+@keyframes hint-back {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
 
 .next-hint {
@@ -340,17 +355,14 @@ button.link {
   border-color: var(--accent);
 }
 
-/* 結末パネルはステージの下部に重ねる */
+/* 結末パネルはステージの下に置く（本文とは重ねない） */
 .ending-panel {
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 12px;
+  margin-top: 12px;
   text-align: center;
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 14px;
-  background: rgb(13 18 26 / 0.94);
+  background: var(--surface);
 }
 
 .ending-title {

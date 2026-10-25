@@ -134,7 +134,10 @@ function renderGame(): void {
   $('speaker').textContent = node.speaker ?? '';
   if (node.id !== lastNodeId) {
     const prev = lastNodeId ? story.nodes[lastNodeId] : undefined;
-    if (node.choices) {
+    if (node.ending) {
+      // 結末は独立したページにする（前の文章と重なって読めなくならないように）
+      segments = [node.text];
+    } else if (node.choices) {
       // 選択肢の場面では、それまでの文章は消し、直前の文章（その場面の文章）だけを残す
       segments = [node.text];
     } else if (prev?.choices) {
@@ -147,7 +150,7 @@ function renderGame(): void {
   renderStoryText(segments);
   // ページめくり: 文章が画面いっぱいになってはみ出したら、ページをめくる感じで
   // 全部消して、その文章だけを右から始める（前のページは「読み返す」で読める）
-  if (!node.choices) {
+  if (!node.choices && !node.ending) {
     const textEl = $('story-text');
     if (segments.length > 1 && textEl.scrollWidth > textEl.clientWidth + 1) {
       segments = [node.text];

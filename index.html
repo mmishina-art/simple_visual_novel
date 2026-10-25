@@ -53,10 +53,7 @@
       <section id="game-screen" class="screen" hidden>
         <header class="game-header">
           <span class="game-title">午前0時の校舎</span>
-          <span class="game-head-actions">
-            <button id="backlog-button" type="button" class="link">読み返す</button>
-            <button id="sound-button-game" type="button" class="icon-button" aria-label="音" aria-pressed="true">🔊</button>
-          </span>
+          <button id="sound-button-game" type="button" class="icon-button" aria-label="音" aria-pressed="true">🔊</button>
         </header>
 
         <!-- ステージ: 背景の上に、文章・選択肢・結末を重ねて表示する -->
@@ -70,11 +67,14 @@
           </div>
           <div id="choices" class="choices" hidden></div>
 
-          <div id="ending-panel" class="ending-panel" hidden>
-            <p id="ending-title" class="ending-title" aria-live="polite"></p>
-            <button id="retry-button" type="button" class="primary">最後の選択からやり直す</button>
-            <button id="ending-title-button" type="button">タイトルへ</button>
-          </div>
+          <button id="backlog-button" type="button" class="backlog-hint" aria-label="読み返す">▶</button>
+        </div>
+
+        <!-- 結末パネルはステージの外（下）に置く。本文と重なって読めなくならないように -->
+        <div id="ending-panel" class="ending-panel" hidden>
+          <p id="ending-title" class="ending-title" aria-live="polite"></p>
+          <button id="retry-button" type="button" class="primary">最後の選択からやり直す</button>
+          <button id="ending-title-button" type="button">タイトルへ</button>
         </div>
 
         <button id="to-title-button" type="button" class="link">タイトルへ（進行は自動で保存されます）</button>
