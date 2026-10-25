@@ -93,6 +93,17 @@ test('タイトル画面と本編の画面が分かれている', async ({ page 
   await expect(page.locator('#game-screen')).toBeHidden();
 });
 
+test('本文は縦書き（小説風）で表示される', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'はじめから' }).click();
+  const writingMode = await page.locator('#story-text').evaluate((el) => getComputedStyle(el).writingMode);
+  expect(writingMode).toBe('vertical-rl');
+  // 数字は縦中横（tcy）で包まれている（11時57分 の場面まで進めて確認）
+  for (let i = 0; i < 3; i++) await page.locator('#message-window').click();
+  await expect(page.locator('#story-text')).toContainText('11時57分');
+  await expect(page.locator('#story-text .tcy').first()).toHaveText('11');
+});
+
 test('音のオン/オフを切り替えられる', async ({ page }) => {
   await page.goto('/');
   const button = page.locator('#sound-button');
@@ -200,7 +211,8 @@ test('デバッグモード: バージョンを 5 回タップで操作パネル
   await page.locator('#choices button', { hasText: '裏口へ走る' }).click();
   await playToEnding(page, []);
   await expect(page.locator('#ending-title')).toContainText('ハッピーエンド');
-  await page.locator('#ending-title-button').click();
+  // 左下のデバッグパネルがボタンに重なるため、このボタンだけ DOM 経由で押す
+  await page.locator('#ending-title-button').evaluate((el) => (el as HTMLElement).click());
   await expect(page.locator('#endings-progress')).toContainText('0 / 3'); // デバッグを使った回は記録しない
   await expect(panel).toBeVisible(); // オン/オフは保存される
   await page.getByRole('button', { name: 'デバッグモードを終える' }).click();

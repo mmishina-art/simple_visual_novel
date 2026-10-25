@@ -55,6 +55,23 @@ function recordEnding(): void {
   }
 }
 
+/** 本文を縦書きで出す。数字（11時57分など）は縦中横になるよう、数字の並びだけ span.tcy で包む */
+function renderStoryText(text: string): void {
+  const el = $('story-text');
+  el.replaceChildren();
+  for (const part of text.split(/(\d+%?)/g)) {
+    if (!part) continue;
+    if (/^\d/.test(part)) {
+      const span = document.createElement('span');
+      span.className = 'tcy';
+      span.textContent = part;
+      el.append(span);
+    } else {
+      el.append(document.createTextNode(part));
+    }
+  }
+}
+
 function renderTitle(): void {
   $('continue-button').hidden = !state || (state !== null && isEnding(story, state));
   $('endings-progress').textContent = `到達した結末: ${seenEndings.length} / ${totalEndings}`;
@@ -73,7 +90,7 @@ function renderGame(): void {
   if (node.bg) currentBg = node.bg;
   $<HTMLImageElement>('scene-img').src = SCENES[currentBg];
   $('speaker').textContent = node.speaker ?? '';
-  $('story-text').textContent = node.text;
+  renderStoryText(node.text);
   $('next-hint').hidden = !!node.choices || !!node.ending;
 
   const choicesEl = $('choices');
