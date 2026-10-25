@@ -134,6 +134,41 @@ test('文章は消えずに左へ追加され、選択肢では直前の文章�
   expect(centered).toBeLessThan(24);
 });
 
+test('読み返しで、前のページや、選んだ選択肢だけをさかのぼれる', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'はじめから' }).click();
+  await page.locator('#message-window').click();
+  await page.locator('#message-window').click();
+  await page.getByRole('button', { name: '読み返す' }).click();
+  await expect(page.locator('#backlog-screen')).toBeVisible();
+  await expect(page.locator('#backlog-text')).toContainText('文化祭を明日に控えた');
+  await expect(page.locator('#backlog-text')).toContainText('仕上がった看板を壁に立てかけた');
+  await page.getByRole('button', { name: '閉じる' }).click();
+  await expect(page.locator('#game-screen')).toBeVisible();
+  // 最初の選択肢まで進めて、懐中電灯を選ぶ
+  for (let i = 0; i < 12 && !(await page.locator('#choices').isVisible()); i++) {
+    await page.locator('#message-window').click();
+  }
+  await page.getByRole('button', { name: '懐中電灯を持っていく' }).click();
+  await page.getByRole('button', { name: '読み返す' }).click();
+  // 読み返しに残るのは、選んだ選択肢だけ（選ばなかった方は出てこない）
+  await expect(page.locator('#backlog-text')).toContainText('懐中電灯を持っていく');
+  await expect(page.locator('#backlog-text')).not.toContainText('明かりはなくても');
+});
+
+test('文章で画面がいっぱいになったら、ページがめくれて新しいページが始まる', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'はじめから' }).click();
+  for (let i = 0; i < 4; i++) await page.locator('#message-window').click();
+  // 5つ目の文章まで進むと、ページがめくれて、最初の文章は本文から消えている
+  await expect(page.locator('#story-text')).toContainText('画面は黒く落ちた');
+  await expect(page.locator('#story-text')).not.toContainText('文化祭を明日に控えた');
+  // めくれたページも「読み返す」で読める
+  await page.getByRole('button', { name: '読み返す' }).click();
+  await expect(page.locator('#backlog-text')).toContainText('文化祭を明日に控えた');
+});
+
 test('文章は背景の上に重なり、選択肢は縦書きで選べる', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'はじめから' }).click();

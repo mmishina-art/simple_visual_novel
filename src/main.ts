@@ -32,10 +32,22 @@ migrateStorage();
 const story = STORIES[0];
 const totalEndings = endingsOf(story).length;
 
-let screen: 'title' | 'game' = 'title';
+let screen: 'title' | 'game' | 'backlog' = 'title';
 let state: PlayState | null = load<PlayState | null>('progress', null);
 if (state && !storyById(state.storyId)) state = null;
 let seenEndings: string[] = load<string[]>('endings', []);
+
+/** 読み返し用の履歴。文章と、選んだ選択肢だけを記録する（選ばなかった選択肢は残らない）。進行と一緒に保存する */
+type BacklogEntry = { kind: 'text' | 'choice'; text: string };
+const loadedBacklog = load<unknown>('backlog', []);
+let backlog: BacklogEntry[] = Array.isArray(loadedBacklog)
+  ? loadedBacklog.filter(
+      (e): e is BacklogEntry =>
+        typeof e === 'object' && e !== null &&
+        ((e as BacklogEntry).kind === 'text' || (e as BacklogEntry).kind === 'choice') &&
+        typeof (e as BacklogEntry).text === 'string',
+    )
+  : [];
 /** デバッグの操作を使った回は、到達した結末を記録しない */
 let cheated = false;
 let lastNodeId = '';
@@ -44,8 +56,13 @@ let currentBg: SceneBg = 'classroom';
 let segments: string[] = [];
 
 function persist(): void {
-  if (state && !isEnding(story, state)) save('progress', state);
-  else remove('progress');
+  if (state && !isEnding(story, state)) {
+    save('progress', state);
+    save('backlog', backlog);
+  } else {
+    remove('progress');
+    remove('backlog');
+  }
 }
 
 function recordEnding(): void {
@@ -58,27 +75,43 @@ function recordEnding(): void {
 }
 
 /** 本文を縦書きで出す。数字（11時57分など）は縦中横になるよう、数字の並びだけ span.tcy で包む */
+function buildSegment(text: string, className = 'segment'): HTMLSpanElement {
+  const seg = document.createElement('span');
+  seg.className = className;
+  for (const part of text.split(/(\d+%?)/g)) {
+    if (!part) continue;
+    if (/^\d/.test(part)) {
+      const span = document.createElement('span');
+      span.className = 'tcy';
+      span.textContent = part;
+      seg.append(span);
+    } else {
+      seg.append(document.createTextNode(part));
+    }
+  }
+  return seg;
+}
+
 function renderStoryText(texts: string[]): void {
   const el = $('story-text');
   el.replaceChildren();
-  texts.forEach((text) => {
-    const seg = document.createElement('span');
-    seg.className = 'segment';
-    for (const part of text.split(/(\d+%?)/g)) {
-      if (!part) continue;
-      if (/^\d/.test(part)) {
-        const span = document.createElement('span');
-        span.className = 'tcy';
-        span.textContent = part;
-        seg.append(span);
-      } else {
-        seg.append(document.createTextNode(part));
-      }
-    }
-    el.append(seg);
-  });
-  // いちばん新しい列（左端）が見える位置まで寄せる
-  requestAnimationFrame(() => { el.scrollLeft = -el.scrollWidth; });
+  texts.forEach((text) => el.append(buildSegment(text)));
+  el.scrollLeft = 0;
+}
+
+function renderBacklog(): void {
+  const el = $('backlog-text');
+  el.replaceChildren();
+  if (backlog.length === 0) el.append(buildSegment('まだ文章がありません。'));
+  for (const entry of backlog) {
+    el.append(
+      entry.kind === 'choice'
+        ? buildSegment(`▶ ${entry.text}`, 'segment choice-entry')
+        : buildSegment(entry.text),
+    );
+  }
+  // 開いたときは最初（右端）から読める位置にする
+  requestAnimationFrame(() => { el.scrollLeft = 0; });
 }
 
 function renderTitle(): void {
@@ -112,6 +145,15 @@ function renderGame(): void {
     }
   }
   renderStoryText(segments);
+  // ページめくり: 文章が画面いっぱいになってはみ出したら、ページをめくる感じで
+  // 全部消して、その文章だけを右から始める（前のページは「読み返す」で読める）
+  if (!node.choices) {
+    const textEl = $('story-text');
+    if (segments.length > 1 && textEl.scrollWidth > textEl.clientWidth + 1) {
+      segments = [node.text];
+      renderStoryText(segments);
+    }
+  }
   $('next-hint').hidden = !!node.choices || !!node.ending;
 
   const choicesEl = $('choices');
@@ -123,6 +165,7 @@ function renderGame(): void {
     b.textContent = choice.label;
     b.addEventListener('click', () => {
       if (!state) return;
+      backlog = [...backlog, { kind: 'choice', text: choice.label }];
       state = choose(story, state, i);
       persist();
       render();
@@ -135,9 +178,10 @@ function renderGame(): void {
   if (node.ending) $('ending-title').textContent = node.ending.title;
   $('to-title-button').hidden = !!node.ending;
 
-  // 場面が変わったときだけ、その場面の音を鳴らす
+  // 場面が変わったときだけ、その場面の音を鳴らし、読み返し用に文章を記録する
   if (node.id !== lastNodeId) {
     lastNodeId = node.id;
+    backlog = [...backlog, { kind: 'text', text: node.text }];
     if (node.se) playSceneSound(node.se);
     if (node.ending) recordEnding();
   }
@@ -146,12 +190,16 @@ function renderGame(): void {
 function render(): void {
   $('title-screen').hidden = screen !== 'title';
   $('game-screen').hidden = screen !== 'game';
+  $('backlog-screen').hidden = screen !== 'backlog';
   renderTitle();
   renderGame();
+  if (screen === 'backlog') renderBacklog();
 }
 
 function startGame(fromState: PlayState, resume = false): void {
   state = fromState;
+  if (!resume) backlog = [];
+  else if (backlog.length === 0) backlog = [{ kind: 'text', text: nodeOf(story, fromState).text }];
   segments = resume ? [nodeOf(story, fromState).text] : [];
   lastNodeId = resume ? fromState.nodeId : '';
   currentBg = 'classroom';
@@ -163,6 +211,14 @@ function startGame(fromState: PlayState, resume = false): void {
 $('start-button').addEventListener('click', () => {
   cheated = false;
   startGame(startState(story));
+});
+$('backlog-button').addEventListener('click', () => {
+  screen = 'backlog';
+  render();
+});
+$('backlog-close').addEventListener('click', () => {
+  screen = 'game';
+  render();
 });
 $('continue-button').addEventListener('click', () => {
   if (state) startGame(state, true);
@@ -209,6 +265,7 @@ $<HTMLInputElement>('backup-import').addEventListener('change', async (e) => {
     const n = importBackup(await file.text());
     state = load<PlayState | null>('progress', null);
     seenEndings = load<string[]>('endings', []);
+    backlog = load<BacklogEntry[]>('backlog', []);
     screen = 'title';
     render();
     message.textContent = `${n} 件の記録を読み込みました`;

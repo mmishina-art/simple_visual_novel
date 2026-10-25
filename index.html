@@ -53,7 +53,10 @@
       <section id="game-screen" class="screen" hidden>
         <header class="game-header">
           <span class="game-title">午前0時の校舎</span>
-          <button id="sound-button-game" type="button" class="icon-button" aria-label="音" aria-pressed="true">🔊</button>
+          <span class="game-head-actions">
+            <button id="backlog-button" type="button" class="link">読み返す</button>
+            <button id="sound-button-game" type="button" class="icon-button" aria-label="音" aria-pressed="true">🔊</button>
+          </span>
         </header>
 
         <!-- ステージ: 背景の上に、文章・選択肢・結末を重ねて表示する -->
@@ -75,6 +78,14 @@
         </div>
 
         <button id="to-title-button" type="button" class="link">タイトルへ（進行は自動で保存されます）</button>
+      </section>
+      <section id="backlog-screen" class="screen backlog-screen" hidden>
+        <div class="backlog-head">
+          <h2>読み返し</h2>
+          <button id="backlog-close" type="button" class="link">閉じる</button>
+        </div>
+        <p class="backlog-note">右が最初、左がいちばん新しい文章です。横にスワイプしてさかのぼれます。</p>
+        <div id="backlog-text" class="backlog-text"></div>
       </section>
     </main>
 

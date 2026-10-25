@@ -218,7 +218,8 @@ button.link {
 }
 
 /* 文章1つが1まとまり。読み進めるたびに、左へ新しい列のまとまりが足される（改行扱い） */
-.story-text .segment {
+.story-text .segment,
+.backlog-text .segment {
   writing-mode: vertical-rl;
   flex: 0 0 auto;
   height: 100%;
@@ -226,12 +227,69 @@ button.link {
 }
 
 /* 縦書きの中で、数字は縦中横（横並び）にする */
-.story-text::-webkit-scrollbar {
+.story-text::-webkit-scrollbar,
+.backlog-text::-webkit-scrollbar {
   display: none;
 }
 
-.story-text .tcy {
+.story-text .tcy,
+.backlog-text .tcy {
   text-combine-upright: all;
+}
+
+.game-head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 読み返し画面 */
+.backlog-screen {
+  text-align: left;
+}
+
+.backlog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.backlog-head h2 {
+  margin: 0;
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif;
+  font-size: 1.15rem;
+  letter-spacing: 0.12em;
+}
+
+.backlog-note {
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin: 8px 0 12px;
+}
+
+.backlog-text {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 1.1em;
+  height: min(60vh, 540px);
+  padding: 18px 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif;
+  font-size: 1.02rem;
+  line-height: 2;
+  letter-spacing: 0.05em;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+/* 読み返しの中で、選んだ選択肢は色を変えて目立たせる */
+.backlog-text .segment.choice-entry {
+  color: var(--accent);
+  text-indent: 0;
 }
 
 .next-hint {
