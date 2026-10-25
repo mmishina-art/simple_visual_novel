@@ -124,3 +124,16 @@ describe('シナリオデータの検証', () => {
     expect(validateStory(broken).length).toBeGreaterThan(0);
   });
 });
+
+describe('全作品の検証', () => {
+  it('登録されている全作品に、リンク切れ・到達できない場面・結末の欠けがない', async () => {
+    const { STORIES } = await import('../src/stories');
+    const { endingsOf, validateStory } = await import('../src/logic');
+    for (const s of STORIES) {
+      expect(validateStory(s), s.title).toEqual([]);
+      const endings = endingsOf(s);
+      expect(endings.length, s.title).toBe(3);
+      expect(endings.filter((n) => n.ending?.kind === 'happy').length, s.title).toBe(1);
+    }
+  });
+});

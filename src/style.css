@@ -201,6 +201,31 @@ button.link {
   color: #aeb6bd;
 }
 
+/* ---- 本棚の画面（木の棚の背景） ---- */
+
+#shelf-screen {
+  position: relative;
+}
+
+/* 背景は main の余白の分だけはみ出させて、画面いっぱいに広げる（木目＋板の継ぎ目） */
+#shelf-screen::before {
+  content: '';
+  position: absolute;
+  top: calc(-1 * max(16px, var(--safe-top)));
+  right: calc(-1 * max(16px, env(safe-area-inset-right)));
+  bottom: calc(-1 * max(24px, env(safe-area-inset-bottom)));
+  left: calc(-1 * max(16px, env(safe-area-inset-left)));
+  z-index: -1;
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.16) 0 2px, transparent 2px 118px),
+    linear-gradient(rgba(255, 214, 150, 0.07), rgba(0, 0, 0, 0.14) 55%, rgba(0, 0, 0, 0.3)),
+    linear-gradient(100deg, #3a2817, #2e1f12 55%, #352412);
+}
+
+#shelf-screen .muted {
+  color: #c9b896;
+}
+
 /* ---- 設定の画面 ---- */
 
 .settings-row {
@@ -233,7 +258,7 @@ button.link {
   text-align: left;
   background: transparent;
   border: 0;
-  border-bottom: 5px solid #43301f;
+  border-bottom: 6px solid #6a4525;
   border-radius: 0;
   box-shadow: 0 14px 10px -12px rgba(0, 0, 0, 0.8);
 }
