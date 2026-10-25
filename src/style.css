@@ -119,7 +119,20 @@ button.link {
   font-size: 0.9rem;
 }
 
-/* ---- タイトル画面 / 物語の画面 ---- */
+/* ---- タイトル画面 / 本編の画面（2画面は独立させる） ---- */
+
+.game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.game-title {
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
 
 .scene-art {
   display: block;

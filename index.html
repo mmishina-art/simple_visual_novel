@@ -20,23 +20,42 @@
   </head>
   <body>
     <main id="app">
-      <header class="header">
-        <h1>午前0時の校舎</h1>
-        <button id="sound-button" type="button" class="icon-button" aria-label="音" aria-pressed="true">🔊</button>
-      </header>
+      <!-- タイトル画面（本編の画面とは分けた、独立した画面）。
+           インストール方法の入口・バージョン表示・記録のバックアップは、この画面にだけ置く -->
+      <section id="title-screen" class="screen">
+        <header class="header">
+          <h1>午前0時の校舎</h1>
+          <button id="sound-button" type="button" class="icon-button" aria-label="音" aria-pressed="true">🔊</button>
+        </header>
 
-      <!-- タイトル画面 -->
-      <section id="title-screen">
         <img id="title-art" class="scene-art" alt="" />
         <p class="story-lead">文化祭の前夜、真夜中の校舎に一人取り残された。<br />名前を呼ばれても、返事をしてはいけない。</p>
         <p class="muted">短編ホラーサウンドノベル ／ 読了目安 <span id="story-length"></span> ／ 結末は全<span id="ending-total"></span>通り</p>
         <button id="start-button" type="button" class="primary big">はじめから</button>
         <button id="continue-button" type="button" class="big" hidden>つづきから</button>
         <p class="muted" id="endings-progress" aria-live="polite"></p>
+
+        <details class="backup">
+          <summary>記録のバックアップ</summary>
+          <p class="muted">進行状況や到達した結末は、このブラウザの中にだけ保存されています。ファイルに残しておくと、消えたときに戻せます。</p>
+          <button id="backup-export" type="button">ファイルに書き出す</button>
+          <label class="file-button">ファイルから読み込む<input id="backup-import" type="file" accept="application/json,.json" hidden></label>
+          <p id="backup-message" class="muted" role="status"></p>
+        </details>
+
+        <button id="install-open" type="button" class="link">📲 アプリとしてインストールする方法</button>
+
+        <p class="muted version" id="version-line">v<span id="version"></span></p>
       </section>
 
-      <!-- 物語の画面 -->
-      <section id="game-screen" hidden>
+      <!-- 本編の画面（タイトル画面とは分けた、独立した画面）。
+           物語に必要なものだけを置き、タイトル画面の要素（バックアップ・インストール・バージョン）は出さない -->
+      <section id="game-screen" class="screen" hidden>
+        <header class="game-header">
+          <span class="game-title">午前0時の校舎</span>
+          <button id="sound-button-game" type="button" class="icon-button" aria-label="音" aria-pressed="true">🔊</button>
+        </header>
+
         <div class="scene">
           <img id="scene-img" class="scene-art" alt="" />
         </div>
@@ -55,21 +74,9 @@
 
         <button id="to-title-button" type="button" class="link">タイトルへ（進行は自動で保存されます）</button>
       </section>
-
-      <details class="backup">
-        <summary>記録のバックアップ</summary>
-        <p class="muted">進行状況や到達した結末は、このブラウザの中にだけ保存されています。ファイルに残しておくと、消えたときに戻せます。</p>
-        <button id="backup-export" type="button">ファイルに書き出す</button>
-        <label class="file-button">ファイルから読み込む<input id="backup-import" type="file" accept="application/json,.json" hidden></label>
-        <p id="backup-message" class="muted" role="status"></p>
-      </details>
-
-      <button id="install-open" type="button" class="link">📲 アプリとしてインストールする方法</button>
-
-      <p class="muted version" id="version-line">v<span id="version"></span></p>
     </main>
 
-    <!-- インストール方法（最初の画面から開く） -->
+    <!-- インストール方法（タイトル画面から開く） -->
     <dialog id="install-dialog" class="install-dialog" aria-labelledby="install-title">
       <h2 id="install-title">ホーム画面に追加して使う</h2>
       <p class="muted">インストールすると、ホーム画面から開けて、オフラインでも使えます。</p>

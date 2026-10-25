@@ -56,12 +56,14 @@ function recordEnding(): void {
 }
 
 function renderTitle(): void {
-  $('title-screen').hidden = screen !== 'title';
   $('continue-button').hidden = !state || (state !== null && isEnding(story, state));
   $('endings-progress').textContent = `到達した結末: ${seenEndings.length} / ${totalEndings}`;
-  const sound = $('sound-button');
-  sound.textContent = isSoundOn() ? '🔊' : '🔇';
-  sound.setAttribute('aria-pressed', String(isSoundOn()));
+  // 音ボタンはタイトル画面と本編の画面の両方にあるので、表示をそろえる
+  for (const id of ['sound-button', 'sound-button-game']) {
+    const sound = $(id);
+    sound.textContent = isSoundOn() ? '🔊' : '🔇';
+    sound.setAttribute('aria-pressed', String(isSoundOn()));
+  }
 }
 
 function renderGame(): void {
@@ -144,10 +146,12 @@ const toTitle = (): void => {
 };
 $('ending-title-button').addEventListener('click', toTitle);
 $('to-title-button').addEventListener('click', toTitle);
-$('sound-button').addEventListener('click', () => {
-  setSound(!isSoundOn());
-  render();
-});
+for (const id of ['sound-button', 'sound-button-game']) {
+  $(id).addEventListener('click', () => {
+    setSound(!isSoundOn());
+    render();
+  });
+}
 
 $('backup-export').addEventListener('click', () => {
   const blob = new Blob([exportBackup()], { type: 'application/json' });

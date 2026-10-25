@@ -73,6 +73,26 @@ test('途中で閉じても、つづきから再開できる', async ({ page }) 
   await expect(page.locator('#story-text')).toHaveText(text ?? '');
 });
 
+test('タイトル画面と本編の画面が分かれている', async ({ page }) => {
+  await page.goto('/');
+  // タイトル画面: 本編は出ず、バックアップやインストール方法がここにある
+  await expect(page.locator('#title-screen')).toBeVisible();
+  await expect(page.locator('#game-screen')).toBeHidden();
+  await expect(page.locator('.backup')).toBeVisible();
+  await page.getByRole('button', { name: 'はじめから' }).click();
+  // 本編の画面: タイトル画面の要素（バックアップ・インストール・バージョン）は出ない
+  await expect(page.locator('#game-screen')).toBeVisible();
+  await expect(page.locator('#title-screen')).toBeHidden();
+  await expect(page.locator('.backup')).toBeHidden();
+  await expect(page.locator('#install-open')).toBeHidden();
+  await expect(page.locator('#version-line')).toBeHidden();
+  await expect(page.locator('#story-text')).toBeVisible();
+  // 戻るとタイトル画面だけになる
+  await page.locator('#to-title-button').click();
+  await expect(page.locator('#title-screen')).toBeVisible();
+  await expect(page.locator('#game-screen')).toBeHidden();
+});
+
 test('音のオン/オフを切り替えられる', async ({ page }) => {
   await page.goto('/');
   const button = page.locator('#sound-button');
@@ -119,6 +139,7 @@ test('記録をファイルに書き出し、消えたあとに読み込んで�
   await page.goto('/');
   await page.getByRole('button', { name: 'はじめから' }).click();
   await page.locator('#message-window').click();
+  await page.locator('#to-title-button').click();
   await page.getByText('記録のバックアップ').click();
 
   const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'ファイルに書き出す' }).click()]);
