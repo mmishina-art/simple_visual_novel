@@ -4,8 +4,8 @@
 import { deflateSync } from 'node:zlib';
 import { mkdirSync, writeFileSync } from 'node:fs';
 
-const BG = [0x1f, 0x6f, 0xeb];
-const FG = [0xff, 0xff, 0xff];
+const BG = [0x07, 0x09, 0x0d];
+const FG = [0xe8, 0xe3, 0xd5];
 
 function crc32(buf) {
   let c;
@@ -78,6 +78,6 @@ for (const [name, data] of Object.entries(files)) writeFileSync(new URL(name, ou
 
 writeFileSync(
   new URL('icon.svg', out),
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#1f6feb"/><circle cx="256" cy="256" r="143" fill="#fff"/></svg>\n`,
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#07090d"/><circle cx="256" cy="256" r="143" fill="#e8e3d5"/></svg>\n`,
 );
 console.log('icons generated:', [...Object.keys(files), 'icon.svg'].join(', '));

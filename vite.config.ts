@@ -6,9 +6,9 @@ import { VitePWA } from 'vite-plugin-pwa';
 const { version, name: appId } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string; name: string };
 
 // アプリ名・色はここと index.html の2か所だけ。新しいアプリを作るときに書き換える。
-const APP_NAME = 'PWAアプリ';
-const THEME_COLOR = '#1f6feb';
-const BACKGROUND_COLOR = '#f6f8fa';
+const APP_NAME = '午前0時の校舎';
+const THEME_COLOR = '#07090d';
+const BACKGROUND_COLOR = '#07090d';
 
 export default defineConfig({
   // GitHub Pages のサブパス配信でも動くよう、相対パスにする
@@ -33,7 +33,7 @@ export default defineConfig({
       manifest: {
         name: APP_NAME,
         short_name: APP_NAME,
-        description: 'PWAアプリのテンプレート',
+        description: '選択で結末が変わる短編ホラーサウンドノベル',
         lang: 'ja',
         display: 'standalone',
         start_url: './',

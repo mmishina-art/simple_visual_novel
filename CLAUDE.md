@@ -4,13 +4,15 @@ This file provides guidance to Claude Code when working in this repository.
 
 PWA アプリ(ツール/ゲーム)の共通テンプレート。**新しいアプリはこのテンプレートから作り、下の共通ルールを守る。**
 
-## このアプリの方針(新規作成時に記入)
+## このアプリの方針
 
-- アプリの ID(`package.json` の `name`。**ほかのアプリと別の名前**にする。下の「同じサイトに載るアプリ」を参照):
-- アプリの概要:
-- 配色: (端末設定に従う / 明るい固定 / 暗い固定 のどれか。決めたら src/style.css と theme-color をそろえる)
-- 公開 URL:
-- 追加した拡張: (なし / UI フレームワーク / バックエンド など。理由も書く)
+- アプリの ID(`package.json` の `name`): `simple-visual-novel`
+- アプリの概要: 短編ホラーサウンドノベル『午前0時の校舎』。文章を読み進め、選択肢で物語が分岐し、ハッピーエンド／バッドエンドに到達する。途中から再開でき、バッドエンドからは最後の選択肢へ戻ってやり直せる。
+- 配色: 暗い固定(`src/style.css` は `color-scheme: dark only`、`theme-color` / `background_color` は `#07090d`)
+- 公開 URL: https://mmishina-art.github.io/simple_visual_novel/ (GitHub Pages の想定 URL。Settings → Pages の Source が GitHub Actions になっているか要確認)
+- 追加した拡張: なし(UI フレームワーク・バックエンドは入れていない)
+- シナリオデータ: 作品ごとに `src/stories/<id>.ts` に分け、`src/stories/index.ts` に登録する。将来は、この一覧をもとに本棚形式の作品選択画面を作る。
+- 素材: 背景は自作 SVG(`src/assets/scenes/`)、音は Web Audio 合成(`src/sound.ts`)。外部素材は使わない。
 
 ## 基本方針
 

@@ -1,6 +1,5 @@
 {
-  "name": "pwa-app",
-  "pwaTemplate": true,
+  "name": "simple-visual-novel",
   "version": "0.1.0",
   "private": true,
   "type": "module",
