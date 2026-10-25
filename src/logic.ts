@@ -2,7 +2,7 @@
 // シナリオのデータは src/stories/ に分けて置く（このファイルはデータを持たない）。
 
 /** 背景イラストの種類（src/assets/scenes/ の SVG と対応する） */
-export type SceneBg = 'classroom' | 'corridor' | 'stairs' | 'music' | 'entrance' | 'dark' | 'outside';
+export type SceneBg = 'classroom' | 'corridor' | 'stairs' | 'music' | 'entrance' | 'dark' | 'outside' | 'library' | 'trophy';
 
 /** 場面で鳴らす音の種類（src/sound.ts の合成音と対応する） */
 export type SceneSound = 'rain' | 'phone' | 'steps' | 'piano' | 'chime' | 'knock' | 'door' | 'thunder' | 'whisper';
@@ -44,6 +44,8 @@ export interface Story {
   coverObi?: 'red' | 'cream' | 'navy';
   /** BGM のテーマ（省略時は 'horror'） */
   bgm?: 'horror' | 'romance' | 'mystery';
+  /** 表紙の色調（省略時は 'dark'）。明るい絵には 'light' */
+  coverTone?: 'dark' | 'light';
   start: string;
   nodes: Record<string, StoryNode>;
 }

@@ -7,13 +7,13 @@ export const missingTrophy: Story = {
   title: '消えた優勝杯',
   description: '文化祭の朝、展示室の優勝杯が消えた。鍵は内側から掛かっていた――密室の謎を解く。',
   length: '10〜15分',
-  cover: 'entrance',
+  cover: 'trophy',
   coverObi: 'navy',
   bgm: 'mystery',
   start: 'start1',
   nodes: {
     start1: {
-      id: 'start1', bg: 'entrance', se: 'chime',
+      id: 'start1', bg: 'trophy', se: 'chime',
       text: '文化祭の朝。クラス対抗展の優勝杯を展示室へ運ぶ係は、私、高嶺あかりだった。式は昼から。優勝杯はステージに飾られる。',
       next: 'start2',
     },
@@ -106,7 +106,7 @@ export const missingTrophy: Story = {
       next: 'win1',
     },
     win1: {
-      id: 'win1', bg: 'entrance',
+      id: 'win1', bg: 'trophy',
       text: '展示室に戻る。チェーンの謎を解く鍵は、もう一度この部屋を見ることだと思った。',
       next: 'choice_window',
     },
@@ -164,7 +164,7 @@ export const missingTrophy: Story = {
       next: 'end_wrong',
     },
     end_truth: {
-      id: 'end_truth', bg: 'entrance', se: 'chime',
+      id: 'end_truth', bg: 'trophy', se: 'chime',
       text: '授与式。ステージの優勝杯は、スポットライトを受けて輝いた。事情を知るのは、私と潤と部長だけ。部長の直した小さな傷跡は、優勝したクラスの、新しい歴史の始まりになった。',
       ending: { kind: 'happy', title: 'ハッピーエンド「輝く優勝杯」' },
     },

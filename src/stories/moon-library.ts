@@ -7,13 +7,14 @@ export const moonLibrary: Story = {
   title: '月夜の図書室',
   description: '返却ポストで見つけた、名前のない貸出カード。放課後の図書室で、静かな恋が始まる。',
   length: '5〜10分',
-  cover: 'corridor',
+  cover: 'library',
+  coverTone: 'light',
   coverObi: 'cream',
   bgm: 'romance',
   start: 'start1',
   nodes: {
     start1: {
-      id: 'start1', bg: 'classroom', se: 'chime',
+      id: 'start1', bg: 'library', se: 'chime',
       text: '金曜日の放課後。図書委員の当番は、私、森下栞の番だった。夕日の図書室で、返却ポストの本を一冊ずつ棚に戻していく。',
       next: 'start2',
     },
@@ -66,7 +67,7 @@ export const moonLibrary: Story = {
       next: 'week1',
     },
     week1: {
-      id: 'week1', bg: 'classroom',
+      id: 'week1', bg: 'library',
       text: '次の金曜日。返却ポストに、あの詩集が戻っていた。先週より、少しだけ早く。',
       next: 'week2',
     },
@@ -133,7 +134,7 @@ export const moonLibrary: Story = {
       next: 'last1',
     },
     last1: {
-      id: 'last1', bg: 'classroom',
+      id: 'last1', bg: 'library',
       text: '十二月。図書室の掲示に、委員長の交代が貼り出された。篠宮先輩の当番は、次の金曜日が最後になる。',
       next: 'last2',
     },
@@ -171,7 +172,7 @@ export const moonLibrary: Story = {
       next: 'end_letter',
     },
     end_happy: {
-      id: 'end_happy', bg: 'classroom',
+      id: 'end_happy', bg: 'library',
       text: '春、卒業式の日。先輩から詩集を手渡された。貸出カードには、二人分の字が並んでいた。最後の行に、新しい字。『続きは、また金曜日に』',
       ending: { kind: 'happy', title: 'ハッピーエンド「金曜日の続き」' },
     },

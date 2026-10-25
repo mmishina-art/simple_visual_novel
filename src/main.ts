@@ -17,8 +17,10 @@ import music from './assets/scenes/music.svg';
 import entrance from './assets/scenes/entrance.svg';
 import dark from './assets/scenes/dark.svg';
 import outside from './assets/scenes/outside.svg';
+import library from './assets/scenes/library.svg';
+import trophy from './assets/scenes/trophy.svg';
 
-const SCENES: Record<SceneBg, string> = { classroom, corridor, stairs, music, entrance, dark, outside };
+const SCENES: Record<SceneBg, string> = { classroom, corridor, stairs, music, entrance, dark, outside, library, trophy };
 
 const $ = <T extends HTMLElement>(id: string): T => {
   const el = document.getElementById(id);
@@ -161,8 +163,8 @@ function spanOf(className: string, text?: string): HTMLSpanElement {
  * 表紙を作る。装丁は「帯のデザイン」（2026-10-26 決定）：
  * 縦書きの題字、赤い帯にあらすじ、左上に奥付
  */
-function buildCover(item: { title: string; description: string; cover?: SceneBg; coverObi?: string }): HTMLSpanElement {
-  const cover = spanOf(`book-cover obi-${item.coverObi ?? 'red'}`);
+function buildCover(item: { title: string; description: string; cover?: SceneBg; coverObi?: string; coverTone?: string }): HTMLSpanElement {
+  const cover = spanOf(`book-cover obi-${item.coverObi ?? 'red'} tone-${item.coverTone ?? 'dark'}`);
   const img = document.createElement('img');
   img.className = 'book-cover-img';
   img.src = SCENES[item.cover ?? 'classroom'];

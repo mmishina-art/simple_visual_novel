@@ -331,6 +331,25 @@ button.link {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
 }
 
+/* 明るい表紙（恋愛もの）：題字と奥付は濃い色に、背の陰影も柔らかく */
+.tone-light .book-cover-vtitle {
+  color: #54382a;
+  text-shadow: 0 1px 0 rgba(255, 246, 230, 0.65);
+}
+
+.tone-light .book-colophon {
+  color: rgba(84, 56, 42, 0.85);
+  text-shadow: none;
+}
+
+.tone-light::before {
+  background: linear-gradient(270deg, rgba(90, 60, 30, 0.45), rgba(255, 255, 255, 0.28) 45%, rgba(90, 60, 30, 0.3));
+}
+
+.tone-light .book-obi {
+  color: #8a4a56;
+}
+
 /* 帯のバリエーション：恋愛ものは生成り、推理ものは紺のラベル帯 */
 .obi-cream .book-obi {
   background: #e9ddc2;
