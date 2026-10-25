@@ -202,6 +202,16 @@ test('結末は文章だけが先に表示され、もう一度押すとパネ�
   await expect(page.locator('#ending-title')).toContainText('ハッピーエンド');
 });
 
+test('新しい版があると、タイトル画面に「更新する」が出る', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#title-update')).toBeHidden();
+  await expect(page.locator('#update-banner')).toBeHidden();
+  await page.evaluate(() => document.dispatchEvent(new CustomEvent('app:need-refresh')));
+  await expect(page.locator('#title-update')).toBeVisible();
+  await expect(page.locator('#title-update-button')).toHaveText('更新する');
+  await expect(page.locator('#update-banner')).toBeVisible();
+});
+
 test('タイトル画面と本編の画面が分かれている', async ({ page }) => {
   await page.goto('/');
   // タイトル画面: 本編は出ず、バックアップやインストール方法がここにある

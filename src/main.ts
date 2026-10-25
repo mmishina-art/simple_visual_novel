@@ -6,7 +6,7 @@ import {
 import { STORIES, storyById } from './stories';
 import { setupDebug } from './debug';
 import { setupInstallGuide } from './install';
-import { setupUpdateBanner } from './pwa';
+import { applyUpdate, checkForUpdate, onUpdateAvailable, setupPwa } from './pwa';
 import { isSoundOn, playAdvanceSound, playEndingJingle, playSceneSound, setSound, startBgm, stopBgm } from './sound';
 import { exportBackup, importBackup, load, migrateStorage, remove, requestPersist, save } from './storage';
 
@@ -290,6 +290,7 @@ $('retry-button').addEventListener('click', () => {
 const toTitle = (): void => {
   stopBgm();
   screen = 'title';
+  checkForUpdate();
   render();
 };
 $('ending-title-button').addEventListener('click', toTitle);
@@ -349,7 +350,14 @@ setupDebug($('debug-panel'), $('version-line'), [
   },
 ]);
 requestPersist();
-setupUpdateBanner($('update-banner'), $('update-button'));
+setupPwa();
+setTimeout(() => checkForUpdate(), 5000);
+onUpdateAvailable(() => {
+  $('update-banner').hidden = false;
+  $('title-update').hidden = false;
+});
+$('update-button').addEventListener('click', applyUpdate);
+$('title-update-button').addEventListener('click', applyUpdate);
 setupInstallGuide($<HTMLButtonElement>('install-open'), $<HTMLDialogElement>('install-dialog'), $<HTMLButtonElement>('install-now'));
 render();
 
