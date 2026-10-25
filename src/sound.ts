@@ -281,55 +281,35 @@ export function startBgm(mood?: BgmMood): void {
   }
 }
 
-/** 結末に着いた瞬間の音。バッドは低い衝撃と半音の不協和、ハッピーは澄んだ上昇音 */
+/**
+ * 結末パネルが出る瞬間の音。どちらも全体の静かな雰囲気に合わせ、
+ * 小さな音量で余韻を長く残す。
+ * バッド：遠くの低い鐘のような音と、半音の薄いうなりがゆっくり消える。
+ * ハッピー：夜明けのオルゴールのように、柔らかい音が間を置いて昇っていく。
+ */
 export function playEndingJingle(kind: 'happy' | 'bad'): void {
   if (!enabled) return;
   try {
     if (kind === 'bad') {
-      // 悲鳴のような音：高音から滑り落ちる鋸波を、声のフォルマント風の
-      // バンドパスと震え（振幅・周波数の揺れ）で声らしくし、立ち上がりを
-      // 急にして驚かせる。バッドエンドのパネルが出る瞬間に鳴らす。
-      const c = ac();
-      const t = c.currentTime;
-      const bp = c.createBiquadFilter();
-      bp.type = 'bandpass';
-      bp.Q.value = 1.1;
-      bp.frequency.setValueAtTime(1900, t);
-      bp.frequency.exponentialRampToValueAtTime(650, t + 0.85);
-      const g = c.createGain();
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(0.24, t + 0.03);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.95);
-      const tremolo = c.createOscillator();
-      tremolo.frequency.value = 27;
-      const tremoloGain = c.createGain();
-      tremoloGain.gain.value = 0.09;
-      tremolo.connect(tremoloGain).connect(g.gain);
-      bp.connect(g).connect(c.destination);
-      for (const mult of [1, 1.007, 0.5]) {
-        const o = c.createOscillator();
-        o.type = 'sawtooth';
-        o.frequency.setValueAtTime(1250 * mult, t);
-        o.frequency.exponentialRampToValueAtTime(420 * mult, t + 0.85);
-        const vib = c.createOscillator();
-        vib.frequency.value = 11;
-        const vibGain = c.createGain();
-        vibGain.gain.value = 18 * mult;
-        vib.connect(vibGain).connect(o.frequency);
-        o.connect(bp);
-        o.start(t);
-        o.stop(t + 1);
-        vib.start(t);
-        vib.stop(t + 1);
-      }
-      tremolo.start(t);
-      tremolo.stop(t + 1);
-      noise(0.16, 2600, 0.1, 0, 'highpass');
-      tone(66, 0.7, 'sine', 0.22, 0, 34);
+      // 低い鐘の余韻（基音＋弱い倍音を長く減衰させる）
+      tone(98, 5.0, 'sine', 0.15);
+      tone(196, 4.0, 'sine', 0.045);
+      tone(294.5, 3.0, 'sine', 0.018);
+      // 少し遅れて、半音ずれた薄いうなりが重なって消えていく
+      tone(116.54, 4.2, 'sine', 0.032, 0.5);
+      // 風がひと吹き、遠くで鳴る感じに
+      noise(2.6, 240, 0.028);
     } else {
-      tone(523.25, 1.6, 'sine', 0.06, 0);
-      tone(659.25, 1.6, 'sine', 0.06, 0.14);
-      tone(783.99, 2.4, 'sine', 0.06, 0.28);
+      // オルゴール風：小さな音を間を置いて昇らせ、最後の音に薄い残響を添える
+      tone(261.63, 3.4, 'triangle', 0.028);
+      tone(523.25, 2.8, 'sine', 0.05, 0);
+      tone(1046.5, 2.2, 'sine', 0.012, 0);
+      tone(659.25, 2.8, 'sine', 0.05, 0.24);
+      tone(1318.5, 2.2, 'sine', 0.012, 0.24);
+      tone(783.99, 3.2, 'sine', 0.05, 0.48);
+      tone(1568, 2.4, 'sine', 0.01, 0.48);
+      tone(1046.5, 3.8, 'sine', 0.045, 0.78);
+      tone(1046.5, 2.4, 'sine', 0.016, 1.3);
     }
     document.dispatchEvent(new CustomEvent('app:sound', { detail: { ui: `ending-${kind}` } }));
   } catch {
