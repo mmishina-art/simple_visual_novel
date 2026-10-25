@@ -22,15 +22,22 @@
     <main id="app">
       <!-- タイトル画面（本編の画面とは分けた、独立した画面）。
            この画面には「はじめる」「設定」「バージョン表示」だけを置く -->
-      <section id="title-screen" class="screen">
-        <header class="header">
-          <h1>サウンドノベル</h1>
-        </header>
-
-        <button id="start-button" type="button" class="primary big">はじめる</button>
-        <button id="settings-button" type="button" class="big">設定</button>
-
-        <p class="muted version" id="version-line">v<span id="version"></span></p>
+      <section id="title-screen" class="screen title-screen">
+        <img id="title-bg" class="title-bg" alt="" />
+        <div class="title-shade"></div>
+        <div class="title-content">
+          <div class="title-logo">
+            <span class="title-logo-en">SOUND NOVEL</span>
+            <h1>サウンドノベル</h1>
+            <span class="title-logo-rule"></span>
+            <p class="title-tagline">物語と音でつづる、短編小説集</p>
+          </div>
+          <div class="title-actions">
+            <button id="start-button" type="button" class="primary big">はじめる</button>
+            <button id="settings-button" type="button" class="big">設定</button>
+            <p class="muted version" id="version-line">v<span id="version"></span></p>
+          </div>
+        </div>
       </section>
 
       <!-- 設定の画面。音のオン／オフ、記録のバックアップ、インストール方法はここに置く -->

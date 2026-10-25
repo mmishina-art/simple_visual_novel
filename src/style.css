@@ -119,6 +119,88 @@ button.link {
   font-size: 0.9rem;
 }
 
+/* ---- トップ画面（全画面の背景＋タイトルロゴ） ---- */
+
+.title-screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - max(16px, var(--safe-top)) - max(24px, env(safe-area-inset-bottom)));
+}
+
+/* 背景は main の余白の分だけはみ出させて、画面いっぱいに広げる */
+.title-bg,
+.title-shade {
+  position: absolute;
+  top: calc(-1 * max(16px, var(--safe-top)));
+  right: calc(-1 * max(16px, env(safe-area-inset-right)));
+  bottom: calc(-1 * max(24px, env(safe-area-inset-bottom)));
+  left: calc(-1 * max(16px, env(safe-area-inset-left)));
+}
+
+.title-bg {
+  width: calc(100% + max(16px, env(safe-area-inset-left)) + max(16px, env(safe-area-inset-right)));
+  height: calc(100% + max(16px, var(--safe-top)) + max(24px, env(safe-area-inset-bottom)));
+  object-fit: cover;
+}
+
+.title-shade {
+  background: linear-gradient(rgba(4, 6, 10, 0.6), rgba(4, 6, 10, 0.28) 42%, rgba(4, 6, 10, 0.82));
+}
+
+.title-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.title-logo {
+  margin-top: 11dvh;
+  text-align: center;
+}
+
+.title-logo-en {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.52em;
+  text-indent: 0.52em;
+  color: var(--accent);
+}
+
+.title-logo h1 {
+  font-size: 2.05rem;
+  letter-spacing: 0.16em;
+  text-indent: 0.16em;
+  margin: 12px 0 0;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.85);
+}
+
+.title-logo-rule {
+  display: block;
+  width: 64px;
+  height: 2px;
+  background: var(--primary);
+  margin: 18px auto 14px;
+}
+
+.title-tagline {
+  margin: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.14em;
+  color: #d5d9dc;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
+}
+
+.title-actions {
+  margin-top: auto;
+}
+
+.title-actions .version {
+  color: #aeb6bd;
+}
+
 /* ---- 設定の画面 ---- */
 
 .settings-row {
@@ -167,7 +249,7 @@ button.link {
   position: relative;
   display: block;
   aspect-ratio: 3 / 4;
-  border-radius: 2px 7px 7px 2px;
+  border-radius: 7px 2px 2px 7px;
   overflow: hidden;
   background: #10151d;
   box-shadow:
@@ -178,10 +260,10 @@ button.link {
 .book-cover::before {
   content: '';
   position: absolute;
-  inset: 0 auto 0 0;
+  inset: 0 0 0 auto;
   width: 13px;
   z-index: 2;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0.6), rgba(255, 255, 255, 0.12) 45%, rgba(0, 0, 0, 0.4));
+  background: linear-gradient(270deg, rgba(0, 0, 0, 0.6), rgba(255, 255, 255, 0.12) 45%, rgba(0, 0, 0, 0.4));
 }
 
 .book-cover::after {
@@ -205,7 +287,7 @@ button.link {
   left: 0;
   right: 0;
   z-index: 3;
-  padding: 16px 12px 22px 24px;
+  padding: 16px 24px 22px 12px;
   background: linear-gradient(rgba(4, 6, 11, 0.9), rgba(4, 6, 11, 0.55) 65%, transparent);
 }
 
@@ -221,7 +303,7 @@ button.link {
 
 .book-colophon {
   position: absolute;
-  left: 24px;
+  left: 14px;
   bottom: 10px;
   z-index: 3;
   font-size: 0.62rem;
@@ -232,18 +314,15 @@ button.link {
 
 .book-cover-copy {
   position: absolute;
-  top: 78px;
+  left: 0;
   right: 0;
   bottom: 0;
   z-index: 3;
-  writing-mode: vertical-rl;
-  max-width: calc(100% - 18px);
-  padding: 8px 16px 16px 36px;
-  background: linear-gradient(to left, rgba(4, 6, 11, 0.88), rgba(4, 6, 11, 0.5) 62%, transparent);
-  font-family: 'Hiragino Mincho ProN', 'Hiragino Mincho Pro', 'Yu Mincho', 'YuMincho', serif;
-  font-size: 0.82rem;
-  line-height: 2;
-  letter-spacing: 0.06em;
+  padding: 28px 24px 34px 14px;
+  background: linear-gradient(transparent, rgba(4, 6, 11, 0.86) 52%);
+  font-size: 0.8rem;
+  line-height: 1.7;
+  letter-spacing: 0.03em;
   color: #ece4d1;
   text-shadow: 0 1px 5px rgba(0, 0, 0, 0.9);
 }
@@ -534,6 +613,7 @@ button.link {
 
 .banner {
   position: fixed;
+  z-index: 40;
   left: 16px;
   right: 16px;
   bottom: max(16px, env(safe-area-inset-bottom));

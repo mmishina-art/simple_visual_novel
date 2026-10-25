@@ -6,7 +6,7 @@ import type { Story } from '../logic';
 export const midnightSchool: Story = {
   id: 'midnight-school',
   title: '午前0時の校舎',
-  description: '文化祭の前夜、真夜中の校舎に一人取り残された。名前を呼ばれても、返事をしてはいけない。',
+  description: '真夜中の校舎に一人取り残された。名前を呼ばれても、返事をしてはいけない。',
   length: '5〜10分',
   cover: 'classroom',
   start: 'start1',

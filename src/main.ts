@@ -172,9 +172,10 @@ function renderShelf(): void {
     coverTitle.className = 'book-cover-title';
     coverTitle.textContent = item.title;
     band.append(coverTitle);
-    // あらすじは、表紙の中にカバーコピーとして入れる。
-    // 本文と同じ縦書きで、右から左へ読む並びにする
-    const copy = buildSegment(item.description, 'book-cover-copy');
+    // あらすじは、表紙の下部に横書きのカバーコピーとして入れる
+    const copy = document.createElement('span');
+    copy.className = 'book-cover-copy';
+    copy.textContent = item.description;
     const colophon = document.createElement('span');
     colophon.className = 'book-colophon';
     colophon.textContent = 'サウンドノベル';
@@ -426,6 +427,7 @@ $<HTMLInputElement>('backup-import').addEventListener('change', async (e) => {
 });
 
 document.querySelector('.game-title')!.textContent = story.title;
+$<HTMLImageElement>('title-bg').src = SCENES.classroom;
 $('version').textContent = __APP_VERSION__;
 // デバッグモード: バージョンの表示を続けて 5 回タップで切り替え
 setupDebug($('debug-panel'), $('version-line'), [
