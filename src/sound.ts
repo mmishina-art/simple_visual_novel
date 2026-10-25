@@ -107,17 +107,68 @@ export function playAdvanceSound(): void {
 let bgmWanted = false;
 let bgmNodes: { master: GainNode; timer: ReturnType<typeof setInterval>; sources: OscillatorNode[] } | undefined;
 
-const BGM_CHORDS: number[][] = [
-  [110.0, 164.81, 246.94, 261.63], // Am(add9)
-  [87.31, 130.81, 220.0, 329.63], // Fmaj7
-  [130.81, 196.0, 246.94, 392.0], // Cmaj7
-  [98.0, 146.83, 246.94, 293.66], // G(add9)寄り
-];
-const BGM_BELLS = [440.0, 523.25, 587.33, 659.25, 783.99, 880.0];
+export type BgmMood = 'normal' | 'happy' | 'bad';
 
-export function startBgm(): void {
+interface BgmConfig {
+  chords: number[][];
+  bells: number[];
+  drone: number[];
+  chordSec: number;
+  bellChance: number;
+  bellGain: number;
+  wind: number;
+  padGain: number;
+}
+
+const BGM_MOODS: Record<BgmMood, BgmConfig> = {
+  // 通常：夜の校舎。短調のパッドと、まばらなピアノ
+  normal: {
+    chords: [
+      [110.0, 164.81, 246.94, 261.63], // Am(add9)
+      [87.31, 130.81, 220.0, 329.63], // Fmaj7
+      [130.81, 196.0, 246.94, 392.0], // Cmaj7
+      [98.0, 146.83, 246.94, 293.66], // G(add9)寄り
+    ],
+    bells: [440.0, 523.25, 587.33, 659.25, 783.99, 880.0],
+    drone: [55, 110.4],
+    chordSec: 9, bellChance: 0.28, bellGain: 0.045, wind: 0.007, padGain: 0.014,
+  },
+  // ハッピーエンド：夜明け。長調に転じ、単音は高く明るく、風は弱まる
+  happy: {
+    chords: [
+      [87.31, 130.81, 220.0, 261.63], // Fmaj7
+      [130.81, 196.0, 329.63, 392.0], // Cmaj7
+      [110.0, 164.81, 261.63, 329.63], // Am7
+      [98.0, 146.83, 246.94, 392.0], // G(add9)
+    ],
+    bells: [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5],
+    drone: [65.41, 130.81],
+    chordSec: 8, bellChance: 0.5, bellGain: 0.04, wind: 0.004, padGain: 0.015,
+  },
+  // バッドエンド：不協和な短調。半音の緊張、遅い和音、低い単音、風が強まる
+  bad: {
+    chords: [
+      [110.0, 130.81, 164.81], // Am
+      [103.83, 123.47, 146.83], // 半音下の減和音寄り
+      [98.0, 116.54, 139.69], // さらに不穏に
+      [110.0, 130.81, 155.56], // Am に♭5 の緊張
+    ],
+    bells: [220.0, 233.08, 110.0, 116.54],
+    drone: [55, 58.27], // 半音のうなり
+    chordSec: 12, bellChance: 0.16, bellGain: 0.05, wind: 0.012, padGain: 0.016,
+  },
+};
+
+let bgmMood: BgmMood = 'normal';
+
+export function startBgm(mood?: BgmMood): void {
   bgmWanted = true;
-  if (!enabled || bgmNodes) return;
+  const target = mood ?? bgmMood;
+  if (bgmNodes && target === bgmMood) return;
+  if (bgmNodes) stopBgmInternal(false);
+  bgmMood = target;
+  if (!enabled) return;
+  const cfg = BGM_MOODS[bgmMood];
   try {
     const c = ac();
     const master = c.createGain();
@@ -142,7 +193,7 @@ export function startBgm(): void {
     const droneGain = c.createGain();
     droneGain.gain.value = 0.038;
     droneFilter.connect(droneGain).connect(master);
-    for (const f of [55, 110.4]) {
+    for (const f of cfg.drone) {
       const o = c.createOscillator();
       o.type = 'sine';
       o.frequency.value = f;
@@ -162,11 +213,11 @@ export function startBgm(): void {
     windFilter.frequency.value = 460;
     windFilter.Q.value = 0.5;
     const windGain = c.createGain();
-    windGain.gain.value = 0.007;
+    windGain.gain.value = cfg.wind;
     const windLfo = c.createOscillator();
     windLfo.frequency.value = 0.06;
     const windLfoGain = c.createGain();
-    windLfoGain.gain.value = 0.004;
+    windLfoGain.gain.value = cfg.wind * 0.6;
     windLfo.connect(windLfoGain).connect(windGain.gain);
     wind.connect(windFilter).connect(windGain).connect(master);
     wind.start();
@@ -177,7 +228,7 @@ export function startBgm(): void {
     let chordIndex = 0;
     let nextChordAt = c.currentTime + 0.1;
     const playChord = (at: number): void => {
-      const chord = BGM_CHORDS[chordIndex % BGM_CHORDS.length];
+      const chord = cfg.chords[chordIndex % cfg.chords.length];
       chordIndex += 1;
       for (const f of chord) {
         for (const detune of [-4, 4]) {
@@ -187,25 +238,25 @@ export function startBgm(): void {
           o.detune.value = detune;
           const g = c.createGain();
           g.gain.setValueAtTime(0, at);
-          g.gain.linearRampToValueAtTime(0.014, at + 3.2);
-          g.gain.setValueAtTime(0.014, at + 6.4);
-          g.gain.linearRampToValueAtTime(0, at + 10.4);
+          g.gain.linearRampToValueAtTime(cfg.padGain, at + cfg.chordSec * 0.35);
+          g.gain.setValueAtTime(cfg.padGain, at + cfg.chordSec * 0.7);
+          g.gain.linearRampToValueAtTime(0, at + cfg.chordSec * 1.15);
           const lp = c.createBiquadFilter();
           lp.type = 'lowpass';
           lp.frequency.value = 850;
           o.connect(lp).connect(g).connect(master);
           o.start(at);
-          o.stop(at + 10.6);
+          o.stop(at + cfg.chordSec * 1.2);
         }
       }
     };
     const playBell = (at: number): void => {
-      const f = BGM_BELLS[Math.floor(Math.random() * BGM_BELLS.length)];
+      const f = cfg.bells[Math.floor(Math.random() * cfg.bells.length)];
       const o = c.createOscillator();
       o.type = 'sine';
       o.frequency.value = f;
       const g = c.createGain();
-      g.gain.setValueAtTime(0.045, at);
+      g.gain.setValueAtTime(cfg.bellGain, at);
       g.gain.exponentialRampToValueAtTime(0.0001, at + 2.8);
       o.connect(g).connect(master);
       g.connect(delay);
@@ -216,14 +267,35 @@ export function startBgm(): void {
       const now = c.currentTime;
       if (now >= nextChordAt) {
         playChord(nextChordAt);
-        nextChordAt += 9;
+        nextChordAt += cfg.chordSec;
       }
-      if (Math.random() < 0.28) playBell(now + 0.05);
+      if (Math.random() < cfg.bellChance) playBell(now + 0.05);
     }, 1200);
 
     bgmNodes = { master, timer, sources };
     document.body.dataset.bgm = 'on';
+    document.body.dataset.bgmMood = bgmMood;
     document.dispatchEvent(new CustomEvent('app:bgm', { detail: { on: true } }));
+  } catch {
+    // 音が出せなくても続行する
+  }
+}
+
+/** 結末に着いた瞬間の音。バッドは低い衝撃と半音の不協和、ハッピーは澄んだ上昇音 */
+export function playEndingJingle(kind: 'happy' | 'bad'): void {
+  if (!enabled) return;
+  try {
+    if (kind === 'bad') {
+      tone(64, 1.6, 'sine', 0.32, 0, 30);
+      tone(220, 1.4, 'triangle', 0.07, 0.05);
+      tone(233.08, 1.4, 'triangle', 0.07, 0.05);
+      noise(1.1, 300, 0.1);
+    } else {
+      tone(523.25, 1.6, 'sine', 0.06, 0);
+      tone(659.25, 1.6, 'sine', 0.06, 0.14);
+      tone(783.99, 2.4, 'sine', 0.06, 0.28);
+    }
+    document.dispatchEvent(new CustomEvent('app:sound', { detail: { ui: `ending-${kind}` } }));
   } catch {
     // 音が出せなくても続行する
   }
@@ -237,6 +309,7 @@ function stopBgmInternal(clearWanted: boolean): void {
   if (clearWanted) bgmWanted = false;
   if (!bgmNodes) {
     document.body.dataset.bgm = 'off';
+    delete document.body.dataset.bgmMood;
     return;
   }
   const { master, timer, sources } = bgmNodes;

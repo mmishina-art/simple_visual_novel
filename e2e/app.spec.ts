@@ -153,6 +153,33 @@ test('文章を進めると操作音が鳴る', async ({ page }) => {
   expect(sounds).toContain('advance');
 });
 
+test('バッドエンドでは効果音が鳴り、BGMが不穏なものに変わる', async ({ page }) => {
+  await page.goto('/');
+  await page.evaluate(() => {
+    (window as unknown as { __uiSounds: string[] }).__uiSounds = [];
+    document.addEventListener('app:sound', (e) => {
+      const ui = (e as CustomEvent<{ ui?: string }>).detail?.ui;
+      if (ui) (window as unknown as { __uiSounds: string[] }).__uiSounds.push(ui);
+    });
+  });
+  await page.getByRole('button', { name: 'はじめから' }).click();
+  await playToEnding(page, ['懐中電灯', '音楽室', '返事をする']);
+  await expect(page.locator('#ending-title')).toContainText('バッドエンド');
+  await expect(page.locator('body')).toHaveAttribute('data-bgm-mood', 'bad');
+  const sounds = await page.evaluate(
+    () => (window as unknown as { __uiSounds: string[] }).__uiSounds,
+  );
+  expect(sounds).toContain('ending-bad');
+});
+
+test('ハッピーエンドではBGMが明るいものに変わる', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'はじめから' }).click();
+  await playToEnding(page, ['懐中電灯', '音楽室', '返事をせず', '裏口へ走る']);
+  await expect(page.locator('#ending-title')).toContainText('ハッピーエンド');
+  await expect(page.locator('body')).toHaveAttribute('data-bgm-mood', 'happy');
+});
+
 test('タイトル画面と本編の画面が分かれている', async ({ page }) => {
   await page.goto('/');
   // タイトル画面: 本編は出ず、バックアップやインストール方法がここにある

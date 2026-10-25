@@ -7,7 +7,7 @@ import { STORIES, storyById } from './stories';
 import { setupDebug } from './debug';
 import { setupInstallGuide } from './install';
 import { setupUpdateBanner } from './pwa';
-import { isSoundOn, playAdvanceSound, playSceneSound, setSound, startBgm, stopBgm } from './sound';
+import { isSoundOn, playAdvanceSound, playEndingJingle, playSceneSound, setSound, startBgm, stopBgm } from './sound';
 import { exportBackup, importBackup, load, migrateStorage, remove, requestPersist, save } from './storage';
 
 import classroom from './assets/scenes/classroom.svg';
@@ -205,7 +205,11 @@ function renderGame(): void {
     lastNodeId = node.id;
     backlog = [...backlog, { kind: 'text', text: node.text }];
     if (node.se) playSceneSound(node.se);
-    if (node.ending) recordEnding();
+    if (node.ending) {
+      recordEnding();
+      playEndingJingle(node.ending.kind);
+      startBgm(node.ending.kind);
+    }
   }
 }
 
@@ -227,7 +231,7 @@ function startGame(fromState: PlayState, resume = false): void {
   currentBg = 'classroom';
   screen = 'game';
   persist();
-  startBgm();
+  startBgm('normal');
   render();
 }
 
