@@ -150,16 +150,12 @@ interface BgmConfig {
   bellGain: number;
   wind: number;
   padGain: number;
-  /** 推理もの用：和音の頭に、低く脈打つ音を入れる */
-  pulse?: boolean;
   /** ドローンの音量（恋愛ものは弱く、ホラーは標準） */
   droneGain?: number;
   /** パッドの波形（恋愛ものは柔らかいサイン波） */
   padWave?: OscillatorType;
   /** パッドのローパス（推理ものは低く鈍く、恋愛ものは高く明るく） */
   padCutoff?: number;
-  /** 恋愛もの用：単音ランダムではなく、和音のアルペジオを鳴らす */
-  arp?: boolean;
   /** 単音の余韻の長さ（秒） */
   bellDecay?: number;
 }
@@ -215,7 +211,7 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       bells: [523.25, 659.25, 783.99, 880.0, 1046.5],
       drone: [65.41, 98.0],
       chordSec: 10, bellChance: 0.38, bellGain: 0.032, wind: 0.0015, padGain: 0.016,
-      droneGain: 0.012, padWave: 'sine', padCutoff: 1300, arp: true, bellDecay: 4.2,
+      droneGain: 0.012, padWave: 'sine', padCutoff: 1300, bellDecay: 4.2,
     },
     happy: {
       chords: [
@@ -227,7 +223,7 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       bells: [659.25, 783.99, 880.0, 1046.5, 1318.5],
       drone: [65.41, 130.81],
       chordSec: 9, bellChance: 0.55, bellGain: 0.034, wind: 0.001, padGain: 0.017,
-      droneGain: 0.012, padWave: 'sine', padCutoff: 1400, arp: true, bellDecay: 4.2,
+      droneGain: 0.012, padWave: 'sine', padCutoff: 1400, bellDecay: 4.2,
     },
     bad: {
       chords: [
@@ -239,7 +235,7 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       bells: [392.0, 440.0, 523.25, 587.33],
       drone: [55, 82.41],
       chordSec: 11, bellChance: 0.22, bellGain: 0.03, wind: 0.003, padGain: 0.015,
-      droneGain: 0.014, padWave: 'sine', padCutoff: 1100, arp: true, bellDecay: 4.6,
+      droneGain: 0.014, padWave: 'sine', padCutoff: 1100, bellDecay: 4.6,
     },
   },
   // 推理もの（『消えた優勝杯』）：張り詰めた短調。和音の頭に低い脈打ち、単音は控えめ
@@ -253,7 +249,7 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       ],
       bells: [220.0, 261.63, 329.63, 196.0],
       drone: [55, 82.41],
-      chordSec: 8, bellChance: 0.18, bellGain: 0.04, wind: 0.002, padGain: 0.015, pulse: true,
+      chordSec: 8, bellChance: 0.18, bellGain: 0.04, wind: 0.002, padGain: 0.015,
       padCutoff: 620, droneGain: 0.042,
     },
     happy: {
@@ -276,7 +272,7 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       ],
       bells: [110.0, 116.54, 220.0],
       drone: [55, 58.27],
-      chordSec: 11, bellChance: 0.12, bellGain: 0.042, wind: 0.004, padGain: 0.016, pulse: true,
+      chordSec: 11, bellChance: 0.12, bellGain: 0.042, wind: 0.004, padGain: 0.016,
       padCutoff: 560, droneGain: 0.044,
     },
   },
@@ -352,27 +348,10 @@ export function startBgm(mood?: BgmMood, theme?: BgmTheme): void {
 
     // パッドの和音と、まばらなピアノの単音を定期的に差し込む
     let chordIndex = 0;
-    let chordsPlayed = 0;
     let nextChordAt = c.currentTime + 0.1;
     const playChord = (at: number): void => {
       const chord = cfg.chords[chordIndex % cfg.chords.length];
       chordIndex += 1;
-      chordsPlayed += 1;
-      currentChord = chord;
-      if (cfg.pulse && chordsPlayed > 1) {
-        // 推理もの：和音の頭に、心臓のような低い脈打ちを2つ
-        for (const off of [0, 0.55]) {
-          const o = c.createOscillator();
-          o.type = 'sine';
-          o.frequency.value = 52;
-          const g = c.createGain();
-          g.gain.setValueAtTime(0.055, at + off);
-          g.gain.exponentialRampToValueAtTime(0.0001, at + off + 0.5);
-          o.connect(g).connect(master);
-          o.start(at + off);
-          o.stop(at + off + 0.6);
-        }
-      }
       for (const f of chord) {
         for (const detune of [-4, 4]) {
           const o = c.createOscillator();
@@ -394,8 +373,8 @@ export function startBgm(mood?: BgmMood, theme?: BgmTheme): void {
       }
     };
     const decay = cfg.bellDecay ?? 2.8;
-    const playBell = (at: number, freq?: number): void => {
-      const f = freq ?? cfg.bells[Math.floor(Math.random() * cfg.bells.length)];
+    const playBell = (at: number): void => {
+      const f = cfg.bells[Math.floor(Math.random() * cfg.bells.length)];
       const o = c.createOscillator();
       o.type = 'sine';
       o.frequency.value = f;
@@ -407,20 +386,13 @@ export function startBgm(mood?: BgmMood, theme?: BgmTheme): void {
       o.start(at);
       o.stop(at + decay + 0.3);
     };
-    // 恋愛もの：いま鳴っている和音の音を、順にそっと昇らせる
-    let currentChord: number[] = cfg.chords[0];
-    const playArp = (at: number): void => {
-      const tones = [...currentChord.slice(1), currentChord[1] * 2];
-      tones.forEach((f, i) => playBell(at + 0.4 + i * 0.85, f));
-    };
     const timer = setInterval(() => {
       const now = c.currentTime;
       if (now >= nextChordAt) {
         playChord(nextChordAt);
-        if (cfg.arp && chordsPlayed > 1) playArp(nextChordAt);
         nextChordAt += cfg.chordSec;
       }
-      if (!cfg.arp && Math.random() < cfg.bellChance) playBell(now + 0.05);
+      if (Math.random() < cfg.bellChance) playBell(now + 0.05);
     }, 1200);
 
     bgmNodes = { master, timer, sources };
