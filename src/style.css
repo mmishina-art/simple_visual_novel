@@ -204,6 +204,9 @@ button.link {
   writing-mode: vertical-rl;
   width: 100%;
   height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
   margin: 0;
   font-size: 1.08rem;
   line-height: 2;
@@ -212,6 +215,10 @@ button.link {
 }
 
 /* 縦書きの中で、数字は縦中横（横並び）にする */
+.story-text::-webkit-scrollbar {
+  display: none;
+}
+
 .story-text .tcy {
   text-combine-upright: all;
 }

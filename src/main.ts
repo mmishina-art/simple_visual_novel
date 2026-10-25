@@ -40,6 +40,8 @@ let seenEndings: string[] = load<string[]>('endings', []);
 let cheated = false;
 let lastNodeId = '';
 let currentBg: SceneBg = 'classroom';
+/** 表示中の文章。読み進めると左へ追加されていき、選択肢が出ると消える */
+let segments: string[] = [];
 
 function persist(): void {
   if (state && !isEnding(story, state)) save('progress', state);
@@ -56,20 +58,28 @@ function recordEnding(): void {
 }
 
 /** 本文を縦書きで出す。数字（11時57分など）は縦中横になるよう、数字の並びだけ span.tcy で包む */
-function renderStoryText(text: string): void {
+function renderStoryText(texts: string[]): void {
   const el = $('story-text');
   el.replaceChildren();
-  for (const part of text.split(/(\d+%?)/g)) {
-    if (!part) continue;
-    if (/^\d/.test(part)) {
-      const span = document.createElement('span');
-      span.className = 'tcy';
-      span.textContent = part;
-      el.append(span);
-    } else {
-      el.append(document.createTextNode(part));
+  texts.forEach((text, i) => {
+    if (i > 0) el.append(document.createTextNode('　'));
+    const seg = document.createElement('span');
+    seg.className = 'segment';
+    for (const part of text.split(/(\d+%?)/g)) {
+      if (!part) continue;
+      if (/^\d/.test(part)) {
+        const span = document.createElement('span');
+        span.className = 'tcy';
+        span.textContent = part;
+        seg.append(span);
+      } else {
+        seg.append(document.createTextNode(part));
+      }
     }
-  }
+    el.append(seg);
+  });
+  // いちばん新しい列（左端）が見える位置まで寄せる
+  requestAnimationFrame(() => { el.scrollLeft = -el.scrollWidth; });
 }
 
 function renderTitle(): void {
@@ -90,7 +100,11 @@ function renderGame(): void {
   if (node.bg) currentBg = node.bg;
   $<HTMLImageElement>('scene-img').src = SCENES[currentBg];
   $('speaker').textContent = node.speaker ?? '';
-  renderStoryText(node.text);
+  if (node.id !== lastNodeId) {
+    // 選択肢の場面では、それまでの文章を消して、選択肢だけを中央に出す
+    segments = node.choices ? [] : [...segments, node.text];
+  }
+  renderStoryText(segments);
   $('next-hint').hidden = !!node.choices || !!node.ending;
 
   const choicesEl = $('choices');
@@ -129,9 +143,10 @@ function render(): void {
   renderGame();
 }
 
-function startGame(fromState: PlayState): void {
+function startGame(fromState: PlayState, resume = false): void {
   state = fromState;
-  lastNodeId = '';
+  segments = resume ? [nodeOf(story, fromState).text] : [];
+  lastNodeId = resume ? fromState.nodeId : '';
   currentBg = 'classroom';
   screen = 'game';
   persist();
@@ -143,7 +158,7 @@ $('start-button').addEventListener('click', () => {
   startGame(startState(story));
 });
 $('continue-button').addEventListener('click', () => {
-  if (state) startGame(state);
+  if (state) startGame(state, true);
 });
 $('message-window').addEventListener('click', () => {
   if (!state || screen !== 'game') return;

@@ -66,11 +66,10 @@ test('途中で閉じても、つづきから再開できる', async ({ page }) 
   await page.getByRole('button', { name: 'はじめから' }).click();
   await page.locator('#message-window').click();
   await page.locator('#message-window').click();
-  const text = await page.locator('#story-text').textContent();
   await page.reload();
   await expect(page.locator('#continue-button')).toBeVisible();
   await page.locator('#continue-button').click();
-  await expect(page.locator('#story-text')).toHaveText(text ?? '');
+  await expect(page.locator('#story-text')).toContainText('仕上がった看板を壁に立てかけた');
 });
 
 test('タイトル画面と本編の画面が分かれている', async ({ page }) => {
@@ -101,7 +100,31 @@ test('本文は縦書き（小説風）で表示される', async ({ page }) => 
   // 数字は縦中横（tcy）で包まれている（11時57分 の場面まで進めて確認）
   for (let i = 0; i < 3; i++) await page.locator('#message-window').click();
   await expect(page.locator('#story-text')).toContainText('11時57分');
-  await expect(page.locator('#story-text .tcy').first()).toHaveText('11');
+  await expect(page.locator('#story-text .tcy').filter({ hasText: '11' }).first()).toHaveText('11');
+});
+
+test('文章は消えずに左へ追加され、選択肢が出ると消えて中央に来る', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'はじめから' }).click();
+  await expect(page.locator('#story-text')).toContainText('文化祭を明日に控えた');
+  await page.locator('#message-window').click();
+  // 前の文章が残ったまま、次の文章が追加されている
+  await expect(page.locator('#story-text')).toContainText('文化祭を明日に控えた');
+  await expect(page.locator('#story-text')).toContainText('夕方から降り始めた雨');
+  // 選択肢まで進めると、文章は消えて、選択肢の帯がステージ中央に来る
+  for (let i = 0; i < 12 && !(await page.locator('#choices').isVisible()); i++) {
+    await page.locator('#message-window').click();
+  }
+  await expect(page.locator('#choices')).toBeVisible();
+  await expect(page.locator('#story-text')).toHaveText('');
+  const centered = await page.evaluate(() => {
+    const stage = document.querySelector('.stage')!.getBoundingClientRect();
+    const buttons = [...document.querySelectorAll('#choices button')].map((b) => b.getBoundingClientRect());
+    const left = Math.min(...buttons.map((r) => r.left));
+    const right = Math.max(...buttons.map((r) => r.right));
+    return Math.abs((left + right) / 2 - (stage.left + stage.right) / 2);
+  });
+  expect(centered).toBeLessThan(24);
 });
 
 test('文章は背景の上に重なり、選択肢は縦書きで選べる', async ({ page }) => {
