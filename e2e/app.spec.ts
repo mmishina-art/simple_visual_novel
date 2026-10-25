@@ -117,6 +117,16 @@ test('三冊目（推理もの）を選んで、真相のハッピーエンド�
   await expect(page.locator('#ending-title')).toContainText('ハッピーエンド');
 });
 
+test('追加した本では、BGMのテーマが物語に合っている', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'はじめる' }).click();
+  await page.locator('.book-card').nth(1).click();
+  await expect(page.locator('body')).toHaveAttribute('data-bgm-theme', 'romance');
+  await page.locator('#to-title-button').click();
+  await page.locator('.book-card').nth(2).click();
+  await expect(page.locator('body')).toHaveAttribute('data-bgm-theme', 'mystery');
+});
+
 test('BGMが本編で鳴り、音オフとタイトル復帰で止まる', async ({ page }) => {
   await page.goto('/');
   await beginStory(page);

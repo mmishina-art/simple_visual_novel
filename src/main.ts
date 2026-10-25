@@ -161,8 +161,8 @@ function spanOf(className: string, text?: string): HTMLSpanElement {
  * 表紙を作る。装丁は「帯のデザイン」（2026-10-26 決定）：
  * 縦書きの題字、赤い帯にあらすじ、左上に奥付
  */
-function buildCover(item: { title: string; description: string; cover?: SceneBg }): HTMLSpanElement {
-  const cover = spanOf('book-cover');
+function buildCover(item: { title: string; description: string; cover?: SceneBg; coverObi?: string }): HTMLSpanElement {
+  const cover = spanOf(`book-cover obi-${item.coverObi ?? 'red'}`);
   const img = document.createElement('img');
   img.className = 'book-cover-img';
   img.src = SCENES[item.cover ?? 'classroom'];
@@ -294,7 +294,7 @@ function renderGame(): void {
       recordEnding();
       // 結末の効果音は、結末パネルが出る瞬間に鳴らす
       // （そちらは操作ハンドラ側）。ここではBGMだけ切り替える
-      startBgm(node.ending.kind);
+      startBgm(node.ending.kind, story.bgm);
     }
   }
 }
@@ -320,7 +320,7 @@ function startGame(fromState: PlayState, resume = false): void {
   currentBg = 'classroom';
   screen = 'game';
   persist();
-  startBgm('normal');
+  startBgm('normal', story.bgm);
   render();
 }
 

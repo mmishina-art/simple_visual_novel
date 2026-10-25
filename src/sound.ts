@@ -133,57 +133,136 @@ interface BgmConfig {
   bellGain: number;
   wind: number;
   padGain: number;
+  /** 推理もの用：和音の頭に、低く脈打つ音を入れる */
+  pulse?: boolean;
 }
 
-const BGM_MOODS: Record<BgmMood, BgmConfig> = {
-  // 通常：夜の校舎。短調のパッドと、まばらなピアノ
-  normal: {
-    chords: [
-      [110.0, 164.81, 246.94, 261.63], // Am(add9)
-      [87.31, 130.81, 220.0, 329.63], // Fmaj7
-      [130.81, 196.0, 246.94, 392.0], // Cmaj7
-      [98.0, 146.83, 246.94, 293.66], // G(add9)寄り
-    ],
-    bells: [440.0, 523.25, 587.33, 659.25, 783.99, 880.0],
-    drone: [55, 110.4],
-    chordSec: 9, bellChance: 0.28, bellGain: 0.045, wind: 0.007, padGain: 0.014,
+export type BgmTheme = 'horror' | 'romance' | 'mystery';
+
+const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
+  // ホラー（『午前0時の校舎』）：夜の校舎。短調のパッドと、まばらなピアノ、風の音
+  horror: {
+    normal: {
+      chords: [
+        [110.0, 164.81, 246.94, 261.63],
+        [87.31, 130.81, 220.0, 329.63],
+        [130.81, 196.0, 246.94, 392.0],
+        [98.0, 146.83, 246.94, 293.66],
+      ],
+      bells: [440.0, 523.25, 587.33, 659.25, 783.99, 880.0],
+      drone: [55, 110.4],
+      chordSec: 9, bellChance: 0.28, bellGain: 0.045, wind: 0.007, padGain: 0.014,
+    },
+    happy: {
+      chords: [
+        [87.31, 130.81, 220.0, 261.63],
+        [130.81, 196.0, 329.63, 392.0],
+        [110.0, 164.81, 261.63, 329.63],
+        [98.0, 146.83, 246.94, 392.0],
+      ],
+      bells: [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5],
+      drone: [65.41, 130.81],
+      chordSec: 8, bellChance: 0.5, bellGain: 0.04, wind: 0.004, padGain: 0.015,
+    },
+    bad: {
+      chords: [
+        [110.0, 130.81, 164.81],
+        [103.83, 123.47, 146.83],
+        [98.0, 116.54, 139.69],
+        [110.0, 130.81, 155.56],
+      ],
+      bells: [220.0, 233.08, 110.0, 116.54],
+      drone: [55, 58.27],
+      chordSec: 12, bellChance: 0.16, bellGain: 0.05, wind: 0.012, padGain: 0.016,
+    },
   },
-  // ハッピーエンド：夜明け。長調に転じ、単音は高く明るく、風は弱まる
-  happy: {
-    chords: [
-      [87.31, 130.81, 220.0, 261.63], // Fmaj7
-      [130.81, 196.0, 329.63, 392.0], // Cmaj7
-      [110.0, 164.81, 261.63, 329.63], // Am7
-      [98.0, 146.83, 246.94, 392.0], // G(add9)
-    ],
-    bells: [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5],
-    drone: [65.41, 130.81],
-    chordSec: 8, bellChance: 0.5, bellGain: 0.04, wind: 0.004, padGain: 0.015,
+  // 恋愛もの（『月夜の図書室』）：温かい長調。風はほぼなし、単音は柔らかく高く
+  romance: {
+    normal: {
+      chords: [
+        [130.81, 196.0, 246.94, 329.63], // Cmaj7
+        [110.0, 164.81, 261.63, 392.0], // Am7
+        [87.31, 130.81, 220.0, 349.23], // Fmaj7
+        [98.0, 146.83, 246.94, 293.66], // G(add9)
+      ],
+      bells: [523.25, 659.25, 783.99, 880.0, 1046.5],
+      drone: [65.41, 98.0],
+      chordSec: 10, bellChance: 0.38, bellGain: 0.032, wind: 0.0015, padGain: 0.016,
+    },
+    happy: {
+      chords: [
+        [87.31, 130.81, 220.0, 349.23],
+        [130.81, 196.0, 293.66, 329.63],
+        [98.0, 146.83, 246.94, 392.0],
+        [130.81, 196.0, 246.94, 329.63],
+      ],
+      bells: [659.25, 783.99, 880.0, 1046.5, 1318.5],
+      drone: [65.41, 130.81],
+      chordSec: 9, bellChance: 0.55, bellGain: 0.034, wind: 0.001, padGain: 0.017,
+    },
+    bad: {
+      chords: [
+        [110.0, 164.81, 261.63, 329.63], // Am7
+        [87.31, 130.81, 220.0, 261.63], // Fmaj7
+        [130.81, 196.0, 246.94, 329.63], // Cmaj7
+        [82.41, 123.47, 196.0, 293.66], // Em7
+      ],
+      bells: [392.0, 440.0, 523.25, 587.33],
+      drone: [55, 82.41],
+      chordSec: 11, bellChance: 0.22, bellGain: 0.03, wind: 0.003, padGain: 0.015,
+    },
   },
-  // バッドエンド：不協和な短調。半音の緊張、遅い和音、低い単音、風が強まる
-  bad: {
-    chords: [
-      [110.0, 130.81, 164.81], // Am
-      [103.83, 123.47, 146.83], // 半音下の減和音寄り
-      [98.0, 116.54, 139.69], // さらに不穏に
-      [110.0, 130.81, 155.56], // Am に♭5 の緊張
-    ],
-    bells: [220.0, 233.08, 110.0, 116.54],
-    drone: [55, 58.27], // 半音のうなり
-    chordSec: 12, bellChance: 0.16, bellGain: 0.05, wind: 0.012, padGain: 0.016,
+  // 推理もの（『消えた優勝杯』）：張り詰めた短調。和音の頭に低い脈打ち、単音は控えめ
+  mystery: {
+    normal: {
+      chords: [
+        [110.0, 130.81, 164.81], // Am
+        [110.0, 130.81, 164.81],
+        [87.31, 110.0, 130.81, 174.61], // F
+        [82.41, 103.83, 123.47, 164.81], // E
+      ],
+      bells: [220.0, 261.63, 329.63, 196.0],
+      drone: [55, 82.41],
+      chordSec: 8, bellChance: 0.18, bellGain: 0.04, wind: 0.002, padGain: 0.015, pulse: true,
+    },
+    happy: {
+      chords: [
+        [130.81, 196.0, 246.94, 329.63],
+        [87.31, 130.81, 220.0, 261.63],
+        [110.0, 164.81, 261.63, 329.63],
+        [98.0, 146.83, 246.94, 392.0],
+      ],
+      bells: [440.0, 523.25, 659.25, 783.99],
+      drone: [65.41, 98.0],
+      chordSec: 8.5, bellChance: 0.4, bellGain: 0.036, wind: 0.0015, padGain: 0.016,
+    },
+    bad: {
+      chords: [
+        [110.0, 130.81, 164.81],
+        [123.47, 146.83, 174.61],
+        [103.83, 130.81, 155.56],
+        [110.0, 116.54, 164.81],
+      ],
+      bells: [110.0, 116.54, 220.0],
+      drone: [55, 58.27],
+      chordSec: 11, bellChance: 0.12, bellGain: 0.042, wind: 0.004, padGain: 0.016, pulse: true,
+    },
   },
 };
 
 let bgmMood: BgmMood = 'normal';
+let bgmTheme: BgmTheme = 'horror';
 
-export function startBgm(mood?: BgmMood): void {
+export function startBgm(mood?: BgmMood, theme?: BgmTheme): void {
   bgmWanted = true;
   const target = mood ?? bgmMood;
-  if (bgmNodes && target === bgmMood) return;
+  const targetTheme = theme ?? bgmTheme;
+  if (bgmNodes && target === bgmMood && targetTheme === bgmTheme) return;
   if (bgmNodes) stopBgmInternal(false);
   bgmMood = target;
+  bgmTheme = targetTheme;
   if (!enabled) return;
-  const cfg = BGM_MOODS[bgmMood];
+  const cfg = BGM_THEMES[bgmTheme][bgmMood];
   try {
     const c = ac();
     const master = c.createGain();
@@ -245,6 +324,20 @@ export function startBgm(mood?: BgmMood): void {
     const playChord = (at: number): void => {
       const chord = cfg.chords[chordIndex % cfg.chords.length];
       chordIndex += 1;
+      if (cfg.pulse) {
+        // 推理もの：和音の頭に、心臓のような低い脈打ちを2つ
+        for (const off of [0, 0.55]) {
+          const o = c.createOscillator();
+          o.type = 'sine';
+          o.frequency.value = 52;
+          const g = c.createGain();
+          g.gain.setValueAtTime(0.055, at + off);
+          g.gain.exponentialRampToValueAtTime(0.0001, at + off + 0.5);
+          o.connect(g).connect(master);
+          o.start(at + off);
+          o.stop(at + off + 0.6);
+        }
+      }
       for (const f of chord) {
         for (const detune of [-4, 4]) {
           const o = c.createOscillator();
@@ -290,6 +383,7 @@ export function startBgm(mood?: BgmMood): void {
     bgmNodes = { master, timer, sources };
     document.body.dataset.bgm = 'on';
     document.body.dataset.bgmMood = bgmMood;
+    document.body.dataset.bgmTheme = bgmTheme;
     document.dispatchEvent(new CustomEvent('app:bgm', { detail: { on: true } }));
   } catch {
     // 音が出せなくても続行する
@@ -344,6 +438,7 @@ function stopBgmInternal(clearWanted: boolean): void {
   if (!bgmNodes) {
     document.body.dataset.bgm = 'off';
     delete document.body.dataset.bgmMood;
+    delete document.body.dataset.bgmTheme;
     return;
   }
   const { master, timer, sources } = bgmNodes;
@@ -362,5 +457,7 @@ function stopBgmInternal(clearWanted: boolean): void {
     // 音が出せなくても続行する
   }
   document.body.dataset.bgm = 'off';
+  delete document.body.dataset.bgmMood;
+  delete document.body.dataset.bgmTheme;
   document.dispatchEvent(new CustomEvent('app:bgm', { detail: { on: false } }));
 }

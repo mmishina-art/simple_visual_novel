@@ -8,6 +8,8 @@ export const missingTrophy: Story = {
   description: '文化祭の朝、展示室の優勝杯が消えた。鍵は内側から掛かっていた――密室の謎を解く。',
   length: '10〜15分',
   cover: 'entrance',
+  coverObi: 'navy',
+  bgm: 'mystery',
   start: 'start1',
   nodes: {
     start1: {

@@ -40,6 +40,10 @@ export interface Story {
   length: string;
   /** 本棚で表紙に使う背景（省略時は 'classroom'） */
   cover?: SceneBg;
+  /** 表紙の帯の色・形（省略時は 'red'） */
+  coverObi?: 'red' | 'cream' | 'navy';
+  /** BGM のテーマ（省略時は 'horror'） */
+  bgm?: 'horror' | 'romance' | 'mystery';
   start: string;
   nodes: Record<string, StoryNode>;
 }

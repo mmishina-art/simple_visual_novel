@@ -331,6 +331,22 @@ button.link {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
 }
 
+/* 帯のバリエーション：恋愛ものは生成り、推理ものは紺のラベル帯 */
+.obi-cream .book-obi {
+  background: #e9ddc2;
+  color: #37312a;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.obi-navy .book-obi {
+  left: 12px;
+  right: 24px;
+  bottom: 20px;
+  border-radius: 3px;
+  background: #1e324e;
+  color: #ece4d1;
+}
+
 .book-colophon {
   position: absolute;
   top: 10px;

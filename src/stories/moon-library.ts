@@ -8,6 +8,8 @@ export const moonLibrary: Story = {
   description: '返却ポストで見つけた、名前のない貸出カード。放課後の図書室で、静かな恋が始まる。',
   length: '5〜10分',
   cover: 'corridor',
+  coverObi: 'cream',
+  bgm: 'romance',
   start: 'start1',
   nodes: {
     start1: {
