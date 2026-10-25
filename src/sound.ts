@@ -103,6 +103,23 @@ export function playButtonSound(): void {
   }
 }
 
+/** 本を開く音。本棚で本を選んだ瞬間に、全冊共通で鳴らす。「コト→パラ」の短い音 */
+export function playBookOpenSound(): void {
+  if (!enabled) return;
+  try {
+    // コト：本を置くような、低い小さな音
+    tone(145, 0.1, 'sine', 0.07, 0, 92);
+    noise(0.04, 420, 0.032, 0, 'lowpass');
+    // パラ：ページが開いて落ち着く、短い紙の音
+    noise(0.05, 2000, 0.05, 0.15, 'bandpass');
+    noise(0.06, 1500, 0.055, 0.22, 'bandpass');
+    noise(0.1, 950, 0.04, 0.3, 'bandpass');
+    document.dispatchEvent(new CustomEvent('app:sound', { detail: { ui: 'book' } }));
+  } catch {
+    // 音が出せなくても続行する
+  }
+}
+
 /** 文章を進める操作の音（紙をめくるような、短く柔らかい音） */
 export function playAdvanceSound(): void {
   if (!enabled) return;
@@ -335,12 +352,14 @@ export function startBgm(mood?: BgmMood, theme?: BgmTheme): void {
 
     // パッドの和音と、まばらなピアノの単音を定期的に差し込む
     let chordIndex = 0;
+    let chordsPlayed = 0;
     let nextChordAt = c.currentTime + 0.1;
     const playChord = (at: number): void => {
       const chord = cfg.chords[chordIndex % cfg.chords.length];
       chordIndex += 1;
+      chordsPlayed += 1;
       currentChord = chord;
-      if (cfg.pulse) {
+      if (cfg.pulse && chordsPlayed > 1) {
         // 推理もの：和音の頭に、心臓のような低い脈打ちを2つ
         for (const off of [0, 0.55]) {
           const o = c.createOscillator();
@@ -398,7 +417,7 @@ export function startBgm(mood?: BgmMood, theme?: BgmTheme): void {
       const now = c.currentTime;
       if (now >= nextChordAt) {
         playChord(nextChordAt);
-        if (cfg.arp) playArp(nextChordAt);
+        if (cfg.arp && chordsPlayed > 1) playArp(nextChordAt);
         nextChordAt += cfg.chordSec;
       }
       if (!cfg.arp && Math.random() < cfg.bellChance) playBell(now + 0.05);

@@ -117,6 +117,32 @@ test('三冊目（推理もの）を選んで、真相のハッピーエンド�
   await expect(page.locator('#ending-title')).toContainText('ハッピーエンド');
 });
 
+test('本を選ぶと、どの本でも共通の「本を開く音」が鳴る', async ({ page }) => {
+  await page.addInitScript(() => {
+    (window as unknown as { __uiSounds: string[] }).__uiSounds = [];
+    document.addEventListener('app:sound', (e) => {
+      const ui = (e as CustomEvent<{ ui?: string }>).detail?.ui;
+      if (ui) (window as unknown as { __uiSounds: string[] }).__uiSounds.push(ui);
+    });
+  });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'はじめる' }).click();
+  for (let i = 0; i < 3; i++) {
+    await page.evaluate(() => {
+      (window as unknown as { __uiSounds: string[] }).__uiSounds = [];
+    });
+    await page.locator('.book-card').nth(i).click();
+    await expect(page.locator('#game-screen')).toBeVisible();
+    const sounds = await page.evaluate(
+      () => (window as unknown as { __uiSounds: string[] }).__uiSounds,
+    );
+    expect(sounds).toContain('book');
+    expect(sounds).not.toContain('button');
+    await page.locator('#to-title-button').click();
+    await expect(page.locator('#shelf-screen')).toBeVisible();
+  }
+});
+
 test('追加した本では、BGMのテーマが物語に合っている', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'はじめる' }).click();

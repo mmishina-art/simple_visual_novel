@@ -7,7 +7,7 @@ import { STORIES, storyById } from './stories';
 import { setupDebug } from './debug';
 import { setupInstallGuide } from './install';
 import { applyUpdate, checkForUpdate, onUpdateAvailable, setupPwa } from './pwa';
-import { isSoundOn, playAdvanceSound, playButtonSound, playEndingJingle, playSceneSound, setSound, startBgm, stopBgm } from './sound';
+import { isSoundOn, playAdvanceSound, playBookOpenSound, playButtonSound, playEndingJingle, playSceneSound, setSound, startBgm, stopBgm } from './sound';
 import { exportBackup, importBackup, load, migrateStorage, remove, requestPersist, save } from './storage';
 
 import classroom from './assets/scenes/classroom.svg';
@@ -201,6 +201,7 @@ function renderShelf(): void {
 
 /** 本棚で作品を選んだとき。本編の画面へ移る */
 function openStory(target: Story, mode: 'new' | 'resume'): void {
+  playBookOpenSound();
   story = target;
   loadForStory(target);
   document.querySelector('.game-title')!.textContent = target.title;
@@ -333,6 +334,7 @@ document.addEventListener('click', (e) => {
   const button = target.closest('button');
   if (!button) return;
   if (button.id === 'sound-button' || button.id === 'sound-button-game') return;
+  if (button.classList.contains('book-card')) return; // 本を開く音が鳴るので、ボタンの音は出さない
   if (button.id === 'update-button' || button.id === 'boot-repair') return;
   if (button.closest('#debug-panel')) return;
   playButtonSound();
