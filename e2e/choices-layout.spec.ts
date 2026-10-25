@@ -32,7 +32,8 @@ for (const vp of [
   test(`選択肢が全画面サイズで見切れない（${vp.width}x${vp.height}）`, async ({ page }) => {
     await page.setViewportSize(vp);
     await page.goto('/');
-    await page.getByRole('button', { name: 'はじめから' }).click();
+    await page.getByRole('button', { name: 'はじめる' }).click();
+    await page.locator('.book-card').first().click();
     const labels = [
       '教室の後ろの棚から、懐中電灯を持っていく',
       '足跡をたどって、音楽室をのぞく',

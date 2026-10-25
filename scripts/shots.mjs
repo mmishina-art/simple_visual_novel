@@ -7,13 +7,19 @@ import { preview } from 'vite';
 import { mkdirSync, rmSync } from 'node:fs';
 
 /** 撮る画面。open は、ページを開いたあと、その画面を出すための操作。 */
+const openStory = async (page) => {
+  await page.click('#start-button');
+  await page.click('.book-card');
+};
+
 const SCREENS = [
   { name: 'home' },
-  { name: 'story', open: async (page) => page.click('#start-button') },
+  { name: 'shelf', open: async (page) => page.click('#start-button') },
+  { name: 'story', open: openStory },
   {
     name: 'choice',
     open: async (page) => {
-      await page.click('#start-button');
+      await openStory(page);
       // 選択肢が出たら、そこから先は本文をタップできない（選ぶ必要がある）ので止める
       for (let i = 0; i < 10 && !(await page.locator('#choices').isVisible()); i++) {
         await page.click('#message-window');

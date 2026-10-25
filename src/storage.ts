@@ -41,8 +41,17 @@ export function requestPersist(): void {
 
 /** 保存データの形が変わったときの移行処理。from → from+1 の変換を、ここに足していく。 */
 function migrate(from: number): void {
-  // 例: if (from < 2) { /* 版 1 → 2 の変換 */ }
-  void from;
+  if (from < 2) {
+    // 版2: 保存を物語ごとに分けた。これまでの記録（1作品目『午前0時の校舎』分）を移す
+    const firstStoryId = 'midnight-school';
+    for (const base of ['progress', 'backlog', 'endings']) {
+      const legacy = load<unknown>(base, null);
+      if (legacy !== null) {
+        save(`story:${firstStoryId}:${base}`, legacy);
+        remove(base);
+      }
+    }
+  }
 }
 
 /** 起動時に一度呼ぶ。保存されている形の版が古ければ、移行してから版番号を書き直す。 */

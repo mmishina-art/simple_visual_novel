@@ -20,9 +20,15 @@ async function playToEnding(page: Page, labels: string[]): Promise<void> {
   throw new Error('結末に着きませんでした');
 }
 
+/** トップで「はじめる」を押し、本棚で『午前0時の校舎』を選んで本編に入る */
+async function beginStory(page: Page): Promise<void> {
+  await page.getByRole('button', { name: 'はじめる' }).click();
+  await page.locator('.book-card').first().click();
+}
+
 async function startAndAdvanceToFirstChoice(page: Page): Promise<void> {
   await page.goto('/');
-  await page.getByRole('button', { name: 'はじめから' }).click();
+  await beginStory(page);
   for (let i = 0; i < 12 && !(await page.locator('#choices').isVisible()); i++) {
     await page.locator('#message-window').click();
   }
@@ -30,8 +36,11 @@ async function startAndAdvanceToFirstChoice(page: Page): Promise<void> {
 
 test('タイトルから始めて、文章が進み、最初の選択肢が出る', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: '午前0時の校舎' })).toBeVisible();
-  await page.getByRole('button', { name: 'はじめから' }).click();
+  await expect(page.getByRole('heading', { name: 'サウンドノベル' })).toBeVisible();
+  await page.getByRole('button', { name: 'はじめる' }).click();
+  await expect(page.locator('#shelf-screen')).toBeVisible();
+  await expect(page.locator('.book-card')).toContainText('午前0時の校舎');
+  await page.locator('.book-card').first().click();
   await expect(page.locator('#story-text')).toContainText('文化祭を明日に控えた');
   await page.locator('#message-window').click();
   await expect(page.locator('#story-text')).toContainText('夕方から降り始めた雨');
@@ -42,7 +51,7 @@ test('タイトルから始めて、文章が進み、最初の選択肢が出�
 
 test('選択を誤るとバッドエンドになり、最後の選択からやり直せる', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'はじめから' }).click();
+  await beginStory(page);
   await playToEnding(page, ['そのまま出る', '急ぐ', '返事をする']);
   await expect(page.locator('#ending-title')).toContainText('バッドエンド');
   // 結末の本文は独立したページに出る（直前の文章と重なって読めなくならない）
@@ -56,34 +65,49 @@ test('選択を誤るとバッドエンドになり、最後の選択からや�
 
 test('正しく選ぶとハッピーエンドになり、タイトルに結末の数が記録される', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'はじめから' }).click();
+  await beginStory(page);
   await playToEnding(page, ['懐中電灯', '音楽室', '返事をせず', '裏口へ走る']);
   await expect(page.locator('#ending-title')).toContainText('ハッピーエンド');
   await page.locator('#ending-title-button').click();
-  await expect(page.locator('#endings-progress')).toContainText('1 / 3');
-  await expect(page.locator('#continue-button')).toBeHidden();
+  await expect(page.locator('#shelf-screen')).toBeVisible();
+  await expect(page.locator('.book-card')).toContainText('到達した結末: 1 / 3');
+  await expect(page.locator('.book-card')).not.toContainText('つづきから読む');
 });
 
 test('途中で閉じても、つづきから再開できる', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'はじめから' }).click();
+  await beginStory(page);
   await page.locator('#message-window').click();
   await page.locator('#message-window').click();
   await page.reload();
-  await expect(page.locator('#continue-button')).toBeVisible();
-  await page.locator('#continue-button').click();
+  await page.getByRole('button', { name: 'はじめる' }).click();
+  await expect(page.locator('.book-card')).toContainText('つづきから読む');
+  await page.locator('.book-card').first().click();
   await expect(page.locator('#story-text')).toContainText('仕上がった看板を壁に立てかけた');
+});
+
+test('本棚から物語を選び直し、途中でも最初から読み直せる', async ({ page }) => {
+  await page.goto('/');
+  await beginStory(page);
+  await page.locator('#message-window').click();
+  // 本棚へ戻ると、カードに「つづきから読む」が出る
+  await page.locator('#to-title-button').click();
+  await expect(page.locator('.book-card')).toContainText('午前0時の校舎');
+  await expect(page.locator('.book-card')).toContainText('つづきから読む');
+  // 「最初から読み直す」を選ぶと、物語の先頭から始まる
+  await page.locator('.book-restart').click();
+  await expect(page.locator('#story-text')).toContainText('文化祭を明日に控えた');
 });
 
 test('BGMが本編で鳴り、音オフとタイトル復帰で止まる', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'はじめから' }).click();
+  await beginStory(page);
   await expect(page.locator('body')).toHaveAttribute('data-bgm', 'on');
   await page.locator('#sound-button-game').click();
   await expect(page.locator('body')).toHaveAttribute('data-bgm', 'off');
   await page.locator('#sound-button-game').click();
   await expect(page.locator('body')).toHaveAttribute('data-bgm', 'on');
-  await page.getByRole('button', { name: /タイトルへ/ }).click();
+  await page.getByRole('button', { name: /本棚へ/ }).click();
   await expect(page.locator('body')).toHaveAttribute('data-bgm', 'off');
 });
 
@@ -96,7 +120,7 @@ test('文章を進めると操作音が鳴る', async ({ page }) => {
       if (ui) (window as unknown as { __uiSounds: string[] }).__uiSounds.push(ui);
     });
   });
-  await page.getByRole('button', { name: 'はじめから' }).click();
+  await beginStory(page);
   await page.locator('#message-window').click();
   const sounds = await page.evaluate(
     () => (window as unknown as { __uiSounds: string[] }).__uiSounds,
@@ -113,7 +137,7 @@ test('バッドエンドの効果音は、文章のあとパネルが出る瞬�
       if (ui) (window as unknown as { __uiSounds: string[] }).__uiSounds.push(ui);
     });
   });
-  await page.getByRole('button', { name: 'はじめから' }).click();
+  await beginStory(page);
   const labels = ['懐中電灯', '音楽室', '返事をする'];
   const readSounds = () =>
     page.evaluate(() => (window as unknown as { __uiSounds: string[] }).__uiSounds);
@@ -144,7 +168,7 @@ test('バッドエンドの効果音は、文章のあとパネルが出る瞬�
 
 test('ハッピーエンドではBGMが明るいものに変わる', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'はじめから' }).click();
+  await beginStory(page);
   await playToEnding(page, ['懐中電灯', '音楽室', '返事をせず', '裏口へ走る']);
   await expect(page.locator('#ending-title')).toContainText('ハッピーエンド');
   await expect(page.locator('body')).toHaveAttribute('data-bgm-mood', 'happy');
@@ -152,7 +176,7 @@ test('ハッピーエンドではBGMが明るいものに変わる', async ({ pa
 
 test('読み返しは、いちばん新しい文章から表示される', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'はじめから' }).click();
+  await beginStory(page);
   for (let i = 0; i < 4; i++) await page.locator('#message-window').click();
   await page.locator('#backlog-button').click();
   await expect(page.locator('#backlog-screen')).toBeVisible();
@@ -185,7 +209,7 @@ test('結末は文章だけが先に表示され、もう一度押すとパネ�
       if (ui) (window as unknown as { __uiSounds: string[] }).__uiSounds.push(ui);
     });
   });
-  await page.getByRole('button', { name: 'はじめから' }).click();
+  await beginStory(page);
   const labels = ['懐中電灯', '音楽室', '返事をせず', '裏口へ走る'];
   let revealed = false;
   for (let i = 0; i < 80 && !revealed; i++) {
@@ -234,7 +258,7 @@ test('ボタンを押すと操作音が鳴る', async ({ page }) => {
       if (ui) (window as unknown as { __uiSounds: string[] }).__uiSounds.push(ui);
     });
   });
-  await page.getByRole('button', { name: 'はじめから' }).click();
+  await beginStory(page);
   const sounds = await page.evaluate(
     () => (window as unknown as { __uiSounds: string[] }).__uiSounds,
   );
@@ -247,7 +271,7 @@ test('タイトル画面と本編の画面が分かれている', async ({ page 
   await expect(page.locator('#title-screen')).toBeVisible();
   await expect(page.locator('#game-screen')).toBeHidden();
   await expect(page.locator('.backup')).toBeVisible();
-  await page.getByRole('button', { name: 'はじめから' }).click();
+  await beginStory(page);
   // 本編の画面: タイトル画面の要素（バックアップ・インストール・バージョン）は出ない
   await expect(page.locator('#game-screen')).toBeVisible();
   await expect(page.locator('#title-screen')).toBeHidden();
@@ -255,15 +279,18 @@ test('タイトル画面と本編の画面が分かれている', async ({ page 
   await expect(page.locator('#install-open')).toBeHidden();
   await expect(page.locator('#version-line')).toBeHidden();
   await expect(page.locator('#story-text')).toBeVisible();
-  // 戻るとタイトル画面だけになる
+  // 本編から戻ると本棚、そこから戻るとタイトル画面だけになる
   await page.locator('#to-title-button').click();
-  await expect(page.locator('#title-screen')).toBeVisible();
+  await expect(page.locator('#shelf-screen')).toBeVisible();
   await expect(page.locator('#game-screen')).toBeHidden();
+  await page.getByRole('button', { name: 'タイトルに戻る' }).click();
+  await expect(page.locator('#title-screen')).toBeVisible();
+  await expect(page.locator('#shelf-screen')).toBeHidden();
 });
 
 test('本文は縦書き（小説風）で表示される', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'はじめから' }).click();
+  await beginStory(page);
   const writingMode = await page.locator('#story-text .segment').first().evaluate((el) => getComputedStyle(el).writingMode);
   expect(writingMode).toBe('vertical-rl');
   // 数字は縦中横（tcy）で包まれている（11時57分 の場面まで進めて確認）
@@ -274,7 +301,7 @@ test('本文は縦書き（小説風）で表示される', async ({ page }) => 
 
 test('文章は消えずに左へ追加され、選択肢では直前の文章だけが残る', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'はじめから' }).click();
+  await beginStory(page);
   await expect(page.locator('#story-text')).toContainText('文化祭を明日に控えた');
   await page.locator('#message-window').click();
   // 前の文章が残ったまま、次の文章が追加されている
@@ -305,7 +332,7 @@ test('文章は消えずに左へ追加され、選択肢では直前の文章�
 
 test('読み返しで、前のページや、選んだ選択肢だけをさかのぼれる', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'はじめから' }).click();
+  await beginStory(page);
   await page.locator('#message-window').click();
   await page.locator('#message-window').click();
   await page.getByRole('button', { name: '読み返す' }).click();
@@ -333,7 +360,7 @@ test('読み返しで、前のページや、選んだ選択肢だけをさか�
 test('文章で画面がいっぱいになったら、ページがめくれて新しいページが始まる', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await page.getByRole('button', { name: 'はじめから' }).click();
+  await beginStory(page);
   for (let i = 0; i < 4; i++) await page.locator('#message-window').click();
   // 5つ目の文章まで進むと、ページがめくれて、最初の文章は本文から消えている
   await expect(page.locator('#story-text')).toContainText('画面は黒く落ちた');
@@ -345,7 +372,7 @@ test('文章で画面がいっぱいになったら、ページがめくれて�
 
 test('文章は背景の上に重なり、選択肢は縦書きで選べる', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'はじめから' }).click();
+  await beginStory(page);
   // 文章が背景イラストの上に重なっている
   const overlap = await page.evaluate(() => {
     const bg = document.getElementById('scene-img')!.getBoundingClientRect();
@@ -411,26 +438,30 @@ test('最初の画面にバージョンが表示される', async ({ page }) => 
 
 test('記録をファイルに書き出し、消えたあとに読み込んで戻せる', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'はじめから' }).click();
+  await beginStory(page);
   await page.locator('#message-window').click();
   await page.locator('#to-title-button').click();
+  await page.getByRole('button', { name: 'タイトルに戻る' }).click();
   await page.getByText('記録のバックアップ').click();
 
   const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'ファイルに書き出す' }).click()]);
   const path = await download.path();
   const { readFileSync } = await import('node:fs');
   const text = readFileSync(path, 'utf8');
-  const progress = JSON.parse(JSON.parse(text).data[`${APP_ID}-progress`] as string) as { nodeId: string };
+  const progress = JSON.parse(JSON.parse(text).data[`${APP_ID}-story:midnight-school:progress`] as string) as { nodeId: string };
   expect(progress.nodeId).toBe('start2');
 
   // 記録を消す → 読み込んで戻す
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await expect(page.locator('#continue-button')).toBeHidden();
+  await page.getByRole('button', { name: 'はじめる' }).click();
+  await expect(page.locator('.book-card')).not.toContainText('つづきから読む');
+  await page.getByRole('button', { name: 'タイトルに戻る' }).click();
   await page.getByText('記録のバックアップ').click();
   await page.locator('#backup-import').setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(text) });
-  await expect(page.locator('#continue-button')).toBeVisible();
   await expect(page.locator('#backup-message')).toContainText('読み込みました');
+  await page.getByRole('button', { name: 'はじめる' }).click();
+  await expect(page.locator('.book-card')).toContainText('つづきから読む');
 });
 
 test('おかしいバックアップファイルは、理由を表示して読み込まない', async ({ page }) => {
@@ -457,7 +488,8 @@ test('起動できないときは「なおす」ボタンが出て、押すと�
 
   await page.unroute('**/assets/*.js');
   await page.getByRole('button', { name: 'なおす' }).click();
-  await expect(page.locator('#endings-progress')).toContainText('1 / 3');
+  await page.getByRole('button', { name: 'はじめる' }).click();
+  await expect(page.locator('.book-card')).toContainText('到達した結末: 1 / 3');
   await expect(page.locator('#boot-error')).toBeHidden();
   // このアプリのキャッシュだけが作り直され、ほかのアプリのキャッシュは残っている
   expect(await page.evaluate(() => caches.has('other-app-v1'))).toBe(true);
@@ -476,7 +508,7 @@ test('デバッグモード: バージョンを 5 回タップで操作パネル
   await expect(page.locator('#ending-title')).toContainText('ハッピーエンド');
   // 左下のデバッグパネルがボタンに重なるため、このボタンだけ DOM 経由で押す
   await page.locator('#ending-title-button').evaluate((el) => (el as HTMLElement).click());
-  await expect(page.locator('#endings-progress')).toContainText('0 / 3'); // デバッグを使った回は記録しない
+  await expect(page.locator('.book-card')).toContainText('到達した結末: 0 / 3'); // デバッグを使った回は記録しない
   await expect(panel).toBeVisible(); // オン/オフは保存される
   await page.getByRole('button', { name: 'デバッグモードを終える' }).click();
   await expect(panel).toBeHidden();

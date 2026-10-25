@@ -119,6 +119,51 @@ button.link {
   font-size: 0.9rem;
 }
 
+/* ---- 本棚の画面 ---- */
+
+.shelf-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+/* 本のカード。カード全体がボタンで、選ぶと本編が始まる */
+.book-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  margin: 0;
+  padding: 16px 18px;
+  text-align: left;
+  border-left: 4px solid var(--primary);
+}
+
+.book-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.book-desc {
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.book-action {
+  color: var(--primary);
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.book-restart {
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-decoration: underline;
+}
+
 /* ---- タイトル画面 / 本編の画面（2画面は独立させる） ---- */
 
 .game-header {

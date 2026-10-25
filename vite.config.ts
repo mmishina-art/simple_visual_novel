@@ -6,7 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 const { version, name: appId } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string; name: string };
 
 // アプリ名・色はここと index.html の2か所だけ。新しいアプリを作るときに書き換える。
-const APP_NAME = '午前0時の校舎';
+const APP_NAME = 'サウンドノベル';
 const THEME_COLOR = '#07090d';
 const BACKGROUND_COLOR = '#07090d';
 

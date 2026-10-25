@@ -7,16 +7,16 @@
     <meta name="theme-color" content="#07090d" />
     <meta name="color-scheme" content="dark only" />
     <meta name="app-id" content="__APP_ID__" />
-    <meta name="description" content="選択で結末が変わる短編ホラーサウンドノベル『午前0時の校舎』" />
+    <meta name="description" content="選択で結末が変わる、短編サウンドノベル集" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <!-- iPhone のホーム画面アプリ: ステータスバーは不透明にする（暗い固定・端末設定に従う: black / 明るい固定: default）。
          black-translucent にすると、ステータスバーの下に入った内容を iOS がぼかして、画面の上端の文字が読みにくくなる -->
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <meta name="apple-mobile-web-app-title" content="午前0時の校舎" />
+    <meta name="apple-mobile-web-app-title" content="サウンドノベル" />
     <link rel="icon" type="image/svg+xml" href="icons/icon.svg" />
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
-    <title>午前0時の校舎 | サウンドノベル</title>
+    <title>サウンドノベル</title>
   </head>
   <body>
     <main id="app">
@@ -24,16 +24,13 @@
            インストール方法の入口・バージョン表示・記録のバックアップは、この画面にだけ置く -->
       <section id="title-screen" class="screen">
         <header class="header">
-          <h1>午前0時の校舎</h1>
+          <h1>サウンドノベル</h1>
           <button id="sound-button" type="button" class="icon-button" aria-label="音" aria-pressed="true">🔊</button>
         </header>
 
         <img id="title-art" class="scene-art" alt="" />
-        <p class="story-lead">文化祭の前夜、真夜中の校舎に一人取り残された。<br />名前を呼ばれても、返事をしてはいけない。</p>
-        <p class="muted">短編ホラーサウンドノベル ／ 読了目安 <span id="story-length"></span> ／ 結末は全<span id="ending-total"></span>通り</p>
-        <button id="start-button" type="button" class="primary big">はじめから</button>
-        <button id="continue-button" type="button" class="big" hidden>つづきから</button>
-        <p class="muted" id="endings-progress" aria-live="polite"></p>
+        <p class="story-lead">物語と音でつづる、短編小説集。<br />選択で、結末が変わります。</p>
+        <button id="start-button" type="button" class="primary big">はじめる</button>
 
         <details class="backup">
           <summary>記録のバックアップ</summary>
@@ -46,6 +43,16 @@
         <button id="install-open" type="button" class="link">📲 アプリとしてインストールする方法</button>
 
         <p class="muted version" id="version-line">v<span id="version"></span></p>
+      </section>
+
+      <!-- 本棚の画面。作品を選ぶと本編が始まる（作品は src/stories/ の一覧から作る） -->
+      <section id="shelf-screen" class="screen" hidden>
+        <header class="header">
+          <h1>本棚</h1>
+        </header>
+        <p class="muted">読みたい物語を選んでください。</p>
+        <div id="shelf-list" class="shelf-list"></div>
+        <button id="shelf-back" type="button" class="link">タイトルに戻る</button>
       </section>
 
       <!-- 本編の画面（タイトル画面とは分けた、独立した画面）。
@@ -74,10 +81,10 @@
         <div id="ending-panel" class="ending-panel" hidden>
           <p id="ending-title" class="ending-title" aria-live="polite"></p>
           <button id="retry-button" type="button" class="primary">最後の選択からやり直す</button>
-          <button id="ending-title-button" type="button">タイトルへ</button>
+          <button id="ending-title-button" type="button">本棚へ</button>
         </div>
 
-        <button id="to-title-button" type="button" class="link">タイトルへ（進行は自動で保存されます）</button>
+        <button id="to-title-button" type="button" class="link">本棚へ（進行は自動で保存されます）</button>
       </section>
       <section id="backlog-screen" class="screen backlog-screen" hidden>
         <div class="backlog-head">

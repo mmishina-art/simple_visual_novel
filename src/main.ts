@@ -1,7 +1,7 @@
 import './style.css';
 import {
   advance, backToCheckpoint, choose, endingsOf, isEnding, nodeOf, startState,
-  type PlayState, type SceneBg,
+  type PlayState, type SceneBg, type Story,
 } from './logic';
 import { STORIES, storyById } from './stories';
 import { setupDebug } from './debug';
@@ -28,26 +28,43 @@ const $ = <T extends HTMLElement>(id: string): T => {
 
 migrateStorage();
 
-// MVP は1作品。将来は本棚画面で STORIES から選ぶ（src/stories/index.ts）。
-const story = STORIES[0];
-const totalEndings = endingsOf(story).length;
+// 本棚（src/stories/index.ts の STORIES）から選んだ作品を遊ぶ。
+// 進行・読み返し・到達した結末は作品ごとに分けて保存する。
+let story: Story = STORIES[0];
 
-let screen: 'title' | 'game' | 'backlog' = 'title';
-let state: PlayState | null = load<PlayState | null>('progress', null);
-if (state && !storyById(state.storyId)) state = null;
-let seenEndings: string[] = load<string[]>('endings', []);
+let screen: 'title' | 'shelf' | 'game' | 'backlog' = 'title';
+const skey = (base: string, target: Story = story): string => `story:${target.id}:${base}`;
+let state: PlayState | null = null;
+let seenEndings: string[] = [];
+
+/** その作品の進行を読み込む（作品が存在しない・壊れている場合は空にする） */
+function savedProgressOf(target: Story): PlayState | null {
+  const saved = load<PlayState | null>(skey('progress', target), null);
+  return saved && storyById(saved.storyId)?.id === target.id ? saved : null;
+}
 
 /** 読み返し用の履歴。文章と、選んだ選択肢だけを記録する（選ばなかった選択肢は残らない）。進行と一緒に保存する */
 type BacklogEntry = { kind: 'text' | 'choice'; text: string };
-const loadedBacklog = load<unknown>('backlog', []);
-let backlog: BacklogEntry[] = Array.isArray(loadedBacklog)
-  ? loadedBacklog.filter(
-      (e): e is BacklogEntry =>
-        typeof e === 'object' && e !== null &&
-        ((e as BacklogEntry).kind === 'text' || (e as BacklogEntry).kind === 'choice') &&
-        typeof (e as BacklogEntry).text === 'string',
-    )
-  : [];
+let backlog: BacklogEntry[] = [];
+
+function loadBacklogOf(target: Story): BacklogEntry[] {
+  const raw = load<unknown>(skey('backlog', target), []);
+  return Array.isArray(raw)
+    ? raw.filter(
+        (e): e is BacklogEntry =>
+          typeof e === 'object' && e !== null &&
+          ((e as BacklogEntry).kind === 'text' || (e as BacklogEntry).kind === 'choice') &&
+          typeof (e as BacklogEntry).text === 'string',
+      )
+    : [];
+}
+
+/** 作品を選んだとき、その作品の進行・履歴・結末を読み込む */
+function loadForStory(target: Story): void {
+  state = savedProgressOf(target);
+  seenEndings = load<string[]>(skey('endings', target), []);
+  backlog = loadBacklogOf(target);
+}
 /** デバッグの操作を使った回は、到達した結末を記録しない */
 let cheated = false;
 let lastNodeId = '';
@@ -59,11 +76,11 @@ let segments: string[] = [];
 
 function persist(): void {
   if (state && !isEnding(story, state)) {
-    save('progress', state);
-    save('backlog', backlog);
+    save(skey('progress'), state);
+    save(skey('backlog'), backlog);
   } else {
-    remove('progress');
-    remove('backlog');
+    remove(skey('progress'));
+    remove(skey('backlog'));
   }
 }
 
@@ -72,7 +89,7 @@ function recordEnding(): void {
   if (!node?.ending || cheated) return;
   if (!seenEndings.includes(node.id)) {
     seenEndings = [...seenEndings, node.id];
-    save('endings', seenEndings);
+    save(skey('endings'), seenEndings);
   }
 }
 
@@ -124,14 +141,59 @@ function renderBacklog(): void {
 }
 
 function renderTitle(): void {
-  $('continue-button').hidden = !state || (state !== null && isEnding(story, state));
-  $('endings-progress').textContent = `到達した結末: ${seenEndings.length} / ${totalEndings}`;
   // 音ボタンはタイトル画面と本編の画面の両方にあるので、表示をそろえる
   for (const id of ['sound-button', 'sound-button-game']) {
     const sound = $(id);
     sound.textContent = isSoundOn() ? '🔊' : '🔇';
     sound.setAttribute('aria-pressed', String(isSoundOn()));
   }
+}
+
+/** 本棚の画面。STORIES の作品をカード（本）として並べ、選ぶと本編が始まる */
+function renderShelf(): void {
+  const list = $('shelf-list');
+  list.replaceChildren();
+  for (const item of STORIES) {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'book-card';
+    const resume = savedProgressOf(item) !== null;
+    const endings = load<string[]>(skey('endings', item), []);
+    const heading = document.createElement('span');
+    heading.className = 'book-title';
+    heading.textContent = item.title;
+    const desc = document.createElement('span');
+    desc.className = 'book-desc';
+    desc.textContent = item.description;
+    const meta = document.createElement('span');
+    meta.className = 'book-meta muted';
+    meta.textContent = `読了目安 ${item.length} ／ 結末は全${endingsOf(item).length}通り ／ 到達した結末: ${endings.length} / ${endingsOf(item).length}`;
+    const action = document.createElement('span');
+    action.className = 'book-action';
+    action.textContent = resume ? 'つづきから読む' : 'この物語を読む';
+    card.append(heading, desc, meta, action);
+    if (resume) {
+      const restart = document.createElement('span');
+      restart.className = 'book-restart';
+      restart.textContent = '最初から読み直す';
+      card.append(restart);
+    }
+    card.addEventListener('click', (e) => {
+      const fromRestart = (e.target as HTMLElement).closest('.book-restart') !== null;
+      openStory(item, fromRestart ? 'new' : resume ? 'resume' : 'new');
+    });
+    list.append(card);
+  }
+}
+
+/** 本棚で作品を選んだとき。本編の画面へ移る */
+function openStory(target: Story, mode: 'new' | 'resume'): void {
+  story = target;
+  loadForStory(target);
+  document.querySelector('.game-title')!.textContent = target.title;
+  cheated = false;
+  if (mode === 'resume' && state) startGame(state, true);
+  else startGame(startState(target));
 }
 
 /**
@@ -219,7 +281,7 @@ function renderGame(): void {
     if (node.se) playSceneSound(node.se);
     if (node.ending) {
       recordEnding();
-      // 効果音（ジングル／悲鳴）は、結末パネルが出る瞬間に鳴らす
+      // 結末の効果音は、結末パネルが出る瞬間に鳴らす
       // （そちらは操作ハンドラ側）。ここではBGMだけ切り替える
       startBgm(node.ending.kind);
     }
@@ -228,9 +290,11 @@ function renderGame(): void {
 
 function render(): void {
   $('title-screen').hidden = screen !== 'title';
+  $('shelf-screen').hidden = screen !== 'shelf';
   $('game-screen').hidden = screen !== 'game';
   $('backlog-screen').hidden = screen !== 'backlog';
   renderTitle();
+  if (screen === 'shelf') renderShelf();
   renderGame();
   if (screen === 'backlog') renderBacklog();
 }
@@ -261,8 +325,12 @@ document.addEventListener('click', (e) => {
 });
 
 $('start-button').addEventListener('click', () => {
-  cheated = false;
-  startGame(startState(story));
+  screen = 'shelf';
+  render();
+});
+$('shelf-back').addEventListener('click', () => {
+  screen = 'title';
+  render();
 });
 $('backlog-button').addEventListener('click', () => {
   screen = 'backlog';
@@ -272,13 +340,10 @@ $('backlog-close').addEventListener('click', () => {
   screen = 'game';
   render();
 });
-$('continue-button').addEventListener('click', () => {
-  if (state) startGame(state, true);
-});
 $('message-window').addEventListener('click', () => {
   if (!state || screen !== 'game') return;
   // 結末の文章が表示された状態でもう一度押されたら、結末パネルを出す。
-  // バッドエンドでは、この瞬間に悲鳴のような効果音を鳴らす
+  // この瞬間に、結末ごとの効果音を鳴らす
   const ending = nodeOf(story, state).ending;
   if (ending && !endingRevealed) {
     endingRevealed = true;
@@ -297,14 +362,14 @@ $('message-window').addEventListener('click', () => {
 $('retry-button').addEventListener('click', () => {
   if (state) startGame(backToCheckpoint(story, state));
 });
-const toTitle = (): void => {
+const toShelf = (): void => {
   stopBgm();
-  screen = 'title';
+  screen = 'shelf';
   checkForUpdate();
   render();
 };
-$('ending-title-button').addEventListener('click', toTitle);
-$('to-title-button').addEventListener('click', toTitle);
+$('ending-title-button').addEventListener('click', toShelf);
+$('to-title-button').addEventListener('click', toShelf);
 for (const id of ['sound-button', 'sound-button-game']) {
   $(id).addEventListener('click', () => {
     setSound(!isSoundOn());
@@ -327,9 +392,7 @@ $<HTMLInputElement>('backup-import').addEventListener('change', async (e) => {
   const message = $('backup-message');
   try {
     const n = importBackup(await file.text());
-    state = load<PlayState | null>('progress', null);
-    seenEndings = load<string[]>('endings', []);
-    backlog = load<BacklogEntry[]>('backlog', []);
+    loadForStory(story);
     screen = 'title';
     render();
     message.textContent = `${n} 件の記録を読み込みました`;
@@ -340,8 +403,7 @@ $<HTMLInputElement>('backup-import').addEventListener('change', async (e) => {
 });
 
 $<HTMLImageElement>('title-art').src = SCENES.classroom;
-$('story-length').textContent = story.length;
-$('ending-total').textContent = String(totalEndings);
+document.querySelector('.game-title')!.textContent = story.title;
 $('version').textContent = __APP_VERSION__;
 // デバッグモード: バージョンの表示を続けて 5 回タップで切り替え
 setupDebug($('debug-panel'), $('version-line'), [
