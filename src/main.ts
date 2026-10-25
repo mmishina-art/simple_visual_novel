@@ -3,7 +3,7 @@ import {
   advance, backToCheckpoint, choose, endingsOf, isEnding, nodeOf, startState,
   type PlayState, type SceneBg, type Story,
 } from './logic';
-import { STORIES, storyById } from './stories';
+import { COMING_SOON, STORIES, storyById, type DummyBook } from './stories';
 import { setupDebug } from './debug';
 import { setupInstallGuide } from './install';
 import { applyUpdate, checkForUpdate, onUpdateAvailable, setupPwa } from './pwa';
@@ -150,6 +150,53 @@ function renderTitle(): void {
 }
 
 /** 本棚の画面。STORIES の作品を単行本の装丁で並べ、選ぶと本編が始まる */
+type CoverDesign = 'a' | 'b' | 'c' | 'd';
+
+function spanOf(className: string, text?: string): HTMLSpanElement {
+  const el = document.createElement('span');
+  el.className = className;
+  if (text !== undefined) el.textContent = text;
+  return el;
+}
+
+/** 表紙を作る。design で装丁を切り替える（候補の比較用） */
+function buildCover(item: { title: string; description: string; cover?: SceneBg }, design: CoverDesign): HTMLSpanElement {
+  const cover = spanOf(`book-cover design-${design}`);
+  const img = document.createElement('img');
+  img.className = 'book-cover-img';
+  img.src = SCENES[item.cover ?? 'classroom'];
+  img.alt = '';
+  cover.append(img);
+  if (design === 'b') {
+    // 帯のデザイン: 縦書きの題字と、赤い帯にあらすじ
+    cover.append(spanOf('book-cover-vtitle', item.title));
+    cover.append(spanOf('book-obi', item.description));
+    cover.append(spanOf('book-colophon', 'サウンドノベル'));
+  } else if (design === 'c') {
+    // 金枠と文字組み: 絵を薄くし、題字を中央に置く
+    const band = spanOf('book-cover-band-c');
+    band.append(spanOf('book-cover-title', item.title), spanOf('book-c-rule'));
+    cover.append(band);
+    cover.append(spanOf('book-cover-copy', item.description));
+    cover.append(spanOf('book-colophon', 'サウンドノベル'));
+  } else if (design === 'd') {
+    // 紙のラベル: 生成りのラベルに題字と判子、下部にも生成りの帯
+    const label = spanOf('book-label');
+    label.append(spanOf('book-label-title', item.title), spanOf('book-stamp', '音'));
+    cover.append(label);
+    cover.append(spanOf('book-cover-copy', item.description));
+    cover.append(spanOf('book-colophon', 'サウンドノベル'));
+  } else {
+    // 現在の装丁: 上部に題字の帯、下部にあらすじ
+    const band = spanOf('book-cover-band');
+    band.append(spanOf('book-cover-title', item.title));
+    cover.append(band);
+    cover.append(spanOf('book-cover-copy', item.description));
+    cover.append(spanOf('book-colophon', 'サウンドノベル'));
+  }
+  return cover;
+}
+
 function renderShelf(): void {
   const list = $('shelf-list');
   list.replaceChildren();
@@ -159,44 +206,45 @@ function renderShelf(): void {
     card.className = 'book-card';
     const resume = savedProgressOf(item) !== null;
     const endings = load<string[]>(skey('endings', item), []);
-    // 表紙: 背景イラストの上に、題字の帯と奥付を載せて単行本らしくする
-    const cover = document.createElement('span');
-    cover.className = 'book-cover';
-    const img = document.createElement('img');
-    img.className = 'book-cover-img';
-    img.src = SCENES[item.cover ?? 'classroom'];
-    img.alt = '';
-    const band = document.createElement('span');
-    band.className = 'book-cover-band';
-    const coverTitle = document.createElement('span');
-    coverTitle.className = 'book-cover-title';
-    coverTitle.textContent = item.title;
-    band.append(coverTitle);
-    // あらすじは、表紙の下部に横書きのカバーコピーとして入れる
-    const copy = document.createElement('span');
-    copy.className = 'book-cover-copy';
-    copy.textContent = item.description;
-    const colophon = document.createElement('span');
-    colophon.className = 'book-colophon';
-    colophon.textContent = 'サウンドノベル';
-    cover.append(img, band, copy, colophon);
-    const meta = document.createElement('span');
-    meta.className = 'book-meta muted';
-    meta.textContent = `読了目安 ${item.length} ／ 到達した結末: ${endings.length} / ${endingsOf(item).length}`;
-    const action = document.createElement('span');
-    action.className = 'book-action';
-    action.textContent = resume ? 'つづきから読む' : 'この物語を読む';
-    card.append(cover, meta, action);
-    if (resume) {
-      const restart = document.createElement('span');
-      restart.className = 'book-restart';
-      restart.textContent = '最初から読み直す';
-      card.append(restart);
-    }
+    card.append(buildCover(item, 'a'));
+    const meta = spanOf('book-meta muted', `読了目安 ${item.length} ／ 到達した結末: ${endings.length} / ${endingsOf(item).length}`);
+    const action = spanOf('book-action', resume ? 'つづきから読む' : 'この物語を読む');
+    card.append(meta, action);
+    if (resume) card.append(spanOf('book-restart', '最初から読み直す'));
     card.addEventListener('click', (e) => {
       const fromRestart = (e.target as HTMLElement).closest('.book-restart') !== null;
       openStory(item, fromRestart ? 'new' : resume ? 'resume' : 'new');
     });
+    list.append(card);
+  }
+
+  // 『午前0時の校舎』の装丁候補（表示だけ。選べるのは候補A＝現在の装丁）
+  const first = STORIES[0];
+  if (first) {
+    const note = document.createElement('p');
+    note.className = 'shelf-note muted span-all';
+    note.textContent = '『午前0時の校舎』の装丁候補（B〜Dは表示だけです）';
+    list.append(note);
+    const candidates: { design: CoverDesign; caption: string }[] = [
+      { design: 'b', caption: '候補B：帯のデザイン（縦書きの題字＋赤い帯にあらすじ）' },
+      { design: 'c', caption: '候補C：金枠と文字組み（絵を薄くして、題字を中央に）' },
+      { design: 'd', caption: '候補D：紙のラベル（生成りのラベルに題字と判子）' },
+    ];
+    for (const c of candidates) {
+      const card = document.createElement('div');
+      card.className = 'book-candidate span-all';
+      const cover = buildCover(first, c.design);
+      card.append(cover, spanOf('book-caption muted', c.caption));
+      list.append(card);
+    }
+  }
+
+  // 近日公開のダミー（開けない）
+  for (const item of COMING_SOON) {
+    const card = document.createElement('div');
+    card.className = 'book-dummy';
+    const cover = buildCover(item as DummyBook & { cover?: SceneBg }, 'a');
+    card.append(cover, spanOf('book-meta muted', `近日公開 ／ 読了目安 ${item.length}`));
     list.append(card);
   }
 }
