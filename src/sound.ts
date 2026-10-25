@@ -158,6 +158,8 @@ interface BgmConfig {
   padCutoff?: number;
   /** 単音の余韻の長さ（秒） */
   bellDecay?: number;
+  /** 単音の波形（推理ものは乾いた三角波の短い音） */
+  bellWave?: OscillatorType;
 }
 
 export type BgmTheme = 'horror' | 'romance' | 'mystery';
@@ -238,7 +240,7 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       droneGain: 0.014, padWave: 'sine', padCutoff: 1100, bellDecay: 4.6,
     },
   },
-  // 推理もの（『消えた優勝杯』）：張り詰めた短調。和音の頭に低い脈打ち、単音は控えめ
+  // 推理もの（『消えた優勝杯』）：ドローンも風もない、乾いた音。鋸波の鈍いパッド、短く切れる単音、速めの和音の動きで、ホラーの「広い闇」と区別する
   mystery: {
     normal: {
       chords: [
@@ -249,8 +251,8 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       ],
       bells: [220.0, 261.63, 329.63, 196.0],
       drone: [55, 82.41],
-      chordSec: 8, bellChance: 0.18, bellGain: 0.04, wind: 0.002, padGain: 0.015,
-      padCutoff: 620, droneGain: 0.042,
+      chordSec: 7, bellChance: 0.22, bellGain: 0.05, wind: 0, padGain: 0.015,
+      padWave: 'sawtooth', padCutoff: 480, droneGain: 0, bellWave: 'triangle', bellDecay: 0.55,
     },
     happy: {
       chords: [
@@ -261,7 +263,8 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       ],
       bells: [440.0, 523.25, 659.25, 783.99],
       drone: [65.41, 98.0],
-      chordSec: 8.5, bellChance: 0.4, bellGain: 0.036, wind: 0.0015, padGain: 0.016,
+      chordSec: 7.5, bellChance: 0.4, bellGain: 0.042, wind: 0, padGain: 0.016,
+      padWave: 'sawtooth', padCutoff: 700, droneGain: 0, bellWave: 'triangle', bellDecay: 0.9,
     },
     bad: {
       chords: [
@@ -272,8 +275,8 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       ],
       bells: [110.0, 116.54, 220.0],
       drone: [55, 58.27],
-      chordSec: 11, bellChance: 0.12, bellGain: 0.042, wind: 0.004, padGain: 0.016,
-      padCutoff: 560, droneGain: 0.044,
+      chordSec: 9.5, bellChance: 0.14, bellGain: 0.05, wind: 0, padGain: 0.016,
+      padWave: 'sawtooth', padCutoff: 430, droneGain: 0, bellWave: 'triangle', bellDecay: 0.5,
     },
   },
 };
@@ -376,7 +379,7 @@ export function startBgm(mood?: BgmMood, theme?: BgmTheme): void {
     const playBell = (at: number): void => {
       const f = cfg.bells[Math.floor(Math.random() * cfg.bells.length)];
       const o = c.createOscillator();
-      o.type = 'sine';
+      o.type = cfg.bellWave ?? 'sine';
       o.frequency.value = f;
       const g = c.createGain();
       g.gain.setValueAtTime(cfg.bellGain, at);
