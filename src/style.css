@@ -1,32 +1,22 @@
 /* 色は :root の変数に集約する（色の直書きをしない）。
-   配色方針（端末設定に従う / 明るい固定 / 暗い固定）はアプリごとに CLAUDE.md で決める。
-   このテンプレートは「端末設定に従う」例。 */
+   配色方針は「暗い固定」（ホラーの世界観重視）。CLAUDE.md の「このアプリの方針」を参照。 */
 :root {
+  color-scheme: dark only;
   /* iPhone の画面の上端は、システムがぼかす帯がある。文字がその帯に入らないよう、安全領域の上に余白を足す。
      上端の余白は、env(safe-area-inset-top) だけにせず、この --safe-top を使う（simple_chess などで起きた症状への対応）。 */
   --top-gap: 24px;
   --safe-top: calc(env(safe-area-inset-top) + var(--top-gap));
-  --bg: #f6f8fa;
-  --surface: #ffffff;
-  --text: #1f2328;
-  --muted: #59636e;
-  --border: #d1d9e0;
-  --primary: #1f6feb;
-  --primary-text: #ffffff;
+  --bg: #07090d;
+  --surface: #10151d;
+  --surface-2: #161e2a;
+  --text: #e8e6df;
+  --muted: #9aa3ad;
+  --border: #2c3644;
+  --primary: #8f1d22;
+  --primary-text: #f5ecec;
+  --accent: #c9b458;
   --debug: #d29922;
   --debug-text: #1f2328;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0d1117;
-    --surface: #161b22;
-    --text: #e6edf3;
-    --muted: #9198a1;
-    --border: #3d444d;
-    --primary: #2f81f7;
-    --primary-text: #ffffff;
-  }
 }
 
 * {
@@ -48,8 +38,8 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: system-ui, -apple-system, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
-  line-height: 1.6;
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif;
+  line-height: 1.9;
   -webkit-text-size-adjust: 100%;
   overscroll-behavior: none;
 }
@@ -69,26 +59,14 @@ main {
 }
 
 h1 {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
+  letter-spacing: 0.12em;
   margin: 8px 0;
-}
-
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 24px 16px;
-  text-align: center;
-}
-
-.count {
-  font-size: 4rem;
-  font-weight: 700;
-  margin: 0;
 }
 
 .muted {
   color: var(--muted);
+  font-size: 0.9rem;
 }
 
 .version {
@@ -108,6 +86,7 @@ button {
   border-radius: 12px;
   background: var(--surface);
   cursor: pointer;
+  line-height: 1.5;
 }
 
 button.primary {
@@ -117,11 +96,131 @@ button.primary {
   font-weight: 700;
 }
 
+button.big {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+  padding: 12px 20px;
+}
+
 .icon-button {
   border: 0;
   background: transparent;
   font-size: 1.4rem;
 }
+
+button.link {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  text-decoration: underline;
+  display: block;
+  margin: 12px auto 0;
+  font-size: 0.9rem;
+}
+
+/* ---- タイトル画面 / 物語の画面 ---- */
+
+.scene-art {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.story-lead {
+  text-align: center;
+  margin: 20px 4px 8px;
+}
+
+#title-screen {
+  text-align: center;
+}
+
+#title-screen .muted {
+  text-align: center;
+}
+
+.scene {
+  position: relative;
+}
+
+.message-window {
+  margin-top: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  min-height: 168px;
+  cursor: pointer;
+}
+
+.speaker {
+  margin: 0 0 4px;
+  color: var(--accent);
+  font-weight: 700;
+  min-height: 1em;
+}
+
+.story-text {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.next-hint {
+  margin: 8px 0 0;
+  text-align: right;
+  color: var(--muted);
+  font-size: 0.8rem;
+  animation: hint 1.6s ease-in-out infinite;
+}
+
+@keyframes hint {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+
+.choices {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.choices button {
+  width: 100%;
+  margin: 0;
+  padding: 12px 16px;
+  text-align: left;
+  background: var(--surface-2);
+}
+
+.ending-panel {
+  margin-top: 16px;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  background: var(--surface);
+}
+
+.ending-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin: 0 0 12px;
+}
+
+.ending-panel button {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+}
+
+/* ---- 共通部品（テンプレートから維持） ---- */
 
 .banner {
   position: fixed;
@@ -138,7 +237,8 @@ button.primary {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 14px;
-  box-shadow: 0 6px 20px rgb(0 0 0 / 0.2);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.5);
+  line-height: 1.5;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -148,16 +248,6 @@ button.primary {
   }
 }
 
-button.link {
-  border: 0;
-  background: transparent;
-  color: var(--primary);
-  text-decoration: underline;
-  display: block;
-  margin: 12px auto 0;
-}
-
-/* インストール方法のダイアログ */
 .install-dialog {
   width: min(448px, calc(100vw - 32px));
   max-height: calc(100dvh - 32px);
@@ -167,10 +257,11 @@ button.link {
   color: var(--text);
   border: 1px solid var(--border);
   border-radius: 16px;
+  line-height: 1.6;
 }
 
 .install-dialog::backdrop {
-  background: rgb(0 0 0 / 0.5);
+  background: rgb(0 0 0 / 0.6);
 }
 
 .install-dialog h2 {
@@ -205,11 +296,12 @@ button.link {
 }
 
 .backup {
-  margin-top: 16px;
+  margin-top: 24px;
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 4px 12px;
   background: var(--surface);
+  line-height: 1.6;
 }
 
 .backup summary {
@@ -229,6 +321,7 @@ button.link {
   border-radius: 12px;
   background: var(--surface);
   cursor: pointer;
+  line-height: 1.5;
 }
 
 .boot-error small {
@@ -236,7 +329,7 @@ button.link {
   color: var(--muted);
 }
 
-/* デバッグモードの操作パネル（左下。上端のぼかしの帯は避ける）。色は、ふつうの画面と見分けられる黄土色 */
+/* デバッグモードの操作パネル（左下。上端のぼかしの帯は避ける） */
 .debug-panel {
   position: fixed;
   left: max(8px, env(safe-area-inset-left));
@@ -249,6 +342,7 @@ button.link {
   background: var(--surface);
   border: 2px solid var(--debug);
   border-radius: 10px;
+  line-height: 1.5;
 }
 .debug-panel__title {
   font-size: 0.7rem;

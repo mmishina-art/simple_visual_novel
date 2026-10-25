@@ -9,6 +9,14 @@ import { mkdirSync, rmSync } from 'node:fs';
 /** 撮る画面。open は、ページを開いたあと、その画面を出すための操作。 */
 const SCREENS = [
   { name: 'home' },
+  { name: 'story', open: async (page) => page.click('#start-button') },
+  {
+    name: 'choice',
+    open: async (page) => {
+      await page.click('#start-button');
+      for (let i = 0; i < 6; i++) await page.click('#message-window');
+    },
+  },
   { name: 'install', open: async (page) => page.click('#install-open') },
   { name: 'backup', open: async (page) => page.click('.backup summary') },
 ];

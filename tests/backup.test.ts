@@ -5,7 +5,7 @@ const NOW = new Date('2026-10-12T00:00:00Z');
 
 describe('バックアップの書き出しと読み込み', () => {
   it('書き出した内容を、そのまま読み込める', () => {
-    const data = { 'pwa-app-best': '7', 'pwa-app-sound': 'true' };
+    const data = { 'simple-visual-novel-best': '7', 'simple-visual-novel-sound': 'true' };
     expect(parseBackup(createBackup(data, NOW))).toEqual(data);
   });
 
@@ -29,7 +29,7 @@ describe('バックアップの書き出しと読み込み', () => {
   });
 
   it('中身が文字列でない値は、壊れているとして読み込まない', () => {
-    const broken = JSON.stringify({ app: BACKUP_APP, schemaVersion: SCHEMA_VERSION, data: { 'pwa-app-best': 7 } });
+    const broken = JSON.stringify({ app: BACKUP_APP, schemaVersion: SCHEMA_VERSION, data: { 'simple-visual-novel-best': 7 } });
     expect(() => parseBackup(broken)).toThrow('壊れています');
   });
 });

@@ -1,10 +1,24 @@
 import './style.css';
-import { initialState, reset, tap } from './logic';
+import {
+  advance, backToCheckpoint, choose, endingsOf, isEnding, nodeOf, startState,
+  type PlayState, type SceneBg,
+} from './logic';
+import { STORIES, storyById } from './stories';
 import { setupDebug } from './debug';
 import { setupInstallGuide } from './install';
 import { setupUpdateBanner } from './pwa';
-import { beep, isSoundOn, setSound } from './sound';
-import { exportBackup, importBackup, load, migrateStorage, requestPersist, save } from './storage';
+import { isSoundOn, playSceneSound, setSound } from './sound';
+import { exportBackup, importBackup, load, migrateStorage, remove, requestPersist, save } from './storage';
+
+import classroom from './assets/scenes/classroom.svg';
+import corridor from './assets/scenes/corridor.svg';
+import stairs from './assets/scenes/stairs.svg';
+import music from './assets/scenes/music.svg';
+import entrance from './assets/scenes/entrance.svg';
+import dark from './assets/scenes/dark.svg';
+import outside from './assets/scenes/outside.svg';
+
+const SCENES: Record<SceneBg, string> = { classroom, corridor, stairs, music, entrance, dark, outside };
 
 const $ = <T extends HTMLElement>(id: string): T => {
   const el = document.getElementById(id);
@@ -13,28 +27,123 @@ const $ = <T extends HTMLElement>(id: string): T => {
 };
 
 migrateStorage();
-let state = initialState(load('best', 0));
-/** デバッグの操作を使った回は、記録（最高記録）を残さない（ふつうに遊んだ記録と混ざらないように）。 */
-let cheated = false;
 
-function render(): void {
-  $('count').textContent = String(state.count);
-  $('best').textContent = String(state.best);
+// MVP は1作品。将来は本棚画面で STORIES から選ぶ（src/stories/index.ts）。
+const story = STORIES[0];
+const totalEndings = endingsOf(story).length;
+
+let screen: 'title' | 'game' = 'title';
+let state: PlayState | null = load<PlayState | null>('progress', null);
+if (state && !storyById(state.storyId)) state = null;
+let seenEndings: string[] = load<string[]>('endings', []);
+/** デバッグの操作を使った回は、到達した結末を記録しない */
+let cheated = false;
+let lastNodeId = '';
+let currentBg: SceneBg = 'classroom';
+
+function persist(): void {
+  if (state && !isEnding(story, state)) save('progress', state);
+  else remove('progress');
+}
+
+function recordEnding(): void {
+  const node = state ? nodeOf(story, state) : null;
+  if (!node?.ending || cheated) return;
+  if (!seenEndings.includes(node.id)) {
+    seenEndings = [...seenEndings, node.id];
+    save('endings', seenEndings);
+  }
+}
+
+function renderTitle(): void {
+  $('title-screen').hidden = screen !== 'title';
+  $('continue-button').hidden = !state || (state !== null && isEnding(story, state));
+  $('endings-progress').textContent = `到達した結末: ${seenEndings.length} / ${totalEndings}`;
   const sound = $('sound-button');
   sound.textContent = isSoundOn() ? '🔊' : '🔇';
   sound.setAttribute('aria-pressed', String(isSoundOn()));
 }
 
-$('tap-button').addEventListener('click', () => {
-  state = tap(state);
-  if (!cheated) save('best', state.best);
-  beep();
+function renderGame(): void {
+  $('game-screen').hidden = screen !== 'game';
+  if (screen !== 'game' || !state) return;
+  const node = nodeOf(story, state);
+  if (node.bg) currentBg = node.bg;
+  $<HTMLImageElement>('scene-img').src = SCENES[currentBg];
+  $('speaker').textContent = node.speaker ?? '';
+  $('story-text').textContent = node.text;
+  $('next-hint').hidden = !!node.choices || !!node.ending;
+
+  const choicesEl = $('choices');
+  choicesEl.replaceChildren();
+  choicesEl.hidden = !node.choices;
+  (node.choices ?? []).forEach((choice, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = choice.label;
+    b.addEventListener('click', () => {
+      if (!state) return;
+      state = choose(story, state, i);
+      persist();
+      render();
+    });
+    choicesEl.append(b);
+  });
+
+  const endingPanel = $('ending-panel');
+  endingPanel.hidden = !node.ending;
+  if (node.ending) $('ending-title').textContent = node.ending.title;
+  $('to-title-button').hidden = !!node.ending;
+
+  // 場面が変わったときだけ、その場面の音を鳴らす
+  if (node.id !== lastNodeId) {
+    lastNodeId = node.id;
+    if (node.se) playSceneSound(node.se);
+    if (node.ending) recordEnding();
+  }
+}
+
+function render(): void {
+  $('title-screen').hidden = screen !== 'title';
+  $('game-screen').hidden = screen !== 'game';
+  renderTitle();
+  renderGame();
+}
+
+function startGame(fromState: PlayState): void {
+  state = fromState;
+  lastNodeId = '';
+  currentBg = 'classroom';
+  screen = 'game';
+  persist();
   render();
+}
+
+$('start-button').addEventListener('click', () => {
+  cheated = false;
+  startGame(startState(story));
 });
-$('reset-button').addEventListener('click', () => {
-  state = reset(state);
+$('continue-button').addEventListener('click', () => {
+  if (state) startGame(state);
+});
+$('message-window').addEventListener('click', () => {
+  if (!state || screen !== 'game') return;
+  const next = advance(story, state);
+  if (next !== state) {
+    state = next;
+    persist();
+    render();
+  }
+});
+$('retry-button').addEventListener('click', () => {
+  if (state) startGame(backToCheckpoint(story, state));
+});
+const toTitle = (): void => {
+  screen = 'title';
   render();
-});
+};
+$('ending-title-button').addEventListener('click', toTitle);
+$('to-title-button').addEventListener('click', toTitle);
 $('sound-button').addEventListener('click', () => {
   setSound(!isSoundOn());
   render();
@@ -55,7 +164,9 @@ $<HTMLInputElement>('backup-import').addEventListener('change', async (e) => {
   const message = $('backup-message');
   try {
     const n = importBackup(await file.text());
-    state = initialState(load('best', 0));
+    state = load<PlayState | null>('progress', null);
+    seenEndings = load<string[]>('endings', []);
+    screen = 'title';
     render();
     message.textContent = `${n} 件の記録を読み込みました`;
   } catch (err) {
@@ -64,10 +175,25 @@ $<HTMLInputElement>('backup-import').addEventListener('change', async (e) => {
   input.value = '';
 });
 
+$<HTMLImageElement>('title-art').src = SCENES.classroom;
+$('story-length').textContent = story.length;
+$('ending-total').textContent = String(totalEndings);
 $('version').textContent = __APP_VERSION__;
-// デバッグモード: バージョンの表示を続けて 5 回タップで切り替え。操作はアプリごとにここで決める（サンプル: 数を +10）
+// デバッグモード: バージョンの表示を続けて 5 回タップで切り替え
 setupDebug($('debug-panel'), $('version-line'), [
-  { label: '+10', title: '数を 10 増やす（この回は記録を残さない）', run: () => { cheated = true; state = { ...state, count: state.count + 10 }; render(); } },
+  {
+    label: '結末',
+    title: '最後の選択肢へ飛ぶ（懐中電灯あり。この回は結末を記録しない）',
+    run: () => {
+      cheated = true;
+      startGame({ storyId: story.id, nodeId: 'choice_final', flags: ['flashlight'], checkpoint: { nodeId: 'choice_final', flags: ['flashlight'] } });
+    },
+  },
+  {
+    label: '最初',
+    title: '物語の最初へ戻る（この回は結末を記録しない）',
+    run: () => { cheated = true; startGame(startState(story)); },
+  },
 ]);
 requestPersist();
 setupUpdateBanner($('update-banner'), $('update-button'));
