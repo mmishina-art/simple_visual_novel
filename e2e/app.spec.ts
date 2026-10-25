@@ -95,7 +95,7 @@ test('タイトル画面と本編の画面が分かれている', async ({ page 
 test('本文は縦書き（小説風）で表示される', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'はじめから' }).click();
-  const writingMode = await page.locator('#story-text').evaluate((el) => getComputedStyle(el).writingMode);
+  const writingMode = await page.locator('#story-text .segment').first().evaluate((el) => getComputedStyle(el).writingMode);
   expect(writingMode).toBe('vertical-rl');
   // 数字は縦中横（tcy）で包まれている（11時57分 の場面まで進めて確認）
   for (let i = 0; i < 3; i++) await page.locator('#message-window').click();
@@ -103,7 +103,7 @@ test('本文は縦書き（小説風）で表示される', async ({ page }) => 
   await expect(page.locator('#story-text .tcy').filter({ hasText: '11' }).first()).toHaveText('11');
 });
 
-test('文章は消えずに左へ追加され、選択肢が出ると消えて中央に来る', async ({ page }) => {
+test('文章は消えずに左へ追加され、選択肢では直前の文章だけが残る', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'はじめから' }).click();
   await expect(page.locator('#story-text')).toContainText('文化祭を明日に控えた');
@@ -111,12 +111,19 @@ test('文章は消えずに左へ追加され、選択肢が出ると消えて�
   // 前の文章が残ったまま、次の文章が追加されている
   await expect(page.locator('#story-text')).toContainText('文化祭を明日に控えた');
   await expect(page.locator('#story-text')).toContainText('夕方から降り始めた雨');
-  // 選択肢まで進めると、文章は消えて、選択肢の帯がステージ中央に来る
+  // 文章ごとに改行され、2つ目の文章は1つ目より左の列から始まる
+  const broken = await page.evaluate(() => {
+    const segs = [...document.querySelectorAll('#story-text .segment')].map((el) => el.getBoundingClientRect());
+    return segs.length === 2 && segs[1].right <= segs[0].left + 1;
+  });
+  expect(broken).toBe(true);
+  // 選択肢まで進めると、それまでの文章は消え、直前の文章（選択肢の場面の文章）だけが残る
   for (let i = 0; i < 12 && !(await page.locator('#choices').isVisible()); i++) {
     await page.locator('#message-window').click();
   }
   await expect(page.locator('#choices')).toBeVisible();
-  await expect(page.locator('#story-text')).toHaveText('');
+  await expect(page.locator('#story-text')).toContainText('廊下は真っ暗だ');
+  await expect(page.locator('#story-text')).not.toContainText('文化祭を明日に控えた');
   const centered = await page.evaluate(() => {
     const stage = document.querySelector('.stage')!.getBoundingClientRect();
     const buttons = [...document.querySelectorAll('#choices button')].map((b) => b.getBoundingClientRect());

@@ -201,16 +201,27 @@ button.link {
 }
 
 .story-text {
-  writing-mode: vertical-rl;
+  /* 並べ方は横方向の flex（文章のまとまりを右から左へ）。縦書きは各 .segment 側で指定する
+     （ここに vertical-rl を付けると flex の主軸まで縦になってしまう） */
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 1.1em;
   width: 100%;
   height: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: none;
   margin: 0;
   font-size: 1.08rem;
   line-height: 2;
   letter-spacing: 0.05em;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+/* 文章1つが1まとまり。読み進めるたびに、左へ新しい列のまとまりが足される（改行扱い） */
+.story-text .segment {
+  writing-mode: vertical-rl;
+  flex: 0 0 auto;
+  height: 100%;
   text-indent: 1em;
 }
 

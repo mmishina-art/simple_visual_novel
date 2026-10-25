@@ -61,8 +61,7 @@ function recordEnding(): void {
 function renderStoryText(texts: string[]): void {
   const el = $('story-text');
   el.replaceChildren();
-  texts.forEach((text, i) => {
-    if (i > 0) el.append(document.createTextNode('　'));
+  texts.forEach((text) => {
     const seg = document.createElement('span');
     seg.className = 'segment';
     for (const part of text.split(/(\d+%?)/g)) {
@@ -101,8 +100,16 @@ function renderGame(): void {
   $<HTMLImageElement>('scene-img').src = SCENES[currentBg];
   $('speaker').textContent = node.speaker ?? '';
   if (node.id !== lastNodeId) {
-    // 選択肢の場面では、それまでの文章を消して、選択肢だけを中央に出す
-    segments = node.choices ? [] : [...segments, node.text];
+    const prev = lastNodeId ? story.nodes[lastNodeId] : undefined;
+    if (node.choices) {
+      // 選択肢の場面では、それまでの文章は消し、直前の文章（その場面の文章）だけを残す
+      segments = [node.text];
+    } else if (prev?.choices) {
+      // 選択肢を選んだあとは、まっさらな状態から文章が足されていく
+      segments = [node.text];
+    } else {
+      segments = [...segments, node.text];
+    }
   }
   renderStoryText(segments);
   $('next-hint').hidden = !!node.choices || !!node.ending;
