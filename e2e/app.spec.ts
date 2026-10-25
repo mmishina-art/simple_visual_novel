@@ -131,6 +131,56 @@ test('ハッピーエンドではBGMが明るいものに変わる', async ({ pa
   await expect(page.locator('body')).toHaveAttribute('data-bgm-mood', 'happy');
 });
 
+test('読み返しは、いちばん新しい文章から表示される', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'はじめから' }).click();
+  for (let i = 0; i < 4; i++) await page.locator('#message-window').click();
+  await page.locator('#backlog-button').click();
+  await expect(page.locator('#backlog-screen')).toBeVisible();
+  const state = await page.evaluate(() => {
+    const el = document.querySelector('#backlog-text');
+    if (!el) return null;
+    const segments = el.querySelectorAll('.segment');
+    const newest = segments[segments.length - 1];
+    const er = el.getBoundingClientRect();
+    const nr = newest?.getBoundingClientRect();
+    return {
+      scrollLeft: el.scrollLeft,
+      newestVisible: !!nr && nr.left >= er.left - 1 && nr.right <= er.right + 1,
+      newestText: newest?.textContent ?? '',
+    };
+  });
+  expect(state?.scrollLeft).toBeLessThan(0);
+  expect(state?.newestVisible).toBe(true);
+  expect(state?.newestText).toContain('スマホの電池は残り');
+});
+
+test('結末は文章だけが先に表示され、もう一度押すとパネルが出る', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'はじめから' }).click();
+  const labels = ['懐中電灯', '音楽室', '返事をせず', '裏口へ走る'];
+  let revealed = false;
+  for (let i = 0; i < 80 && !revealed; i++) {
+    if (await page.locator('#choices').isVisible()) {
+      const label = labels.shift();
+      if (label === undefined) throw new Error('選択肢の指定が足りません');
+      await page.locator('#choices button', { hasText: label }).first().click();
+      continue;
+    }
+    const before = await page.locator('#story-text').textContent();
+    const panelWasHidden = await page.locator('#ending-panel').isHidden();
+    await page.locator('#message-window').click();
+    if (await page.locator('#ending-panel').isVisible()) {
+      // パネルが出る直前は、結末の文章だけが表示されていたこと
+      expect(panelWasHidden).toBe(true);
+      expect(before).toContain('家に帰り着いたのは');
+      revealed = true;
+    }
+  }
+  expect(revealed).toBe(true);
+  await expect(page.locator('#ending-title')).toContainText('ハッピーエンド');
+});
+
 test('タイトル画面と本編の画面が分かれている', async ({ page }) => {
   await page.goto('/');
   // タイトル画面: 本編は出ず、バックアップやインストール方法がここにある

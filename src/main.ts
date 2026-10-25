@@ -51,6 +51,8 @@ let backlog: BacklogEntry[] = Array.isArray(loadedBacklog)
 /** デバッグの操作を使った回は、到達した結末を記録しない */
 let cheated = false;
 let lastNodeId = '';
+/** 結末の文章をまず読んでもらい、もう一度押してから結末パネルを出すための状態 */
+let endingRevealed = false;
 let currentBg: SceneBg = 'classroom';
 /** 表示中の文章。読み進めると左へ追加されていき、選択肢が出ると消える */
 let segments: string[] = [];
@@ -110,6 +112,9 @@ function renderBacklog(): void {
         : buildSegment(entry.text),
     );
   }
+  // 開いたときは先頭（右端）ではなく、いちばん新しい文章（左端）から表示する。
+  // row-reverse のはみ出し方向は左で、scrollLeft は負方向に進む
+  el.scrollLeft = -el.scrollWidth;
   // 開いたときは最初（右端）から読める位置にする
   requestAnimationFrame(() => { el.scrollLeft = 0; });
 }
@@ -151,6 +156,7 @@ function renderGame(): void {
   $<HTMLImageElement>('scene-img').src = SCENES[currentBg];
   $('speaker').textContent = node.speaker ?? '';
   if (node.id !== lastNodeId) {
+    endingRevealed = false;
     const prev = lastNodeId ? story.nodes[lastNodeId] : undefined;
     if (node.ending) {
       // 結末は独立したページにする（前の文章と重なって読めなくならないように）
@@ -175,7 +181,8 @@ function renderGame(): void {
       renderStoryText(segments);
     }
   }
-  $('next-hint').hidden = !!node.choices || !!node.ending;
+  // 結末では、パネルを出すまでは「進む」合図を出して、もう一度押してもらう
+  $('next-hint').hidden = !!node.choices || (!!node.ending && endingRevealed);
 
   const choicesEl = $('choices');
   choicesEl.replaceChildren();
@@ -196,7 +203,8 @@ function renderGame(): void {
   if (node.choices) fitChoiceButtons(choicesEl);
 
   const endingPanel = $('ending-panel');
-  endingPanel.hidden = !node.ending;
+  // 結末パネルは先に出さない。文章を表示し、もう一度押されたら出す
+  endingPanel.hidden = !node.ending || !endingRevealed;
   if (node.ending) $('ending-title').textContent = node.ending.title;
   $('to-title-button').hidden = !!node.ending;
 
@@ -252,6 +260,13 @@ $('continue-button').addEventListener('click', () => {
 });
 $('message-window').addEventListener('click', () => {
   if (!state || screen !== 'game') return;
+  // 結末の文章が表示された状態でもう一度押されたら、結末パネルを出す
+  if (nodeOf(story, state).ending && !endingRevealed) {
+    endingRevealed = true;
+    playAdvanceSound();
+    render();
+    return;
+  }
   const next = advance(story, state);
   if (next !== state) {
     state = next;
