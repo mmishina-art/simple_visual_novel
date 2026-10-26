@@ -160,6 +160,10 @@ interface BgmConfig {
   bellDecay?: number;
   /** 単音の波形（推理ものは乾いた三角波の短い音） */
   bellWave?: OscillatorType;
+  /** 推理もの用：持続するパッドではなく、打って消える和音にする */
+  stab?: boolean;
+  /** stab の余韻の長さ（秒） */
+  stabDecay?: number;
 }
 
 export type BgmTheme = 'horror' | 'romance' | 'mystery';
@@ -240,7 +244,7 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       droneGain: 0.014, padWave: 'sine', padCutoff: 1100, bellDecay: 4.6,
     },
   },
-  // 推理もの（『消えた優勝杯』）：ドローンも風もない、乾いた音。鋸波の鈍いパッド、短く切れる単音、速めの和音の動きで、ホラーの「広い闇」と区別する
+  // 推理もの（『消えた優勝杯』）：ドローンも風も持続音もない。乾いた和音を打っては消し、無音を挟む。短く切れる単音と合わせて、ホラーの「広い闇」と区別する
   mystery: {
     normal: {
       chords: [
@@ -251,8 +255,9 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       ],
       bells: [220.0, 261.63, 329.63, 196.0],
       drone: [55, 82.41],
-      chordSec: 7, bellChance: 0.22, bellGain: 0.05, wind: 0, padGain: 0.015,
-      padWave: 'sawtooth', padCutoff: 480, droneGain: 0, bellWave: 'triangle', bellDecay: 0.55,
+      chordSec: 5.5, bellChance: 0.22, bellGain: 0.05, wind: 0, padGain: 0.015,
+      padWave: 'triangle', padCutoff: 1100, droneGain: 0, bellWave: 'triangle', bellDecay: 0.55,
+      stab: true, stabDecay: 1.5,
     },
     happy: {
       chords: [
@@ -263,8 +268,9 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       ],
       bells: [440.0, 523.25, 659.25, 783.99],
       drone: [65.41, 98.0],
-      chordSec: 7.5, bellChance: 0.4, bellGain: 0.042, wind: 0, padGain: 0.016,
-      padWave: 'sawtooth', padCutoff: 700, droneGain: 0, bellWave: 'triangle', bellDecay: 0.9,
+      chordSec: 6, bellChance: 0.4, bellGain: 0.042, wind: 0, padGain: 0.016,
+      padWave: 'triangle', padCutoff: 1300, droneGain: 0, bellWave: 'triangle', bellDecay: 0.9,
+      stab: true, stabDecay: 1.9,
     },
     bad: {
       chords: [
@@ -275,8 +281,9 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       ],
       bells: [110.0, 116.54, 220.0],
       drone: [55, 58.27],
-      chordSec: 9.5, bellChance: 0.14, bellGain: 0.05, wind: 0, padGain: 0.016,
-      padWave: 'sawtooth', padCutoff: 430, droneGain: 0, bellWave: 'triangle', bellDecay: 0.5,
+      chordSec: 7, bellChance: 0.14, bellGain: 0.05, wind: 0, padGain: 0.016,
+      padWave: 'triangle', padCutoff: 800, droneGain: 0, bellWave: 'triangle', bellDecay: 0.5,
+      stab: true, stabDecay: 1.3,
     },
   },
 };
@@ -355,6 +362,25 @@ export function startBgm(mood?: BgmMood, theme?: BgmTheme): void {
     const playChord = (at: number): void => {
       const chord = cfg.chords[chordIndex % cfg.chords.length];
       chordIndex += 1;
+      if (cfg.stab) {
+        // 推理もの：ピアノを打つように和音を鳴らし、余韻を残して消す（持続させない）
+        const dec = cfg.stabDecay ?? 1.5;
+        for (const f of chord) {
+          const o = c.createOscillator();
+          o.type = cfg.padWave ?? 'triangle';
+          o.frequency.value = f;
+          const g = c.createGain();
+          g.gain.setValueAtTime(cfg.padGain * 2.6, at);
+          g.gain.exponentialRampToValueAtTime(0.0001, at + dec);
+          const lp = c.createBiquadFilter();
+          lp.type = 'lowpass';
+          lp.frequency.value = cfg.padCutoff ?? 850;
+          o.connect(lp).connect(g).connect(master);
+          o.start(at);
+          o.stop(at + dec + 0.1);
+        }
+        return;
+      }
       for (const f of chord) {
         for (const detune of [-4, 4]) {
           const o = c.createOscillator();
