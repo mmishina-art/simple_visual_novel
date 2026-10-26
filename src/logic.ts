@@ -1,8 +1,10 @@
 // サウンドノベルのエンジン。ルール・進行は DOM に触れない純関数にして、tests/ で単体テストする。
 // シナリオのデータは src/stories/ に分けて置く（このファイルはデータを持たない）。
 
-/** 背景イラストの種類（src/assets/scenes/ の SVG と対応する） */
-export type SceneBg = 'classroom' | 'corridor' | 'stairs' | 'music' | 'entrance' | 'dark' | 'outside' | 'library' | 'trophy' | 'archlibrary' | 'station' | 'diner';
+import type { SceneBg } from './scenes';
+import type { BgmTheme } from './sound';
+
+export type { SceneBg };
 
 /** 場面で鳴らす音の種類（src/sound.ts の合成音と対応する） */
 export type SceneSound = 'rain' | 'phone' | 'steps' | 'piano' | 'chime' | 'knock' | 'door' | 'thunder' | 'whisper' | 'beep' | 'bell';
@@ -46,8 +48,8 @@ export interface Story {
   coverLines?: string[];
   /** 題字の置き方。絵の落ち着いた場所に合わせて選ぶ（通常は右上の縦書き） */
   coverTitleLayout?: 'vertical' | 'horizontal' | 'window';
-  /** BGM のテーマ（省略時は 'horror'） */
-  bgm?: 'horror' | 'romance' | 'mystery' | 'sf' | 'comedy';
+  /** BGM のテーマ（省略時は 'horror'）。テーマの定義は src/sound.ts */
+  bgm?: BgmTheme;
   /** 表紙の色調（省略時は 'dark'）。明るい絵には 'light' */
   coverTone?: 'dark' | 'light';
   start: string;

@@ -58,6 +58,15 @@ Vite + TypeScript + vite-plugin-pwa + Vitest + Playwright + ESLint。UI フレ�
 - `scripts/shots.mjs`: 画面の一括撮影。**画面を足したら、`SCREENS` に足す**(`open` で、その画面まで操作する)。
 - `scripts/build-preview.mjs`: プレビュー用に、アプリを 1 つの HTML にまとめる(本番の `dist/` とは別)。
 - 画面の部品や機能を足すときは、ファイルを `src/` に分ける。Service Worker のファイル一覧は**自動生成**なので手で更新しない。
+- `src/scenes.ts`: 背景イラストの登録はここだけ（種類 `SceneBg` は登録名から自動で決まる）。
+
+## 新しい本の足し方
+
+1. `src/stories/` に物語のデータファイルを書く（既存の本と同じ形式。結末は3つ・うちハッピーは1つ、`coverLines` の連結が題名と一致すること。構造は単体テスト「全作品の検証」が自動で確認する）。
+2. `src/stories/index.ts` の `STORIES` に1行足す。これで本棚・保存・読みかけ確認まで自動で付く。
+3. 新しい絵が要るときは `src/assets/scenes/` に SVG を置き、`src/scenes.ts` に import と1行を足す（他の型定義は触らない）。新しい BGM テーマは `src/sound.ts` の `BgmTheme` と `BGM_THEMES`、新しい場面音は `src/logic.ts` の `SceneSound` と `src/sound.ts` の `SCENE_SOUNDS` に足す（どちらも対応が欠けると型で落ちる）。
+4. 紹介ページ（`public/home/index.html`）のラインナップに載せ、表紙画像を `public/home/assets/cover-*.svg` に置く。載せ忘れは `tests/homepage.test.ts` が検出する。
+5. 任意: その本を通しで読む E2E を `e2e/app.spec.ts` に足す（選択肢のラベルを順に指定する形式）。
 
 ## PWA 要件(完了の定義)
 
