@@ -476,6 +476,18 @@ button.big {
   margin-bottom: 8px;
 }
 
+.game-header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.game-header .btn-pill {
+  min-height: 32px;
+  padding: 3px 12px;
+  font-size: 0.85rem;
+}
+
 .game-title {
   font-size: 0.95rem;
   letter-spacing: 0.12em;
@@ -592,14 +604,10 @@ button.big {
 }
 
 .backlog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 12px;
-}
-
-/* 「閉じる」は読み返し画面の下に置く */
-.backlog-close {
-  display: block;
-  margin: 16px auto 0;
-  min-width: 180px;
 }
 
 .backlog-head h2 {
