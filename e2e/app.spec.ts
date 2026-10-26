@@ -194,6 +194,23 @@ test('五冊目（コメディ）を選んで、ハッピーエンドまで読�
   await expect(page.locator('#ending-panel')).toContainText('伝説のナポリタン');
 });
 
+test('六冊目（純文学）を選んで、ハッピーエンドまで読める', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'はじめる' }).click();
+  await page.locator('.book-card').nth(5).click();
+  await expect(page.locator('body')).toHaveAttribute('data-bgm-theme', 'literary');
+  await playToEnding(page, ['道具を揃えて', 'この井戸の底で読む', '一歩ずつ', '名前をつけて']);
+  await expect(page.locator('#ending-panel')).toContainText('日曜日の名前');
+});
+
+test('六冊目（純文学）は、道具なしで一気に登るとバッドエンドになる', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'はじめる' }).click();
+  await page.locator('.book-card').nth(5).click();
+  await playToEnding(page, ['いますぐ', 'まず猫を連れて', '一気に登る']);
+  await expect(page.locator('#ending-panel')).toContainText('濡れた手紙');
+});
+
 test('追加した本では、BGMのテーマが物語に合っている', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'はじめる' }).click();

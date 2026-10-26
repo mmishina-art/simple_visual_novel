@@ -481,6 +481,10 @@ button.big {
   background: #1e324e;
   color: #ece4d1;
 }
+.obi-indigo .book-obi {
+  background: linear-gradient(90deg, #2c3a5e, #43538a 55%, #2c3a5e);
+  color: #e9ecf5;
+}
 
 .book-colophon {
   position: absolute;

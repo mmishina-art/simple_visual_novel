@@ -12,6 +12,21 @@ import { dirname, join } from 'node:path';
 const VOICE = 'avocado_v2:Lily';
 const LANGUAGE = 'ja_JP';
 const SPEED = '112';
+
+// 物語ごとの語り手（既定は上の Lily C1）。声・速度・後加工が違う本はここに足す。
+// ハッシュには profile の tag を混ぜ、声や加工を変えたら作り直されるようにする
+// （tests/narration.test.ts にも同じ表がある。変えるときは両方を直すこと）。
+// 『日曜日、井戸の底で』: G（Even Pond）を速度104で合成し、ピッチ0.95と輪郭の強調を
+// かける「改3クリアA」相当（2026-10-26 ユーザー選択）。
+const VOICE_PROFILES = {
+  'sunday-well': {
+    voice: 'avocado_v2:qvd_02415',
+    speed: '104',
+    tag: 'g-mod3a',
+    post: 'rubberband=pitch=0.95,equalizer=f=3500:t=q:w=1:g=3,highshelf=f=8000:g=2',
+  },
+};
+const profileOf = (key) => VOICE_PROFILES[key.split('/')[0]];
 const CONCURRENCY = 4;
 const OUT_DIR = 'public/audio';
 const MANIFEST = join(OUT_DIR, 'manifest.json');
@@ -67,21 +82,31 @@ for (const story of STORIES) {
 const jobs = [];
 for (const [key, text] of wanted) {
   const spoken = spokenText(key, text);
-  const hash = hashOf(spoken);
+  const profile = profileOf(key);
+  const hash = hashOf(profile ? `${spoken}|${profile.tag}` : spoken);
   const file = join(OUT_DIR, `${key}.mp3`);
   if (manifest[key]?.hash === hash && existsSync(file)) continue;
-  jobs.push({ key, text: spoken, hash, file });
+  jobs.push({ key, text: spoken, hash, file, profile });
 }
 console.log(`読み上げ: 全${wanted.size}場面、新規・更新 ${jobs.length}件`);
 
 const speak = (job) =>
   new Promise((resolve, reject) => {
     mkdirSync(dirname(job.file), { recursive: true });
+    const out = job.profile?.post ? `${job.file}.raw.mp3` : job.file;
     const child = execFile(
       '/opt/hatch/bin/tts',
-      ['speak', '--output', job.file, '--voice', VOICE, '--language', LANGUAGE, '--speed', SPEED, '--text-stdin'],
+      ['speak', '--output', out, '--voice', job.profile?.voice ?? VOICE, '--language', LANGUAGE, '--speed', job.profile?.speed ?? SPEED, '--text-stdin'],
       { timeout: 120_000 },
-      (err) => (err ? reject(new Error(`${job.key}: ${err.message}`)) : resolve()),
+      (err) => {
+        if (err) return reject(new Error(`${job.key}: ${err.message}`));
+        if (!job.profile?.post) return resolve();
+        // 後加工（ffmpeg）: 一時ファイルから本ファイルへ変換して、一時ファイルは消す
+        execFile('ffmpeg', ['-v', 'error', '-y', '-i', out, '-af', job.profile.post, job.file], { timeout: 60_000 }, (err2) => {
+          rmSync(out, { force: true });
+          return err2 ? reject(new Error(`${job.key}: 後加工に失敗 ${err2.message}`)) : resolve();
+        });
+      },
     );
     child.stdin.end(job.text);
   });
