@@ -59,9 +59,9 @@
           <p id="backup-message" class="muted" role="status"></p>
         </details>
 
-        <button id="install-open" type="button" class="link">📲 アプリとしてインストールする方法</button>
+        <button id="install-open" type="button" class="btn-pill btn-center">📲 アプリとしてインストールする方法</button>
 
-        <button id="settings-back" type="button" class="link">タイトルに戻る</button>
+        <button id="settings-back" type="button" class="btn-pill btn-center">タイトルに戻る</button>
       </section>
 
       <!-- 本棚の画面。作品を選ぶと本編が始まる（作品は src/stories/ の一覧から作る） -->
@@ -69,9 +69,8 @@
         <div class="shelf-head">
           <header class="header">
             <h1>本棚</h1>
-            <button id="shelf-back" type="button" class="link">タイトルに戻る</button>
+            <button id="shelf-back" type="button" class="btn-pill">タイトルに戻る</button>
           </header>
-          <p class="muted">読みたい物語を選んでください。</p>
         </div>
         <div id="shelf-list" class="shelf-list"></div>
       </section>
@@ -105,7 +104,7 @@
           <button id="ending-title-button" type="button">本棚へ</button>
         </div>
 
-        <button id="to-title-button" type="button" class="link">本棚へ（進行は自動で保存されます）</button>
+        <button id="to-title-button" type="button" class="btn-pill btn-center">本棚へ（進行は自動で保存されます）</button>
       </section>
       <section id="backlog-screen" class="screen backlog-screen" hidden>
         <div class="backlog-head">
@@ -149,6 +148,15 @@
       </details>
 
       <button type="button" data-close>とじる</button>
+    </dialog>
+
+    <!-- 読みかけの本を開くときの確認（つづきから／最初から） -->
+    <dialog id="resume-dialog" class="install-dialog" aria-labelledby="resume-title">
+      <h2 id="resume-title"></h2>
+      <p class="muted">読みかけの記録があります。どうやって読みますか？</p>
+      <button id="resume-continue" type="button" class="primary">つづきから読む</button>
+      <button id="resume-restart" type="button">最初から読む</button>
+      <button id="resume-cancel" type="button">キャンセル</button>
     </dialog>
 
     <!-- デバッグモードのときだけ出る操作（src/debug.ts。バージョンの表示を続けて 5 回タップで切り替え） -->

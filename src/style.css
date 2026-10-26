@@ -109,14 +109,26 @@ button.big {
   font-size: 1.4rem;
 }
 
-button.link {
-  border: 0;
-  background: transparent;
-  color: var(--muted);
-  text-decoration: underline;
-  display: block;
-  margin: 12px auto 0;
+/* 押せるものはボタンらしく見せる（全体ルール）：ピル型の共通ボタン */
+.btn-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 4px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(240, 232, 216, 0.07);
+  color: var(--ink);
   font-size: 0.9rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-center {
+  display: flex;
+  width: fit-content;
+  margin: 14px auto 0;
 }
 
 /* ---- トップ画面（全画面の背景＋タイトルロゴ） ---- */
@@ -220,7 +232,16 @@ button.link {
   z-index: 2;
   background: #2b1a0e;
   box-shadow: 0 10px 14px -10px rgba(0, 0, 0, 0.8);
-  padding-bottom: 10px;
+  padding: 4px 8px 6px;
+}
+
+#shelf-screen .header {
+  margin: 0;
+}
+
+#shelf-screen h1 {
+  font-size: 1.05rem;
+  margin: 0;
 }
 
 #shelf-screen .shelf-list {
@@ -228,7 +249,7 @@ button.link {
   min-height: 0;
   overflow-y: auto;
   margin: 0;
-  padding: 16px 2px 20px;
+  padding: 12px 2px 20px;
   scrollbar-width: thin;
   /* 行が画面の高さに合わせて潰れないようにし、あふれた分はスクロールさせる */
   align-content: start;
@@ -427,18 +448,6 @@ button.link {
 
 .book-meta {
   margin-top: 8px;
-}
-
-.book-action {
-  color: var(--primary);
-  font-weight: 700;
-  margin-top: 2px;
-}
-
-.book-restart {
-  color: var(--muted);
-  font-size: 0.85rem;
-  text-decoration: underline;
 }
 
 /* ---- タイトル画面 / 本編の画面（2画面は独立させる） ---- */
