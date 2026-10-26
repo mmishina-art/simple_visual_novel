@@ -145,7 +145,7 @@ button.link {
 }
 
 .title-shade {
-  background: linear-gradient(rgba(4, 6, 10, 0.6), rgba(4, 6, 10, 0.28) 42%, rgba(4, 6, 10, 0.82));
+  background: linear-gradient(rgba(4, 8, 6, 0.42), rgba(4, 8, 6, 0.14) 42%, rgba(4, 8, 6, 0.62));
 }
 
 .title-content {
