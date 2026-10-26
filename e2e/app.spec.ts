@@ -117,6 +117,25 @@ test('三冊目（推理もの）を選んで、真相のハッピーエンド�
   await expect(page.locator('#ending-title')).toContainText('ハッピーエンド');
 });
 
+test('本棚は見出しと戻るボタンが固定され、リストだけがスクロールする', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 500 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'はじめる' }).click();
+  await expect(page.locator('#shelf-screen')).toBeVisible();
+  const back = page.locator('#shelf-back');
+  const before = await back.boundingBox();
+  expect(before).not.toBeNull();
+  await page.locator('#shelf-list').evaluate((el) => {
+    el.scrollTop = el.scrollHeight;
+  });
+  const scrolled = await page.locator('#shelf-list').evaluate((el) => el.scrollTop);
+  expect(scrolled).toBeGreaterThan(0);
+  const after = await back.boundingBox();
+  expect(after).not.toBeNull();
+  expect(Math.abs((after?.y ?? 0) - (before?.y ?? 0))).toBeLessThan(1);
+  await expect(back).toBeVisible();
+});
+
 test('本を選ぶと、どの本でも共通の「本を開く音」が鳴る', async ({ page }) => {
   await page.addInitScript(() => {
     (window as unknown as { __uiSounds: string[] }).__uiSounds = [];

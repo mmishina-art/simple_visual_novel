@@ -66,12 +66,14 @@
 
       <!-- 本棚の画面。作品を選ぶと本編が始まる（作品は src/stories/ の一覧から作る） -->
       <section id="shelf-screen" class="screen" hidden>
-        <header class="header">
-          <h1>本棚</h1>
-        </header>
-        <p class="muted">読みたい物語を選んでください。</p>
+        <div class="shelf-head">
+          <header class="header">
+            <h1>本棚</h1>
+            <button id="shelf-back" type="button" class="link">タイトルに戻る</button>
+          </header>
+          <p class="muted">読みたい物語を選んでください。</p>
+        </div>
         <div id="shelf-list" class="shelf-list"></div>
-        <button id="shelf-back" type="button" class="link">タイトルに戻る</button>
       </section>
 
       <!-- 本編の画面（タイトル画面とは分けた、独立した画面）。
