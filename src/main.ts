@@ -248,7 +248,6 @@ function renderGame(): void {
   const node = nodeOf(story, state);
   if (node.bg) currentBg = node.bg;
   $<HTMLImageElement>('scene-img').src = SCENES[currentBg];
-  $('speaker').textContent = node.speaker ?? '';
   if (node.id !== lastNodeId) {
     endingRevealed = false;
     choicesRevealed = false;

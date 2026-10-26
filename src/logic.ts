@@ -23,8 +23,6 @@ export interface StoryNode {
   id: string;
   bg?: SceneBg;
   se?: SceneSound;
-  /** 話者名（地の文は省略） */
-  speaker?: string;
   text: string;
   /** このノードに入ったときに付くフラグ */
   set?: string[];
