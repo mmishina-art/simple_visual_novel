@@ -1,4 +1,8 @@
 import { createHash } from 'node:crypto';
+// かな化した読み上げ文（scripts/build-narration.mjs と同じ正）
+const KANA_TEXTS: Record<string, string> = existsSync('scripts/kana-texts.json')
+  ? (JSON.parse(readFileSync('scripts/kana-texts.json', 'utf8')) as Record<string, string>)
+  : {};
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { STORIES } from '../src/stories';
@@ -87,7 +91,7 @@ describe('読み上げ音声', () => {
     'sunday-well/start6',
   ]);
   const expectedHash = (key: string, text: string): string => {
-    const spoken = spokenText(key, text);
+    const spoken = KANA_TEXTS[key] ?? spokenText(key, text);
     const tag = VOICE_PROFILE_TAGS[key.split('/')[0]];
     const base = tag ? `${spoken}|${tag}` : spoken;
     return hashOf(CHUNKED_NARRATION.has(key) ? `${base}|chunked-v1` : base);
