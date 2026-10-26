@@ -58,6 +58,8 @@ describe('読み上げ音声', () => {
     [/粥/g, 'かゆ'],
   [/軍手/g, 'ぐんて'],
   [/茹で/g, 'ゆで'],
+  [/太麺/g, 'ふとめん'],
+  [/河原/g, 'かわら'],
   ];
   const spokenText = (key: string, text: string): string =>
     READING_OVERRIDES.reduce((x, [re, yomi]) => x.replace(re, yomi), SPOKEN_TEXT_OVERRIDES[key] ?? text);
