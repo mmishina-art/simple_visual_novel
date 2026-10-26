@@ -10,6 +10,7 @@ export const cafeTsubame: Story = {
   cover: 'diner',
   coverTone: 'light',
   coverObi: 'orange',
+  coverLines: ['喫茶つばめ', 'の災難'],
   bgm: 'comedy',
   start: 'start1',
   nodes: {

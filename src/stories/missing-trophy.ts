@@ -9,6 +9,7 @@ export const missingTrophy: Story = {
   length: '10〜15分',
   cover: 'trophy',
   coverObi: 'navy',
+  coverLines: ['消えた', '優勝杯'],
   bgm: 'mystery',
   start: 'start1',
   nodes: {

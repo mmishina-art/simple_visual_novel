@@ -9,6 +9,7 @@ export const midnightSchool: Story = {
   description: '真夜中の校舎に一人取り残された。名前を呼ばれても、返事をしてはいけない。',
   length: '5〜10分',
   cover: 'classroom',
+  coverLines: ['午前0時', 'の校舎'],
   start: 'start1',
   nodes: {
     start1: {
