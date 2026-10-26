@@ -16,13 +16,45 @@ describe('読み上げ音声', () => {
     'midnight-school/answer2': 'そして、すぐ後ろで声がした。『みつけた』',
     'midnight-school/music4': '譜面台の上には、濡れた上履きが片方だけ置いてあった。サイズは私のものとよく似ていた。',
     'missing-trophy/start5': '写真部の同級生、潤がカメラを下げて駆けつけた。式まで、あと三時間。犯人捜し、手伝うよ。まず、どこから調べよう。',
-    'missing-trophy/end_truth': '授与式。ステージの優勝杯はスポットライトを受けて輝いた。事情を知るのは、私と、潤と、部長だけ。部長の直した小さな傷跡は、優勝したクラスの、新しい歴史の始まりになった。',
+    'missing-trophy/end_truth': '優勝杯の授与式。ステージの上で、優勝杯はスポットライトを受けて輝いた。事情を知るのは、私と潤と、部長だけ。部長の直した小さな傷跡は、優勝したクラスの、新しい歴史の始まりになった。',
     'stardust-station/locate2': '四十年かけて描いた大きな弧の果てに、船は帰り道の上にいた。まるで、ずっと帰ろうとしていたみたいに。',
     'cafe-tsubame/calm1': '嵐のような一日も、夕方が近づく頃には静かになった。社長はカウンターでうとうとしている。平和だ。平和が一番だ。',
     'cafe-tsubame/recipe2': '太麺をよく炒めて、ケチャップを寝かせて、最後に隠し味。運ばれた皿を見て、美食家の目がはっきりと見開かれた。これだ。この味だ。',
     'yubisaki/night3': 'ランプの橙の中で、彼は何度も「律子、律子」と私の名を呼んだ。そのたびに私は、若かった自分と今の自分が、ひとつの身体の中で重なっていくのを感じた。激しさよりも、確かさだった。求める手つきに迷いがなく、委ねることに怖さがなかった。雨はまだ降っていた。けれどこの部屋だけは、世界のどこよりも静かで、温かかった。',
   };
-  const spokenText = (key: string, text: string): string => (SPOKEN_TEXT_OVERRIDES[key] ?? text).replace(/AI/g, 'エーアイ');
+  const READING_OVERRIDES: [RegExp, string][] = [
+    [/AI/g, 'エーアイ'],
+    [/久瀬遥/g, 'くぜはるか'],
+    [/篠宮 湊/g, 'しのみや みなと'],
+    [/灰谷誠一/g, 'はいたにせいいち'],
+    [/森下栞/g, 'もりしたしおり'],
+    [/女将さん/g, 'おかみさん'],
+    [/佐伯/g, 'さえき'],
+    [/篠宮/g, 'しのみや'],
+    [/高嶺/g, 'たかみね'],
+    [/真由/g, 'まゆ'],
+    [/誠一/g, 'せいいち'],
+    [/律子/g, 'りつこ'],
+    [/圭介/g, 'けいすけ'],
+    [/遥/g, 'はるか'],
+    [/湊/g, 'みなと'],
+    [/栞/g, 'しおり'],
+    [/潤/g, 'じゅん'],
+    [/女将/g, 'おかみ'],
+    [/儂/g, 'わし'],
+    [/萎び/g, 'しなび'],
+    [/帳場/g, 'ちょうば'],
+    [/頷/g, 'うなず'],
+    [/囁/g, 'ささや'],
+    [/顎/g, 'あご'],
+    [/覗/g, 'のぞ'],
+    [/焚き火/g, 'たきび'],
+    [/行き倒れ/g, 'いきたおれ'],
+    [/椀/g, 'わん'],
+    [/粥/g, 'かゆ'],
+  ];
+  const spokenText = (key: string, text: string): string =>
+    READING_OVERRIDES.reduce((x, [re, yomi]) => x.replace(re, yomi), SPOKEN_TEXT_OVERRIDES[key] ?? text);
   // 物語ごとの語り手プロファイルの tag（scripts/build-narration.mjs の VOICE_PROFILES と合わせること）。
   // 声や後加工が違う本は、ハッシュに tag を混ぜて区別する
   const VOICE_PROFILE_TAGS: Record<string, string> = { 'sunday-well': 'g-mod3a', 'maou-diner': 'g-mod3a' };
@@ -50,6 +82,9 @@ describe('読み上げ音声', () => {
     'yubisaki/visit1',
     'yubisaki/night3',
     'yubisaki/end_dream',
+    'missing-trophy/end_truth',
+    'yubisaki/past1',
+    'sunday-well/start6',
   ]);
   const expectedHash = (key: string, text: string): string => {
     const spoken = spokenText(key, text);
