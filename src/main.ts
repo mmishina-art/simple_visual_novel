@@ -19,8 +19,9 @@ import dark from './assets/scenes/dark.svg';
 import outside from './assets/scenes/outside.svg';
 import library from './assets/scenes/library.svg';
 import trophy from './assets/scenes/trophy.svg';
+import libraryhall from './assets/scenes/libraryhall.svg';
 
-const SCENES: Record<SceneBg, string> = { classroom, corridor, stairs, music, entrance, dark, outside, library, trophy };
+const SCENES: Record<SceneBg, string> = { classroom, corridor, stairs, music, entrance, dark, outside, library, trophy, libraryhall };
 
 const $ = <T extends HTMLElement>(id: string): T => {
   const el = document.getElementById(id);
@@ -427,7 +428,7 @@ $<HTMLInputElement>('backup-import').addEventListener('change', async (e) => {
 });
 
 document.querySelector('.game-title')!.textContent = story.title;
-$<HTMLImageElement>('title-bg').src = SCENES.classroom;
+$<HTMLImageElement>('title-bg').src = SCENES.libraryhall;
 $('version').textContent = __APP_VERSION__;
 // デバッグモード: バージョンの表示を続けて 5 回タップで切り替え
 setupDebug($('debug-panel'), $('version-line'), [
