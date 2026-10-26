@@ -338,6 +338,29 @@ function render(): void {
   if (screen !== 'game' && screen !== 'backlog') startTitleBgm();
 }
 
+/** その場面に着いた時点で効いている背景を、物語の入口からたどって求める
+ * （場面自身に指定がなければ、そこへ至る経路で最後に指定された背景が続く）。
+ * 続きから再開したときや、選択肢へ戻ったときに、別の場面の背景が残らないようにするため */
+function bgAtNode(targetId: string): SceneBg {
+  const visited = new Set<string>();
+  const walk = (nodeId: string, bg: SceneBg): SceneBg | null => {
+    if (visited.has(nodeId)) return null;
+    visited.add(nodeId);
+    const node = story.nodes[nodeId];
+    if (!node) return null;
+    const here = node.bg ?? bg;
+    if (nodeId === targetId) return here;
+    const nexts = [node.next, ...(node.choices ?? []).flatMap((c) => [c.to, c.toIfFlag?.to])]
+      .filter((x): x is string => !!x);
+    for (const n of nexts) {
+      const found = walk(n, here);
+      if (found) return found;
+    }
+    return null;
+  };
+  return walk(story.start, 'classroom') ?? 'classroom';
+}
+
 function startGame(fromState: PlayState, resume = false): void {
   resetNarration();
   state = fromState;
@@ -345,7 +368,7 @@ function startGame(fromState: PlayState, resume = false): void {
   else if (backlog.length === 0) backlog = [{ kind: 'text', text: nodeOf(story, fromState).text }];
   segments = resume ? [nodeOf(story, fromState).text] : [];
   lastNodeId = resume ? fromState.nodeId : '';
-  currentBg = 'classroom';
+  currentBg = bgAtNode(fromState.nodeId);
   screen = 'game';
   persist();
   startBgm('normal', story.bgm);
