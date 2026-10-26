@@ -178,7 +178,7 @@ interface BgmConfig {
   stabDecay?: number;
 }
 
-export type BgmTheme = 'horror' | 'romance' | 'mystery' | 'sf' | 'comedy';
+export type BgmTheme = 'horror' | 'romance' | 'mystery' | 'sf' | 'comedy' | 'literary';
 
 const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
   // ホラー（『午前0時の校舎』）：夜の校舎。短調のパッドと、まばらなピアノ、風の音
@@ -377,6 +377,45 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       chordSec: 5.5, bellChance: 0.3, bellGain: 0.04, wind: 0, padGain: 0.014,
       padWave: 'triangle', padCutoff: 1400, droneGain: 0, bellWave: 'triangle', bellDecay: 0.9,
       stab: true, stabDecay: 1.1,
+    },
+  },
+  // 純文学（『日曜日、井戸の底で』）：静かな午後。柔らかい和音がゆっくり移ろい、単音はまばら
+  literary: {
+    normal: {
+      chords: [
+        [87.31, 130.81, 220.0, 329.63], // Fmaj7
+        [82.41, 123.47, 196.0, 293.66], // Em7
+        [65.41, 130.81, 246.94, 293.66], // Cmaj9
+        [110.0, 164.81, 246.94, 261.63], // Am9
+      ],
+      bells: [523.25, 587.33, 659.25, 783.99],
+      drone: [43.65, 87.31],
+      chordSec: 11, bellChance: 0.3, bellGain: 0.028, wind: 0.001, padGain: 0.014,
+      droneGain: 0.008, padWave: 'sine', padCutoff: 1100, bellDecay: 5.0,
+    },
+    happy: {
+      chords: [
+        [65.41, 130.81, 246.94, 329.63], // Cmaj9
+        [87.31, 130.81, 220.0, 349.23], // Fmaj7
+        [98.0, 146.83, 246.94, 392.0], // G(add9)
+        [110.0, 164.81, 261.63, 392.0], // Am7
+      ],
+      bells: [659.25, 783.99, 880.0, 1046.5],
+      drone: [65.41, 98.0],
+      chordSec: 10, bellChance: 0.42, bellGain: 0.03, wind: 0.001, padGain: 0.015,
+      droneGain: 0.009, padWave: 'sine', padCutoff: 1300, bellDecay: 5.0,
+    },
+    bad: {
+      chords: [
+        [110.0, 164.81, 261.63], // Am
+        [87.31, 130.81, 220.0], // F
+        [98.0, 146.83, 196.0], // G
+        [103.83, 155.56, 233.08], // G#
+      ],
+      bells: [329.63, 392.0, 440.0],
+      drone: [55, 82.41],
+      chordSec: 13, bellChance: 0.18, bellGain: 0.03, wind: 0.002, padGain: 0.015,
+      droneGain: 0.01, padWave: 'sine', padCutoff: 800, bellDecay: 5.5,
     },
   },
 };

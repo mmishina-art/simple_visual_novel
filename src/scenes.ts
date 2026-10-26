@@ -13,6 +13,7 @@ import trophy from './assets/scenes/trophy.svg';
 import archlibrary from './assets/scenes/archlibrary.svg';
 import station from './assets/scenes/station.svg';
 import diner from './assets/scenes/diner.svg';
+import well from './assets/scenes/well.svg';
 
 export const SCENES = {
   classroom,
@@ -27,6 +28,7 @@ export const SCENES = {
   archlibrary,
   station,
   diner,
+  well,
 } as const;
 
 /** 背景イラストの種類（SCENES に登録した名前そのまま） */

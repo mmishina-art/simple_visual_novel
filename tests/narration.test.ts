@@ -21,13 +21,21 @@ describe('読み上げ音声', () => {
     'cafe-tsubame/recipe2': '太麺をよく炒めて、ケチャップを寝かせて、最後に隠し味。運ばれた皿を見て、美食家の目がはっきりと見開かれた。これだ。この味だ。',
   };
   const spokenText = (key: string, text: string): string => (SPOKEN_TEXT_OVERRIDES[key] ?? text).replace(/AI/g, 'エーアイ');
+  // 物語ごとの語り手プロファイルの tag（scripts/build-narration.mjs の VOICE_PROFILES と合わせること）。
+  // 声や後加工が違う本は、ハッシュに tag を混ぜて区別する
+  const VOICE_PROFILE_TAGS: Record<string, string> = { 'sunday-well': 'g-mod3a' };
+  const expectedHash = (key: string, text: string): string => {
+    const spoken = spokenText(key, text);
+    const tag = VOICE_PROFILE_TAGS[key.split('/')[0]];
+    return hashOf(tag ? `${spoken}|${tag}` : spoken);
+  };
 
   it('全作品・全場面ぶんの音声があり、本文と一致している', () => {
     for (const story of STORIES) {
       for (const node of Object.values(story.nodes)) {
         const key = `${story.id}/${node.id}`;
         expect(manifest[key], `${key} の音声が未生成（npm run narration）`).toBeDefined();
-        expect(manifest[key].hash, `${key} の文章が音声と食い違っている（npm run narration で再生成）`).toBe(hashOf(spokenText(key, node.text)));
+        expect(manifest[key].hash, `${key} の文章が音声と食い違っている（npm run narration で再生成）`).toBe(expectedHash(key, node.text));
         expect(existsSync(`public/audio/${key}.mp3`), `${key}.mp3 が無い`).toBe(true);
       }
     }
