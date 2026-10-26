@@ -109,14 +109,26 @@ button.big {
   font-size: 1.4rem;
 }
 
-button.link {
-  border: 0;
-  background: transparent;
-  color: var(--muted);
-  text-decoration: underline;
-  display: block;
-  margin: 12px auto 0;
+/* 押せるものはボタンらしく見せる（全体ルール）：ピル型の共通ボタン */
+.btn-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 18px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(240, 232, 216, 0.07);
+  color: var(--ink);
   font-size: 0.9rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-center {
+  display: flex;
+  width: fit-content;
+  margin: 14px auto 0;
 }
 
 /* ---- トップ画面（全画面の背景＋タイトルロゴ） ---- */
@@ -220,7 +232,21 @@ button.link {
   z-index: 2;
   background: #2b1a0e;
   box-shadow: 0 10px 14px -10px rgba(0, 0, 0, 0.8);
-  padding-bottom: 10px;
+  padding-bottom: 6px;
+}
+
+#shelf-screen .header {
+  margin: 0;
+}
+
+#shelf-screen h1 {
+  font-size: 1.15rem;
+  margin: 2px 0;
+}
+
+#shelf-screen .shelf-head .muted {
+  margin: 0;
+  font-size: 0.88rem;
 }
 
 #shelf-screen .shelf-list {
@@ -436,9 +462,15 @@ button.link {
 }
 
 .book-restart {
-  color: var(--muted);
+  align-self: center;
+  width: fit-content;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(240, 232, 216, 0.06);
+  color: var(--ink);
   font-size: 0.85rem;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 /* ---- タイトル画面 / 本編の画面（2画面は独立させる） ---- */
