@@ -73,7 +73,6 @@ export const missingTrophy: Story = {
     },
     mid2: {
       id: 'mid2',
-      speaker: '潤',
       text: '「昨日の夕方、展示の記録写真を撮ったんだ。現像すれば、その時点の優勝杯の状態が分かる。……どうする？」',
       next: 'choice_photo',
     },
@@ -97,7 +96,6 @@ export const missingTrophy: Story = {
     },
     chief1: {
       id: 'chief1',
-      speaker: '実行委員長',
       text: '「杯が消えた？　知らないな。夕方、展示室の前で美術部長とすれ違ったが……」――委員長は明らかに慌てていた。隠している顔だ。',
       next: 'chief2',
     },
@@ -144,7 +142,6 @@ export const missingTrophy: Story = {
     },
     truth1: {
       id: 'truth1',
-      speaker: '美術部長',
       text: '「……ごめん。へこみに気づいて、夜のうちに直そうと思ったんだ。式に間に合わなくて、朝、慌てて窓から戻ろうとして――」',
       next: 'truth2',
     },
@@ -155,7 +152,6 @@ export const missingTrophy: Story = {
     },
     deny1: {
       id: 'deny1',
-      speaker: '美術部長',
       text: '「何の話？　証拠もなく人を疑うの？」――決め手のない追求は、すぐに言いくるめられた。時計の針だけが、無情に進んでいく。',
       next: 'end_late',
     },
