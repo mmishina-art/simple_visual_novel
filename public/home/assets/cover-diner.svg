@@ -1,17 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
 <rect width="800" height="600" fill="#f2e3c2"/>
-<rect x="40" y="56" width="300" height="300" fill="#bcd6e8"/>
-<rect x="40" y="56" width="300" height="110" fill="#a8c8e2"/>
-<rect x="40" y="56" width="300" height="300" fill="none" stroke="#8a5a33" stroke-width="14"/>
-<line x1="190" y1="56" x2="190" y2="356" stroke="#8a5a33" stroke-width="10"/>
-<circle cx="110" cy="130" r="26" fill="#fff3d6"/>
-<rect x="420" y="70" width="320" height="150" fill="#42503a"/>
-<rect x="436" y="86" width="288" height="118" fill="#f7efdb"/>
+<rect x="420" y="56" width="300" height="300" fill="#bcd6e8"/>
+<rect x="420" y="56" width="300" height="110" fill="#a8c8e2"/>
+<rect x="420" y="56" width="300" height="300" fill="none" stroke="#8a5a33" stroke-width="14"/>
+<line x1="570" y1="56" x2="570" y2="356" stroke="#8a5a33" stroke-width="10"/>
+<circle cx="490" cy="130" r="26" fill="#fff3d6"/>
+<rect x="40" y="70" width="320" height="150" fill="#42503a"/>
+<rect x="56" y="86" width="288" height="118" fill="#f7efdb"/>
 <g stroke="#8a4a56" stroke-width="0" fill="#5d4a36">
-<rect x="456" y="106" width="110" height="10" rx="5" fill="#8a4a56"/>
-<rect x="456" y="130" width="150" height="10" rx="5" fill="#5d7d99"/>
-<rect x="456" y="154" width="90" height="10" rx="5" fill="#c97b5a"/>
-<rect x="456" y="178" width="130" height="10" rx="5" fill="#77875a"/>
+<rect x="76" y="106" width="110" height="10" rx="5" fill="#8a4a56"/>
+<rect x="76" y="130" width="150" height="10" rx="5" fill="#5d7d99"/>
+<rect x="76" y="154" width="90" height="10" rx="5" fill="#c97b5a"/>
+<rect x="76" y="178" width="130" height="10" rx="5" fill="#77875a"/>
 </g>
 <g>
 <circle cx="480" cy="300" r="44" fill="#ffd98a" opacity="0.4"/>
