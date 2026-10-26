@@ -203,7 +203,7 @@ test('追加した本では、BGMのテーマが物語に合っている', async
   await expect(page.locator('body')).toHaveAttribute('data-bgm-theme', 'mystery');
 });
 
-test('BGMが本編で鳴り、音オフとタイトル復帰で止まる', async ({ page }) => {
+test('BGMが本編で鳴り、音オフで止まり、本棚ではタイトルBGMに替わる', async ({ page }) => {
   await page.goto('/');
   await beginStory(page);
   await expect(page.locator('body')).toHaveAttribute('data-bgm', 'on');
@@ -212,7 +212,7 @@ test('BGMが本編で鳴り、音オフとタイトル復帰で止まる', async
   await page.locator('#sound-button-game').click();
   await expect(page.locator('body')).toHaveAttribute('data-bgm', 'on');
   await page.getByRole('button', { name: /本棚へ/ }).click();
-  await expect(page.locator('body')).toHaveAttribute('data-bgm', 'off');
+  await expect(page.locator('body')).toHaveAttribute('data-bgm-theme', 'title');
 });
 
 test('文章を進めると操作音が鳴る', async ({ page }) => {

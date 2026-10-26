@@ -59,6 +59,7 @@ Vite + TypeScript + vite-plugin-pwa + Vitest + Playwright + ESLint。UI フレ�
 - `scripts/build-preview.mjs`: プレビュー用に、アプリを 1 つの HTML にまとめる(本番の `dist/` とは別)。
 - 画面の部品や機能を足すときは、ファイルを `src/` に分ける。Service Worker のファイル一覧は**自動生成**なので手で更新しない。
 - `src/scenes.ts`: 背景イラストの登録はここだけ（種類 `SceneBg` は登録名から自動で決まる）。
+- `src/title-song.ts`: タイトル画面のBGM（固定の作曲データとイベント展開）。再生は `src/sound.ts` の `startTitleBgm`。タイトル・本棚・設定の画面で流れ、本編では物語のBGMに譲る。曲を直すときはここのデータだけを触り、`tests/title-song.test.ts` の件数も合わせる。
 
 ## 新しい本の足し方
 

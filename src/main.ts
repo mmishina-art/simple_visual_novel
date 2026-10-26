@@ -7,7 +7,7 @@ import { STORIES, storyById } from './stories';
 import { setupDebug } from './debug';
 import { setupInstallGuide } from './install';
 import { applyUpdate, checkForUpdate, onUpdateAvailable, setupPwa } from './pwa';
-import { isSoundOn, playAdvanceSound, playBookOpenSound, playButtonSound, playEndingJingle, playSceneSound, setSound, startBgm, stopBgm } from './sound';
+import { isSoundOn, playAdvanceSound, playBookOpenSound, playButtonSound, playEndingJingle, playSceneSound, setSound, startBgm, startTitleBgm, stopBgm } from './sound';
 import { isNarrationOn, onNarrationFinish, resetNarration, setNarration, stopNarration, suspendNarration, syncNarration } from './narration';
 import { exportBackup, importBackup, load, migrateStorage, remove, requestPersist, save } from './storage';
 
@@ -331,6 +331,8 @@ function render(): void {
   if (screen === 'shelf') renderShelf();
   renderGame();
   if (screen === 'backlog') renderBacklog();
+  // タイトル・本棚・設定の画面ではタイトルのBGMを流す（本編と読み返しでは物語側のBGMが担当する）
+  if (screen !== 'game' && screen !== 'backlog') startTitleBgm();
 }
 
 function startGame(fromState: PlayState, resume = false): void {
@@ -423,6 +425,10 @@ function advanceReading(): void {
   }
 }
 $('message-window').addEventListener('click', advanceReading);
+// 最初のタップで音声が解放されたら、タイトルBGMの開始をもう一度試みる
+document.addEventListener('pointerdown', () => {
+  if (screen !== 'game' && screen !== 'backlog') startTitleBgm();
+});
 // 読み上げが終わったら自動で次へ。ただし選択肢の場面では、選んでもらうために止まる
 onNarrationFinish(() => {
   if (!state || screen !== 'game') return;
