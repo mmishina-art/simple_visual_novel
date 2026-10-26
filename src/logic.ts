@@ -41,7 +41,7 @@ export interface Story {
   /** 本棚で表紙に使う背景（省略時は 'classroom'） */
   cover?: SceneBg;
   /** 表紙の帯の色・形（省略時は 'red'） */
-  coverObi?: 'red' | 'cream' | 'navy' | 'silver' | 'orange' | 'indigo' | 'moss';
+  coverObi?: 'red' | 'cream' | 'navy' | 'silver' | 'orange' | 'indigo' | 'moss' | 'gold';
   /** 表紙の題字の改行位置（言葉の途中では切らない）。連結すると title と一致すること */
   coverLines?: string[];
   /** 題字の置き方。絵の落ち着いた場所に合わせて選ぶ（通常は右上の縦書き） */
@@ -50,6 +50,8 @@ export interface Story {
   bgm?: BgmTheme;
   /** 表紙の色調（省略時は 'dark'）。明るい絵には 'light' */
   coverTone?: 'dark' | 'light';
+  /** 隠し本：他の全冊でハッピーエンドを見るまで本棚に現れない */
+  hidden?: boolean;
   start: string;
   nodes: Record<string, StoryNode>;
 }
@@ -127,6 +129,14 @@ export function backToCheckpoint(story: Story, state: PlayState): PlayState {
 export function endingsOf(story: Story): StoryNode[] {
   return Object.values(story.nodes).filter((n) => n.ending);
 }
+
+/** その作品のハッピーエンドを、到達済みの結末の中に見たか */
+export const hasSeenHappyEnding = (story: Story, seenEndingIds: string[]): boolean =>
+  endingsOf(story).some((n) => n.ending?.kind === 'happy' && seenEndingIds.includes(n.id));
+
+/** 隠し本の出現条件：隠し本でない全冊で、ハッピーエンドを見ていること */
+export const isBonusUnlocked = (stories: Story[], seenByStory: Record<string, string[]>): boolean =>
+  stories.filter((s) => !s.hidden).every((s) => hasSeenHappyEnding(s, seenByStory[s.id] ?? []));
 
 /**
  * シナリオデータの検証。問題があれば日本語の理由を返す（空なら正常）。

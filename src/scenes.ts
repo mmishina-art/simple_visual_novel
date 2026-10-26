@@ -15,6 +15,7 @@ import station from './assets/scenes/station.svg';
 import diner from './assets/scenes/diner.svg';
 import well from './assets/scenes/well.svg';
 import tavern from './assets/scenes/tavern.svg';
+import bookshop from './assets/scenes/bookshop.svg';
 
 export const SCENES = {
   classroom,
@@ -31,6 +32,7 @@ export const SCENES = {
   diner,
   well,
   tavern,
+  bookshop,
 } as const;
 
 /** 背景イラストの種類（SCENES に登録した名前そのまま） */

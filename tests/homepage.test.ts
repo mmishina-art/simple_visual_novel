@@ -8,13 +8,13 @@ describe('紹介ページのラインナップ', () => {
   const html = readFileSync('public/home/index.html', 'utf8');
 
   it('全作品の題名が載っている', () => {
-    for (const story of STORIES) {
+    for (const story of STORIES.filter((s) => !s.hidden)) {
       expect(html, `紹介ページに『${story.title}』が載っていない`).toContain(story.title);
     }
   });
 
   it('表紙画像の数が作品数と一致する', () => {
     const covers = readdirSync('public/home/assets').filter((f) => f.startsWith('cover-') && f.endsWith('.svg'));
-    expect(covers.length).toBe(STORIES.length);
+    expect(covers.length).toBe(STORIES.filter((s) => !s.hidden).length);
   });
 });

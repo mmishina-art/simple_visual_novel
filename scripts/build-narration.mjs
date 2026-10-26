@@ -75,6 +75,7 @@ const SPOKEN_TEXT_OVERRIDES = {
   'stardust-station/locate2': '四十年かけて描いた大きな弧の果てに、船は帰り道の上にいた。まるで、ずっと帰ろうとしていたみたいに。',
   'cafe-tsubame/calm1': '嵐のような一日も、夕方が近づく頃には静かになった。社長はカウンターでうとうとしている。平和だ。平和が一番だ。',
   'cafe-tsubame/recipe2': '太麺をよく炒めて、ケチャップを寝かせて、最後に隠し味。運ばれた皿を見て、美食家の目がはっきりと見開かれた。これだ。この味だ。',
+  'yubisaki/night3': 'ランプの橙の中で、彼は何度も「律子、律子」と私の名を呼んだ。そのたびに私は、若かった自分と今の自分が、ひとつの身体の中で重なっていくのを感じた。激しさよりも、確かさだった。求める手つきに迷いがなく、委ねることに怖さがなかった。雨はまだ降っていた。けれどこの部屋だけは、世界のどこよりも静かで、温かかった。',
 };
 const spokenText = (key, text) => READING_OVERRIDES.reduce((t, [re, yomi]) => t.replace(re, yomi), SPOKEN_TEXT_OVERRIDES[key] ?? text);
 
@@ -101,6 +102,9 @@ const CHUNKED_NARRATION = new Set([
   'maou-diner/truth2',
   'maou-diner/pro1',
   'maou-diner/end_taste',
+  'yubisaki/visit1',
+  'yubisaki/night3',
+  'yubisaki/end_dream',
 ]);
 const splitSentences = (text) => text.match(/[^。！？]+[。！？]?/g)?.map((t) => t.trim()).filter(Boolean) ?? [text];
 

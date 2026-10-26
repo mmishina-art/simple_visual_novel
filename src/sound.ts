@@ -178,7 +178,7 @@ interface BgmConfig {
   stabDecay?: number;
 }
 
-export type BgmTheme = 'horror' | 'romance' | 'mystery' | 'sf' | 'comedy' | 'literary' | 'tavern';
+export type BgmTheme = 'horror' | 'romance' | 'mystery' | 'sf' | 'comedy' | 'literary' | 'tavern' | 'sensual';
 
 const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
   // ホラー（『午前0時の校舎』）：夜の校舎。短調のパッドと、まばらなピアノ、風の音
@@ -455,6 +455,45 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       drone: [41.2, 82.41],
       chordSec: 11, bellChance: 0.2, bellGain: 0.028, wind: 0.003, padGain: 0.014,
       droneGain: 0.011, padWave: 'triangle', padCutoff: 700, bellWave: 'triangle', bellDecay: 2.6,
+    },
+  },
+  // 官能（『指先の温度』）：雨の夜の古書店。低く暖かい和音がゆっくり移ろい、単音は儚く
+  sensual: {
+    normal: {
+      chords: [
+        [87.31, 130.81, 174.61, 261.63], // Fmaj7（低め）
+        [73.42, 110.0, 146.83, 220.0], // Dm7
+        [58.27, 116.54, 174.61, 233.08], // Bbmaj7
+        [65.41, 98.0, 196.0, 246.94], // C(add9)
+      ],
+      bells: [523.25, 587.33, 698.46, 783.99],
+      drone: [43.65, 65.41],
+      chordSec: 12, bellChance: 0.26, bellGain: 0.026, wind: 0.0012, padGain: 0.015,
+      droneGain: 0.01, padWave: 'sine', padCutoff: 900, bellDecay: 6.0,
+    },
+    happy: {
+      chords: [
+        [87.31, 130.81, 220.0, 261.63], // Fmaj7
+        [98.0, 146.83, 196.0, 293.66], // G7sus 的な広がり
+        [110.0, 164.81, 220.0, 329.63], // Am7
+        [65.41, 130.81, 196.0, 329.63], // C
+      ],
+      bells: [587.33, 698.46, 783.99, 880.0],
+      drone: [43.65, 87.31],
+      chordSec: 11, bellChance: 0.34, bellGain: 0.027, wind: 0.001, padGain: 0.015,
+      droneGain: 0.009, padWave: 'sine', padCutoff: 1100, bellDecay: 6.0,
+    },
+    bad: {
+      chords: [
+        [73.42, 110.0, 146.83], // Dm
+        [69.3, 110.0, 138.59], // Dm(b5) 的な翳り
+        [65.41, 103.83, 155.56], // Cm の翳り
+        [73.42, 110.0, 174.61], // Dm
+      ],
+      bells: [293.66, 349.23, 440.0],
+      drone: [36.71, 73.42],
+      chordSec: 14, bellChance: 0.14, bellGain: 0.026, wind: 0.002, padGain: 0.015,
+      droneGain: 0.011, padWave: 'sine', padCutoff: 650, bellDecay: 6.5,
     },
   },
 };
