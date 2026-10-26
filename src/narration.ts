@@ -10,6 +10,8 @@ let audio: HTMLAudioElement | null = null;
 let currentKey = '';
 let finishHandler: (() => void) | null = null;
 let fallbackTimer: number | undefined;
+/** 場面の切り替え・停止・リセットのたびに増やす。古い再生の通知を無効にするため */
+let generation = 0;
 
 const clearFallback = (): void => {
   if (fallbackTimer !== undefined) {
@@ -34,7 +36,8 @@ const ensureAudio = (): HTMLAudioElement => {
       finishHandler?.();
     });
     audio.addEventListener('error', () => {
-      if (enabled && currentKey) scheduleFallback();
+      // いま表示している場面の音声の失敗だけを拾う（古い場面の失敗は無視する）
+      if (enabled && currentKey && audio?.currentSrc.endsWith(`${currentKey}.mp3`)) scheduleFallback();
     });
     document.body.append(audio);
   }
@@ -54,23 +57,34 @@ export function onNarrationFinish(handler: () => void): void {
   finishHandler = handler;
 }
 
+/** 再生する。失敗したときのフォールバックは、その場面がまだ表示されているときだけ動かす */
+function playCurrent(a: HTMLAudioElement, key: string, gen: number): void {
+  void a.play().catch(() => {
+    // すぐにタップで次へ進むと、前の再生リクエストが「中断」で失敗する。
+    // それを拾って進めてしまうと、画面と読み上げが1場面ずれるので、古い失敗は無視する
+    if (gen === generation && currentKey === key) scheduleFallback();
+  });
+}
+
 /** その場面の読み上げに切り替える。同じ場面なら、止まっていたら再開するだけ */
 export function syncNarration(storyId: string, nodeId: string): void {
   if (!enabled) return;
   const key = `${storyId}/${nodeId}`;
   const a = ensureAudio();
   if (key === currentKey) {
-    if (a.paused && !a.ended && a.currentTime > 0) void a.play().catch(() => scheduleFallback());
+    if (a.paused && !a.ended && a.currentTime > 0) playCurrent(a, key, generation);
     return;
   }
+  generation += 1;
   currentKey = key;
   clearFallback();
   a.src = `audio/${key}.mp3`;
-  void a.play().catch(() => scheduleFallback());
+  playCurrent(a, key, generation);
 }
 
 /** 完全に止める（本棚・タイトル・設定へ出たとき） */
 export function stopNarration(): void {
+  generation += 1;
   currentKey = '';
   clearFallback();
   if (audio) {
@@ -88,6 +102,7 @@ export function suspendNarration(): void {
 
 /** 次の sync で同じ場面でも読み直すようにする（本を開き直したとき） */
 export function resetNarration(): void {
+  generation += 1;
   currentKey = '';
   clearFallback();
 }
