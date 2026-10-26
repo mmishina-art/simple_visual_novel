@@ -7,10 +7,11 @@ export const cafeTsubame: Story = {
   title: '喫茶つばめの災難',
   description: 'バイト初日の喫茶店。注文は聞き間違える、インコの社長は好き放題。ドタバタの一日の終わりに、伝説のメニューが復活する？',
   length: '5〜10分',
-  cover: 'diner',
+  cover: 'dinercover',
   coverTone: 'light',
   coverObi: 'orange',
   coverLines: ['喫茶つばめ', 'の災難'],
+  coverTitleLayout: 'window',
   bgm: 'comedy',
   start: 'start1',
   nodes: {

@@ -11,6 +11,8 @@ export const moonLibrary: Story = {
   coverTone: 'light',
   coverObi: 'cream',
   coverLines: ['月夜の', '図書室'],
+  coverTitleLayout: 'horizontal',
+  coverFocus: 'left',
   bgm: 'romance',
   start: 'start1',
   nodes: {

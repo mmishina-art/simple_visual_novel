@@ -22,8 +22,9 @@ import trophy from './assets/scenes/trophy.svg';
 import libraryhall from './assets/scenes/libraryhall.svg';
 import station from './assets/scenes/station.svg';
 import diner from './assets/scenes/diner.svg';
+import dinercover from './assets/scenes/dinercover.svg';
 
-const SCENES: Record<SceneBg, string> = { classroom, corridor, stairs, music, entrance, dark, outside, library, trophy, libraryhall, station, diner };
+const SCENES: Record<SceneBg, string> = { classroom, corridor, stairs, music, entrance, dark, outside, library, trophy, libraryhall, station, diner, dinercover };
 const $ = <T extends HTMLElement>(id: string): T => {
   const el = document.getElementById(id);
   if (!el) throw new Error(`#${id} not found`);
@@ -165,14 +166,17 @@ function spanOf(className: string, text?: string): HTMLSpanElement {
  * 表紙を作る。装丁は「帯のデザイン」（2026-10-26 決定）：
  * 縦書きの題字、赤い帯にあらすじ、左上に奥付
  */
-function buildCover(item: { title: string; description: string; cover?: SceneBg; coverObi?: string; coverTone?: string; coverLines?: string[] }): HTMLSpanElement {
+function buildCover(item: { title: string; description: string; cover?: SceneBg; coverObi?: string; coverTone?: string; coverLines?: string[]; coverTitleLayout?: string; coverFocus?: string }): HTMLSpanElement {
   const cover = spanOf(`book-cover obi-${item.coverObi ?? 'red'} tone-${item.coverTone ?? 'dark'}`);
   const img = document.createElement('img');
   img.className = 'book-cover-img';
   img.src = SCENES[item.cover ?? 'classroom'];
   img.alt = '';
+  if (item.coverFocus) img.style.objectPosition = item.coverFocus;
   cover.append(img);
   const vtitle = spanOf('book-cover-vtitle');
+  if (item.coverTitleLayout === 'horizontal') vtitle.classList.add('htitle');
+  if (item.coverTitleLayout === 'window') vtitle.classList.add('inwindow');
   // 5文字以上の列がある本は、題字を少し小さくして帯に届かないようにする
   if (item.coverLines?.some((line) => line.length >= 5)) vtitle.classList.add('vt-long');
   if (item.coverLines) {
