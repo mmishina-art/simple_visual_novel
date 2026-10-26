@@ -8,7 +8,7 @@ export const maouDiner: Story = {
   description: '過労で倒れた調理師の転生先は、魔王討伐から30年後の静かな国。小さな食堂から、世界の真実が見えてくる。',
   length: '5〜10分',
   cover: 'tavern',
-  coverTone: 'light',
+  coverTone: 'dark',
   coverObi: 'moss',
   coverLines: ['魔王のいない', '国の食堂'],
   bgm: 'tavern',
