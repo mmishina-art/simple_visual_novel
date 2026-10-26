@@ -8,6 +8,7 @@ import { setupDebug } from './debug';
 import { setupInstallGuide } from './install';
 import { applyUpdate, checkForUpdate, onUpdateAvailable, setupPwa } from './pwa';
 import { isSoundOn, playAdvanceSound, playBookOpenSound, playButtonSound, playEndingJingle, playSceneSound, setSound, startBgm, stopBgm } from './sound';
+import { isNarrationOn, onNarrationFinish, resetNarration, setNarration, stopNarration, suspendNarration, syncNarration } from './narration';
 import { exportBackup, importBackup, load, migrateStorage, remove, requestPersist, save } from './storage';
 
 import { SCENES } from './scenes';
@@ -138,6 +139,9 @@ function renderTitle(): void {
     const sound = $(id);
     sound.textContent = isSoundOn() ? '🔊' : '🔇';
     sound.setAttribute('aria-pressed', String(isSoundOn()));
+  }
+  for (const id of ['narration-button', 'narration-button-game']) {
+    $(id).setAttribute('aria-pressed', String(isNarrationOn()));
   }
 }
 
@@ -296,6 +300,10 @@ function renderGame(): void {
   if (node.ending) $('ending-title').textContent = node.ending.title;
   $('to-title-button').hidden = !!node.ending;
 
+  // 読み上げ：結末パネルが出ているときは止め、それ以外は今の場面に合わせる
+  if (node.ending && endingRevealed) stopNarration();
+  else syncNarration(story.id, node.id);
+
   // 場面が変わったときだけ、その場面の音を鳴らし、読み返し用に文章を記録する
   if (node.id !== lastNodeId) {
     lastNodeId = node.id;
@@ -311,6 +319,9 @@ function renderGame(): void {
 }
 
 function render(): void {
+  // 読み上げは本編の画面だけ。読み返しでは一時停止、その他の画面では止める
+  if (screen === 'backlog') suspendNarration();
+  else if (screen !== 'game') stopNarration();
   $('title-screen').hidden = screen !== 'title';
   $('shelf-screen').hidden = screen !== 'shelf';
   $('settings-screen').hidden = screen !== 'settings';
@@ -323,6 +334,7 @@ function render(): void {
 }
 
 function startGame(fromState: PlayState, resume = false): void {
+  resetNarration();
   state = fromState;
   if (!resume) backlog = [];
   else if (backlog.length === 0) backlog = [{ kind: 'text', text: nodeOf(story, fromState).text }];
@@ -342,6 +354,7 @@ document.addEventListener('click', (e) => {
   const button = target.closest('button');
   if (!button) return;
   if (button.id === 'sound-button' || button.id === 'sound-button-game') return;
+  if (button.id === 'narration-button' || button.id === 'narration-button-game') return;
   if (button.classList.contains('book-card')) return; // 本を開く音が鳴るので、ボタンの音は出さない
   if (button.id === 'update-button' || button.id === 'boot-repair') return;
   if (button.id === 'resume-continue' || button.id === 'resume-restart') return;
@@ -389,7 +402,8 @@ $('backlog-close').addEventListener('click', () => {
   screen = 'game';
   render();
 });
-$('message-window').addEventListener('click', () => {
+// 文章を1つ進める（結末なら、まず結末パネルを出す）。タップと、読み上げの自動再生で共用する
+function advanceReading(): void {
   if (!state || screen !== 'game') return;
   // 結末の文章が表示された状態でもう一度押されたら、結末パネルを出す。
   // この瞬間に、結末ごとの効果音を鳴らす
@@ -407,6 +421,13 @@ $('message-window').addEventListener('click', () => {
     persist();
     render();
   }
+}
+$('message-window').addEventListener('click', advanceReading);
+// 読み上げが終わったら自動で次へ。ただし選択肢の場面では、選んでもらうために止まる
+onNarrationFinish(() => {
+  if (!state || screen !== 'game') return;
+  if (nodeOf(story, state).choices) return;
+  advanceReading();
 });
 $('retry-button').addEventListener('click', () => {
   if (state) startGame(backToCheckpoint(story, state));
@@ -422,6 +443,12 @@ $('to-title-button').addEventListener('click', toShelf);
 for (const id of ['sound-button', 'sound-button-game']) {
   $(id).addEventListener('click', () => {
     setSound(!isSoundOn());
+    render();
+  });
+}
+for (const id of ['narration-button', 'narration-button-game']) {
+  $(id).addEventListener('click', () => {
+    setNarration(!isNarrationOn());
     render();
   });
 }

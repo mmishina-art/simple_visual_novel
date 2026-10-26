@@ -66,7 +66,8 @@ Vite + TypeScript + vite-plugin-pwa + Vitest + Playwright + ESLint。UI フレ�
 2. `src/stories/index.ts` の `STORIES` に1行足す。これで本棚・保存・読みかけ確認まで自動で付く。
 3. 新しい絵が要るときは `src/assets/scenes/` に SVG を置き、`src/scenes.ts` に import と1行を足す（他の型定義は触らない）。新しい BGM テーマは `src/sound.ts` の `BgmTheme` と `BGM_THEMES`、新しい場面音は `src/logic.ts` の `SceneSound` と `src/sound.ts` の `SCENE_SOUNDS` に足す（どちらも対応が欠けると型で落ちる）。
 4. 紹介ページ（`public/home/index.html`）のラインナップに載せ、表紙画像を `public/home/assets/cover-*.svg` に置く。載せ忘れは `tests/homepage.test.ts` が検出する。
-5. 任意: その本を通しで読む E2E を `e2e/app.spec.ts` に足す（選択肢のラベルを順に指定する形式）。
+5. 読み上げ音声を作る: `npm run narration`（本文のハッシュが変わった場面だけ再生成される。未生成・不一致は `tests/narration.test.ts` が検出する）。
+6. 任意: その本を通しで読む E2E を `e2e/app.spec.ts` に足す（選択肢のラベルを順に指定する形式）。
 
 ## PWA 要件(完了の定義)
 
