@@ -346,6 +346,7 @@ function render(): void {
   $('settings-screen').hidden = screen !== 'settings';
   $('game-screen').hidden = screen !== 'game';
   $('backlog-screen').hidden = screen !== 'backlog';
+  syncWakeLock();
   renderTitle();
   if (screen === 'shelf') renderShelf();
   renderGame();
@@ -353,6 +354,35 @@ function render(): void {
   // タイトル・本棚・設定の画面ではタイトルのBGMを流す（本編と読み返しでは物語側のBGMが担当する）
   if (screen !== 'game' && screen !== 'backlog') startTitleBgm();
 }
+
+// 本編・読み返しの画面では Wake Lock を取り、読み上げ中に画面が暗くなったり
+// 消えたりしないようにする（iPhone Safari 16.4以降・Chrome が対応）。
+// 対応していない環境では何もしない。画面が隠れるとブラウザが自動で手放すので、
+// 戻ってきたとき（restoreFromBackground）に取り直す。
+type WakeLockSentinelLike = {
+  release: () => Promise<void>;
+  addEventListener: (type: 'release', listener: () => void) => void;
+};
+let wakeLock: WakeLockSentinelLike | null = null;
+const acquireWakeLock = async (): Promise<void> => {
+  const nav = navigator as Navigator & { wakeLock?: { request: (type: 'screen') => Promise<WakeLockSentinelLike> } };
+  if (!nav.wakeLock || wakeLock) return;
+  try {
+    wakeLock = await nav.wakeLock.request('screen');
+    wakeLock.addEventListener('release', () => {
+      wakeLock = null;
+    });
+  } catch {
+    wakeLock = null;
+  }
+};
+const syncWakeLock = (): void => {
+  if (screen === 'game' || screen === 'backlog') void acquireWakeLock();
+  else {
+    wakeLock?.release().catch(() => {});
+    wakeLock = null;
+  }
+};
 
 /** その場面に着いた時点で効いている背景を、物語の入口からたどって求める
  * （場面自身に指定がなければ、そこへ至る経路で最後に指定された背景が続く）。
@@ -501,6 +531,7 @@ const restoreFromBackground = (): void => {
   } else {
     startTitleBgm();
   }
+  syncWakeLock();
 };
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) silenceForBackground();
