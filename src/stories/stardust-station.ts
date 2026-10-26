@@ -9,6 +9,7 @@ export const stardustStation: Story = {
   length: '5〜10分',
   cover: 'station',
   coverObi: 'silver',
+  coverLines: ['星屑', 'ステーション'],
   bgm: 'sf',
   start: 'start1',
   nodes: {

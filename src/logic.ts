@@ -42,6 +42,8 @@ export interface Story {
   cover?: SceneBg;
   /** 表紙の帯の色・形（省略時は 'red'） */
   coverObi?: 'red' | 'cream' | 'navy' | 'silver' | 'orange';
+  /** 表紙の題字の改行位置（言葉の途中では切らない）。連結すると title と一致すること */
+  coverLines?: string[];
   /** BGM のテーマ（省略時は 'horror'） */
   bgm?: 'horror' | 'romance' | 'mystery' | 'sf' | 'comedy';
   /** 表紙の色調（省略時は 'dark'）。明るい絵には 'light' */
@@ -129,7 +131,11 @@ export function endingsOf(story: Story): StoryNode[] {
  * 作品を足したときに、リンク切れや到達できない場面に気づけるようにする。
  */
 export function validateStory(story: Story): string[] {
-  const errors: string[] = [];
+  const coverErrors: string[] = [];
+  if (story.coverLines && story.coverLines.join('') !== story.title) {
+    coverErrors.push(`coverLines をつなげると題名と一致しません: ${story.id}`);
+  }
+  const errors: string[] = [...coverErrors];
   const ids = new Set(Object.keys(story.nodes));
   if (!ids.has(story.start)) errors.push(`開始ノードがありません: ${story.start}`);
   for (const node of Object.values(story.nodes)) {

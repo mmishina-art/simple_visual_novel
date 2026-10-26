@@ -10,6 +10,7 @@ export const moonLibrary: Story = {
   cover: 'library',
   coverTone: 'light',
   coverObi: 'cream',
+  coverLines: ['月夜の', '図書室'],
   bgm: 'romance',
   start: 'start1',
   nodes: {
