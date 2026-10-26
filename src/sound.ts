@@ -158,6 +158,12 @@ interface BgmConfig {
   padCutoff?: number;
   /** 単音の余韻の長さ（秒） */
   bellDecay?: number;
+  /** 単音の波形（推理ものは乾いた三角波の短い音） */
+  bellWave?: OscillatorType;
+  /** 推理もの用：持続するパッドではなく、打って消える和音にする */
+  stab?: boolean;
+  /** stab の余韻の長さ（秒） */
+  stabDecay?: number;
 }
 
 export type BgmTheme = 'horror' | 'romance' | 'mystery';
@@ -238,19 +244,20 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       droneGain: 0.014, padWave: 'sine', padCutoff: 1100, bellDecay: 4.6,
     },
   },
-  // 推理もの（『消えた優勝杯』）：張り詰めた短調。和音の頭に低い脈打ち、単音は控えめ
+  // 推理もの（『消えた優勝杯』）：ドローンも風も持続音もない。乾いた和音を打っては消し、無音を挟む。短く切れる単音と合わせて、ホラーの「広い闇」と区別する
   mystery: {
     normal: {
       chords: [
-        [110.0, 130.81, 164.81], // Am
-        [110.0, 130.81, 164.81],
-        [87.31, 110.0, 130.81, 174.61], // F
-        [82.41, 103.83, 123.47, 164.81], // E
+        [110.0, 220.0, 261.63, 329.63], // Am（高めに開く）
+        [174.61, 220.0, 261.63, 349.23], // F
+        [130.81, 196.0, 261.63, 392.0], // C（長調で少し軽く）
+        [164.81, 207.65, 246.94, 329.63], // E（最後に緊張を戻す）
       ],
-      bells: [220.0, 261.63, 329.63, 196.0],
+      bells: [329.63, 392.0, 440.0, 523.25],
       drone: [55, 82.41],
-      chordSec: 8, bellChance: 0.18, bellGain: 0.04, wind: 0.002, padGain: 0.015,
-      padCutoff: 620, droneGain: 0.042,
+      chordSec: 5.5, bellChance: 0.28, bellGain: 0.05, wind: 0, padGain: 0.015,
+      padWave: 'triangle', padCutoff: 1600, droneGain: 0, bellWave: 'triangle', bellDecay: 0.8,
+      stab: true, stabDecay: 1.7,
     },
     happy: {
       chords: [
@@ -261,7 +268,9 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       ],
       bells: [440.0, 523.25, 659.25, 783.99],
       drone: [65.41, 98.0],
-      chordSec: 8.5, bellChance: 0.4, bellGain: 0.036, wind: 0.0015, padGain: 0.016,
+      chordSec: 6, bellChance: 0.4, bellGain: 0.042, wind: 0, padGain: 0.016,
+      padWave: 'triangle', padCutoff: 1700, droneGain: 0, bellWave: 'triangle', bellDecay: 0.9,
+      stab: true, stabDecay: 2.1,
     },
     bad: {
       chords: [
@@ -272,8 +281,9 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       ],
       bells: [110.0, 116.54, 220.0],
       drone: [55, 58.27],
-      chordSec: 11, bellChance: 0.12, bellGain: 0.042, wind: 0.004, padGain: 0.016,
-      padCutoff: 560, droneGain: 0.044,
+      chordSec: 7, bellChance: 0.14, bellGain: 0.05, wind: 0, padGain: 0.016,
+      padWave: 'triangle', padCutoff: 1000, droneGain: 0, bellWave: 'triangle', bellDecay: 0.5,
+      stab: true, stabDecay: 1.4,
     },
   },
 };
@@ -352,6 +362,25 @@ export function startBgm(mood?: BgmMood, theme?: BgmTheme): void {
     const playChord = (at: number): void => {
       const chord = cfg.chords[chordIndex % cfg.chords.length];
       chordIndex += 1;
+      if (cfg.stab) {
+        // 推理もの：ピアノを打つように和音を鳴らし、余韻を残して消す（持続させない）
+        const dec = cfg.stabDecay ?? 1.5;
+        for (const f of chord) {
+          const o = c.createOscillator();
+          o.type = cfg.padWave ?? 'triangle';
+          o.frequency.value = f;
+          const g = c.createGain();
+          g.gain.setValueAtTime(cfg.padGain * 2.6, at);
+          g.gain.exponentialRampToValueAtTime(0.0001, at + dec);
+          const lp = c.createBiquadFilter();
+          lp.type = 'lowpass';
+          lp.frequency.value = cfg.padCutoff ?? 850;
+          o.connect(lp).connect(g).connect(master);
+          o.start(at);
+          o.stop(at + dec + 0.1);
+        }
+        return;
+      }
       for (const f of chord) {
         for (const detune of [-4, 4]) {
           const o = c.createOscillator();
@@ -376,7 +405,7 @@ export function startBgm(mood?: BgmMood, theme?: BgmTheme): void {
     const playBell = (at: number): void => {
       const f = cfg.bells[Math.floor(Math.random() * cfg.bells.length)];
       const o = c.createOscillator();
-      o.type = 'sine';
+      o.type = cfg.bellWave ?? 'sine';
       o.frequency.value = f;
       const g = c.createGain();
       g.gain.setValueAtTime(cfg.bellGain, at);
