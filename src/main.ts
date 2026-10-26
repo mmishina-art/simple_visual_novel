@@ -1,6 +1,6 @@
 import './style.css';
 import {
-  advance, backToCheckpoint, choose, endingsOf, isEnding, nodeOf, startState,
+  advance, backToCheckpoint, choose, endingsOf, hasSeenHappyEnding, isBonusUnlocked, isEnding, nodeOf, startState,
   type PlayState, type SceneBg, type Story,
 } from './logic';
 import { STORIES, storyById } from './stories';
@@ -185,7 +185,23 @@ function buildCover(item: { title: string; description: string; cover?: SceneBg;
 function renderShelf(): void {
   const list = $('shelf-list');
   list.replaceChildren();
+  // 隠し本の出現判定：他の全冊でハッピーエンドを見ているか
+  const seenByStory: Record<string, string[]> = {};
+  for (const s of STORIES) seenByStory[s.id] = load<string[]>(skey('endings', s), []);
+  const unlocked = isBonusUnlocked(STORIES, seenByStory);
   for (const item of STORIES) {
+    if (item.hidden && !unlocked) {
+      // まだ現れていない隠し本は、予告だけを置く
+      const teaser = document.createElement('div');
+      teaser.className = 'locked-card';
+      const done = STORIES.filter((x) => !x.hidden && hasSeenHappyEnding(x, seenByStory[x.id] ?? [])).length;
+      const total = STORIES.filter((x) => !x.hidden).length;
+      teaser.append(spanOf('locked-mark', '？？？'));
+      teaser.append(spanOf('locked-text', 'すべての物語でハッピーエンドを見ると、ここに新しい本が現れます'));
+      teaser.append(spanOf('book-meta muted', `ハッピーエンド達成: ${done} / ${total}`));
+      list.append(teaser);
+      continue;
+    }
     const card = document.createElement('button');
     card.type = 'button';
     card.className = 'book-card';

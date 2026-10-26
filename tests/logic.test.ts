@@ -4,6 +4,8 @@ import {
   type PlayState, type Story,
 } from '../src/logic';
 import { midnightSchool } from '../src/stories/midnight-school';
+import { hasSeenHappyEnding, isBonusUnlocked } from '../src/logic';
+import { STORIES } from '../src/stories';
 
 const story = midnightSchool;
 
@@ -135,5 +137,26 @@ describe('全作品の検証', () => {
       expect(endings.length, s.title).toBe(3);
       expect(endings.filter((n) => n.ending?.kind === 'happy').length, s.title).toBe(1);
     }
+  });
+});
+
+describe('隠し本の出現条件', () => {
+  it('ハッピーエンドを見ていれば true、バッドだけでは false', () => {
+    const happy = endingsOf(midnightSchool).find((n) => n.ending?.kind === 'happy')!;
+    const bad = endingsOf(midnightSchool).find((n) => n.ending?.kind === 'bad')!;
+    expect(hasSeenHappyEnding(midnightSchool, [happy.id])).toBe(true);
+    expect(hasSeenHappyEnding(midnightSchool, [bad.id])).toBe(false);
+    expect(hasSeenHappyEnding(midnightSchool, [])).toBe(false);
+  });
+
+  it('全冊のハッピーエンドが揃うと出現し、1冊でも欠けると現れない', () => {
+    const seen: Record<string, string[]> = {};
+    for (const story of STORIES.filter((x) => !x.hidden)) {
+      seen[story.id] = [endingsOf(story).find((n) => n.ending?.kind === 'happy')!.id];
+    }
+    expect(isBonusUnlocked(STORIES, seen)).toBe(true);
+    const first = STORIES.find((x) => !x.hidden)!;
+    seen[first.id] = [];
+    expect(isBonusUnlocked(STORIES, seen)).toBe(false);
   });
 });

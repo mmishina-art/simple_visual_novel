@@ -326,6 +326,30 @@ button.big {
 }
 
 /* 本のカード。カード全体がボタンで、選ぶと本編が始まる */
+.locked-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 18px 16px;
+  border: 1.5px dashed rgba(233, 221, 194, 0.4);
+  border-radius: 10px;
+  background: rgba(20, 16, 10, 0.35);
+  color: #e9ddc2;
+}
+
+.locked-mark {
+  font-size: 1.3rem;
+  letter-spacing: 0.4em;
+  opacity: 0.85;
+}
+
+.locked-text {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
 .book-card {
   display: flex;
   flex-direction: column;
@@ -488,6 +512,10 @@ button.big {
 .obi-moss .book-obi {
   background: linear-gradient(90deg, #55663a, #74875a 55%, #55663a);
   color: #f2f0dd;
+}
+.obi-gold .book-obi {
+  background: linear-gradient(90deg, #8a6a1e, #d9b45c 55%, #8a6a1e);
+  color: #2e2108;
 }
 
 .book-colophon {
