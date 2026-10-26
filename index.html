@@ -52,6 +52,11 @@
           <button id="sound-button" type="button" class="icon-button" aria-label="音" aria-pressed="true">🔊</button>
         </div>
 
+        <div class="settings-row">
+          <span>読み上げ（自動再生）</span>
+          <button id="narration-button" type="button" class="icon-button" aria-label="読み上げ" aria-pressed="false">🗣️</button>
+        </div>
+
         <details class="backup">
           <summary>記録のバックアップ</summary>
           <p class="muted">進行状況や到達した結末は、このブラウザの中にだけ保存されています。ファイルに残しておくと、消えたときに戻せます。</p>
@@ -81,7 +86,8 @@
         <header class="game-header">
           <span class="game-title">午前0時の校舎</span>
           <span class="game-header-actions">
-            <button id="to-title-button" type="button" class="btn-pill">本棚へ戻る</button>
+            <button id="to-title-button" type="button" class="btn-pill">本棚へ</button>
+            <button id="narration-button-game" type="button" class="icon-button" aria-label="読み上げ" aria-pressed="false">🗣️</button>
             <button id="sound-button-game" type="button" class="icon-button" aria-label="音" aria-pressed="true">🔊</button>
           </span>
         </header>

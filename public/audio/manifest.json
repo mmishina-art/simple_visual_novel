@@ -1,0 +1,497 @@
+{
+  "midnight-school/start3": {
+    "hash": "9d8474e2f5"
+  },
+  "midnight-school/start1": {
+    "hash": "62764eed72"
+  },
+  "midnight-school/start2": {
+    "hash": "132a8f308b"
+  },
+  "midnight-school/start4": {
+    "hash": "6aa29154fb"
+  },
+  "midnight-school/choice_light": {
+    "hash": "6604d097fd"
+  },
+  "midnight-school/start5": {
+    "hash": "57391799ef"
+  },
+  "midnight-school/light_take2": {
+    "hash": "cb3e0dfdd0"
+  },
+  "midnight-school/light_leave2": {
+    "hash": "cb3e0dfdd0"
+  },
+  "midnight-school/light_take1": {
+    "hash": "d493807b25"
+  },
+  "midnight-school/light_leave1": {
+    "hash": "be2646981b"
+  },
+  "midnight-school/corridor2": {
+    "hash": "e9e1aafee7"
+  },
+  "midnight-school/choice_music": {
+    "hash": "dfe240cbc7"
+  },
+  "midnight-school/corridor1": {
+    "hash": "32013e7128"
+  },
+  "midnight-school/corridor3": {
+    "hash": "19ebd27bb6"
+  },
+  "midnight-school/music3": {
+    "hash": "0b593c5b3b"
+  },
+  "midnight-school/music2": {
+    "hash": "9b33788212"
+  },
+  "midnight-school/music4": {
+    "hash": "a4ec9975bc"
+  },
+  "midnight-school/music1": {
+    "hash": "b14452e802"
+  },
+  "midnight-school/stairs1": {
+    "hash": "fe4ff5af6c"
+  },
+  "midnight-school/down1": {
+    "hash": "138c4fba74"
+  },
+  "midnight-school/down2": {
+    "hash": "427d87b516"
+  },
+  "midnight-school/stairs2": {
+    "hash": "d66ef41f37"
+  },
+  "midnight-school/choice_voice": {
+    "hash": "82928f5653"
+  },
+  "midnight-school/voice1": {
+    "hash": "1687937229"
+  },
+  "midnight-school/answer1": {
+    "hash": "832b82bfed"
+  },
+  "midnight-school/answer2": {
+    "hash": "e821c033d2"
+  },
+  "midnight-school/silent1": {
+    "hash": "291ed3d65e"
+  },
+  "midnight-school/silent2": {
+    "hash": "4f09ca7b3e"
+  },
+  "midnight-school/end_voice": {
+    "hash": "6a54a1598d"
+  },
+  "midnight-school/entrance1": {
+    "hash": "cbe8800655"
+  },
+  "midnight-school/entrance2": {
+    "hash": "4b72c0b639"
+  },
+  "midnight-school/entrance3": {
+    "hash": "a4ac2ef9a8"
+  },
+  "midnight-school/blackout1": {
+    "hash": "e36b47daef"
+  },
+  "midnight-school/choice_final": {
+    "hash": "fcaffc2834"
+  },
+  "midnight-school/blackout2": {
+    "hash": "81b72cd8af"
+  },
+  "midnight-school/run_light1": {
+    "hash": "816e47d81f"
+  },
+  "midnight-school/lookback1": {
+    "hash": "09833df0fb"
+  },
+  "midnight-school/run_dark1": {
+    "hash": "99da24a6be"
+  },
+  "midnight-school/run_light2": {
+    "hash": "6df59a8080"
+  },
+  "moon-library/start1": {
+    "hash": "42b280da80"
+  },
+  "moon-library/start2": {
+    "hash": "a4eb097968"
+  },
+  "midnight-school/end_happy": {
+    "hash": "88c2c97c95"
+  },
+  "midnight-school/end_caught": {
+    "hash": "17373dd9c4"
+  },
+  "moon-library/choice_note": {
+    "hash": "527b419023"
+  },
+  "moon-library/start4": {
+    "hash": "5180be6c1d"
+  },
+  "moon-library/start3": {
+    "hash": "5cf8e6cd2d"
+  },
+  "moon-library/start5": {
+    "hash": "226890e367"
+  },
+  "moon-library/reply2": {
+    "hash": "989d469bc2"
+  },
+  "moon-library/reply1": {
+    "hash": "e045c870d4"
+  },
+  "moon-library/silent1": {
+    "hash": "4bc7c45869"
+  },
+  "moon-library/week1": {
+    "hash": "fd699c0cab"
+  },
+  "moon-library/choice_book": {
+    "hash": "551d2dc8ed"
+  },
+  "moon-library/silent2": {
+    "hash": "c5b7233a48"
+  },
+  "moon-library/week2": {
+    "hash": "316d011635"
+  },
+  "moon-library/book_talk1": {
+    "hash": "1494245aa3"
+  },
+  "moon-library/rain1": {
+    "hash": "c41880db81"
+  },
+  "moon-library/book_rec1": {
+    "hash": "82bcb02760"
+  },
+  "moon-library/rain2": {
+    "hash": "aeaf2df96b"
+  },
+  "moon-library/choice_rain": {
+    "hash": "4552ab5c0c"
+  },
+  "moon-library/rain3": {
+    "hash": "80d5107342"
+  },
+  "moon-library/lend2": {
+    "hash": "1848266779"
+  },
+  "moon-library/lend1": {
+    "hash": "4712a45ac2"
+  },
+  "moon-library/pass1": {
+    "hash": "70b9aa6c7d"
+  },
+  "moon-library/choice_final": {
+    "hash": "b4a0b669d0"
+  },
+  "moon-library/last1": {
+    "hash": "12c57109a7"
+  },
+  "moon-library/last2": {
+    "hash": "5591c1293f"
+  },
+  "moon-library/meet1": {
+    "hash": "72afcdd458"
+  },
+  "moon-library/meet2": {
+    "hash": "0ef7e68549"
+  },
+  "moon-library/letter1": {
+    "hash": "6868a64c72"
+  },
+  "moon-library/wait_alone1": {
+    "hash": "70e914d8c8"
+  },
+  "moon-library/end_happy": {
+    "hash": "a38d7b2374"
+  },
+  "moon-library/end_missed": {
+    "hash": "bccf7b156f"
+  },
+  "moon-library/end_letter": {
+    "hash": "095b50513c"
+  },
+  "missing-trophy/start1": {
+    "hash": "9c6bb9df34"
+  },
+  "missing-trophy/start2": {
+    "hash": "56dc444bfd"
+  },
+  "missing-trophy/start3": {
+    "hash": "fb21ed6dfd"
+  },
+  "missing-trophy/choice_first": {
+    "hash": "d6bebdcb56"
+  },
+  "missing-trophy/start4": {
+    "hash": "6b37689c5c"
+  },
+  "missing-trophy/mud1": {
+    "hash": "e77668e636"
+  },
+  "missing-trophy/mud2": {
+    "hash": "d61d79764d"
+  },
+  "missing-trophy/start5": {
+    "hash": "f9ed449226"
+  },
+  "missing-trophy/key1": {
+    "hash": "189457673a"
+  },
+  "missing-trophy/key2": {
+    "hash": "efae42cddc"
+  },
+  "missing-trophy/choice_photo": {
+    "hash": "58577da609"
+  },
+  "missing-trophy/mid2": {
+    "hash": "1dbceeb4a8"
+  },
+  "missing-trophy/mid1": {
+    "hash": "ccdbfb1a77"
+  },
+  "missing-trophy/photo2": {
+    "hash": "c175b6e6f1"
+  },
+  "missing-trophy/chief1": {
+    "hash": "e90fd46dcb"
+  },
+  "missing-trophy/chief2": {
+    "hash": "5fffafe02a"
+  },
+  "missing-trophy/choice_window": {
+    "hash": "505b9c447b"
+  },
+  "missing-trophy/win1": {
+    "hash": "033265f98b"
+  },
+  "missing-trophy/photo1": {
+    "hash": "5d74668232"
+  },
+  "missing-trophy/win_case1": {
+    "hash": "60955e7c2b"
+  },
+  "missing-trophy/win_check1": {
+    "hash": "2103738df3"
+  },
+  "missing-trophy/choice_final": {
+    "hash": "66137a663c"
+  },
+  "missing-trophy/last1": {
+    "hash": "0c40b8764e"
+  },
+  "missing-trophy/truth1": {
+    "hash": "24e49f6002"
+  },
+  "missing-trophy/truth2": {
+    "hash": "553ee6f6f2"
+  },
+  "missing-trophy/deny1": {
+    "hash": "d05c21c5d0"
+  },
+  "missing-trophy/wrong1": {
+    "hash": "45a47bd413"
+  },
+  "missing-trophy/end_truth": {
+    "hash": "ae48a3fbdc"
+  },
+  "missing-trophy/end_wrong": {
+    "hash": "bbe254589c"
+  },
+  "missing-trophy/end_late": {
+    "hash": "7b5cf1fd8a"
+  },
+  "stardust-station/choice_signal": {
+    "hash": "b35d7367e4"
+  },
+  "stardust-station/start2": {
+    "hash": "2d989abe4d"
+  },
+  "stardust-station/start3": {
+    "hash": "eb0075bd26"
+  },
+  "stardust-station/start1": {
+    "hash": "6e04ddf212"
+  },
+  "stardust-station/decode1": {
+    "hash": "ffb9def6c3"
+  },
+  "stardust-station/locate2": {
+    "hash": "6b44c8f39a"
+  },
+  "stardust-station/decode2": {
+    "hash": "6174324769"
+  },
+  "stardust-station/locate1": {
+    "hash": "2822ab1b00"
+  },
+  "stardust-station/talk1": {
+    "hash": "6ad2e177ad"
+  },
+  "stardust-station/choice_report": {
+    "hash": "347092343a"
+  },
+  "stardust-station/talk2": {
+    "hash": "64c1a07592"
+  },
+  "stardust-station/report1": {
+    "hash": "d9d2e99d46"
+  },
+  "stardust-station/report2": {
+    "hash": "0f1d6b1758"
+  },
+  "stardust-station/stay2": {
+    "hash": "0483ea104b"
+  },
+  "stardust-station/mid2": {
+    "hash": "93b0bffa28"
+  },
+  "stardust-station/stay1": {
+    "hash": "f368dd11c8"
+  },
+  "stardust-station/choice_rescue": {
+    "hash": "8812a3ee89"
+  },
+  "stardust-station/mid1": {
+    "hash": "273fbf120d"
+  },
+  "stardust-station/power2": {
+    "hash": "db772f03f9"
+  },
+  "stardust-station/power1": {
+    "hash": "f7746c9377"
+  },
+  "stardust-station/transfer2": {
+    "hash": "aa59d8b479"
+  },
+  "stardust-station/transfer1": {
+    "hash": "8478bc44aa"
+  },
+  "stardust-station/choice_final": {
+    "hash": "f26070160e"
+  },
+  "stardust-station/end_signal": {
+    "hash": "030954cf22"
+  },
+  "stardust-station/final1": {
+    "hash": "21421af7eb"
+  },
+  "stardust-station/send2": {
+    "hash": "d5103052eb"
+  },
+  "stardust-station/send1": {
+    "hash": "0acf1adf54"
+  },
+  "stardust-station/wait2": {
+    "hash": "35f880abca"
+  },
+  "stardust-station/wait1": {
+    "hash": "13f1df920b"
+  },
+  "stardust-station/end_far": {
+    "hash": "8c71c66d3b"
+  },
+  "stardust-station/meet1": {
+    "hash": "fe25e0c5ac"
+  },
+  "stardust-station/meet3": {
+    "hash": "6803c63cb1"
+  },
+  "stardust-station/meet2": {
+    "hash": "4956ea498b"
+  },
+  "cafe-tsubame/start2": {
+    "hash": "c65764b54a"
+  },
+  "cafe-tsubame/start3": {
+    "hash": "cfccb90ffa"
+  },
+  "cafe-tsubame/start1": {
+    "hash": "4c7a0122c7"
+  },
+  "stardust-station/end_happy": {
+    "hash": "f91a85078d"
+  },
+  "cafe-tsubame/choice_parrot": {
+    "hash": "6cc9fd6cef"
+  },
+  "cafe-tsubame/choice_order": {
+    "hash": "2d0cc8b5f8"
+  },
+  "cafe-tsubame/feed1": {
+    "hash": "a184230a7a"
+  },
+  "cafe-tsubame/open1": {
+    "hash": "63327377f9"
+  },
+  "cafe-tsubame/prep1": {
+    "hash": "fc1d12cef3"
+  },
+  "cafe-tsubame/memo1": {
+    "hash": "5c10bc9d53"
+  },
+  "cafe-tsubame/rush1": {
+    "hash": "557da4e0db"
+  },
+  "cafe-tsubame/chase1": {
+    "hash": "d0fd1f5452"
+  },
+  "cafe-tsubame/guess1": {
+    "hash": "d66c262079"
+  },
+  "cafe-tsubame/choice_power": {
+    "hash": "084d4e551a"
+  },
+  "cafe-tsubame/candle1": {
+    "hash": "4991bc137a"
+  },
+  "cafe-tsubame/calm1": {
+    "hash": "ac5f78cc31"
+  },
+  "cafe-tsubame/call2": {
+    "hash": "9d63dce010"
+  },
+  "cafe-tsubame/call1": {
+    "hash": "e86f603179"
+  },
+  "cafe-tsubame/choice_final": {
+    "hash": "5872dfb63f"
+  },
+  "cafe-tsubame/end_chaos": {
+    "hash": "9908082fcc"
+  },
+  "cafe-tsubame/final1": {
+    "hash": "271781a13e"
+  },
+  "cafe-tsubame/dusk1": {
+    "hash": "1d7729707b"
+  },
+  "cafe-tsubame/legend1": {
+    "hash": "a863d0207a"
+  },
+  "cafe-tsubame/legend2": {
+    "hash": "fc806588a7"
+  },
+  "cafe-tsubame/plain1": {
+    "hash": "86cdff95da"
+  },
+  "cafe-tsubame/end_pasta": {
+    "hash": "ba7f272239"
+  },
+  "cafe-tsubame/recipe1": {
+    "hash": "cdb33ef3ec"
+  },
+  "cafe-tsubame/recipe2": {
+    "hash": "e51a571780"
+  },
+  "cafe-tsubame/end_happy": {
+    "hash": "f48515bf81"
+  }
+}

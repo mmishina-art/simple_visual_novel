@@ -514,6 +514,49 @@ test('音のオン/オフを切り替えられる', async ({ page }) => {
   await expect(button).toHaveAttribute('aria-pressed', 'false');
 });
 
+test('読み上げをオンにすると、その場面の音声が流れ、終わると自動で次へ進む', async ({ page }) => {
+  await page.goto('/');
+  await beginStory(page);
+  await page.locator('#narration-button-game').click();
+  const audio = page.locator('#narration-audio');
+  await expect(audio).toHaveAttribute('src', /audio\/midnight-school\/start1\.mp3/);
+  // 読み終わったことにして、自動で次の文章へ進むかを見る
+  await audio.evaluate((el) => el.dispatchEvent(new Event('ended')));
+  await expect(audio).toHaveAttribute('src', /audio\/midnight-school\/start2\.mp3/);
+  await expect(page.locator('#story-text')).toContainText('夕方から降り始めた雨は');
+});
+
+test('読み上げの自動再生は、選択肢の場面で止まる', async ({ page }) => {
+  await page.goto('/');
+  await beginStory(page);
+  await page.locator('#narration-button-game').click();
+  const audio = page.locator('#narration-audio');
+  // 読み終わるたびに進めていき、選択肢まで自動で進む
+  for (let i = 0; i < 15 && !(await page.locator('#choices').isVisible()); i++) {
+    await audio.evaluate((el) => el.dispatchEvent(new Event('ended')));
+    await page.waitForTimeout(120);
+  }
+  await expect(page.locator('#choices')).toBeVisible();
+  const srcAtChoice = await audio.getAttribute('src');
+  await audio.evaluate((el) => el.dispatchEvent(new Event('ended')));
+  await page.waitForTimeout(300);
+  // 選択肢の場面では進まない（選ぶのは読者）
+  await expect(page.locator('#choices')).toBeVisible();
+  expect(await audio.getAttribute('src')).toBe(srcAtChoice);
+});
+
+test('読み上げのオン/オフは設定に残る', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: '設定' }).click();
+  const button = page.locator('#narration-button');
+  await expect(button).toHaveAttribute('aria-pressed', 'false');
+  await button.click();
+  await expect(button).toHaveAttribute('aria-pressed', 'true');
+  await page.reload();
+  await page.getByRole('button', { name: '設定' }).click();
+  await expect(page.locator('#narration-button')).toHaveAttribute('aria-pressed', 'true');
+});
+
 test('manifest と Service Worker が使える', async ({ page }) => {
   await page.goto('/');
   const href = await page.locator('link[rel="manifest"]').getAttribute('href');

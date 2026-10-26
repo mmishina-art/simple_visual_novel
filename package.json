@@ -1,6 +1,6 @@
 {
   "name": "simple-visual-novel",
-  "version": "0.8.19",
+  "version": "0.9.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,7 +15,8 @@
     "icons": "node scripts/make-icons.mjs",
     "shots": "npm run build && node scripts/shots.mjs",
     "build:preview": "node scripts/build-preview.mjs",
-    "verify": "npm run lint && npm test && npm run build && npm run check:dist"
+    "verify": "npm run lint && npm test && npm run build && npm run check:dist",
+    "narration": "node scripts/build-narration.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

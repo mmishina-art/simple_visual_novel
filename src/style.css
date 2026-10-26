@@ -103,6 +103,11 @@ button.big {
   padding: 12px 20px;
 }
 
+/* オフのときのトグル（音・読み上げ）は、少し薄くして状態が分かるようにする */
+.icon-button[aria-pressed="false"] {
+  opacity: 0.45;
+}
+
 .icon-button {
   border: 0;
   background: transparent;
@@ -490,14 +495,16 @@ button.big {
 
 .game-header .btn-pill {
   min-height: 32px;
-  padding: 3px 12px;
+  padding: 3px 10px;
   font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 .game-title {
   font-size: 0.95rem;
   letter-spacing: 0.12em;
   color: var(--muted);
+  white-space: nowrap;
 }
 
 #title-screen {
