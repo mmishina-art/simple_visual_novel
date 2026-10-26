@@ -526,6 +526,24 @@ test('読み上げをオンにすると、その場面の音声が流れ、終�
   await expect(page.locator('#story-text')).toContainText('夕方から降り始めた雨は');
 });
 
+test('選択肢は、文章が出たあとタッチで、直前の一文とセットで出る', async ({ page }) => {
+  await page.goto('/');
+  await beginStory(page);
+  // 選択肢の場面の文章まで進める（この時点では選択肢はまだ出ていない）
+  for (let i = 0; i < 12; i++) {
+    const text = await page.locator('#story-text').textContent();
+    if (text?.includes('廊下は真っ暗だ')) break;
+    await page.locator('#message-window').click();
+  }
+  await expect(page.locator('#story-text')).toContainText('廊下は真っ暗だ');
+  await expect(page.locator('#choices')).toBeHidden();
+  // タッチすると、直前の一文とセットで選択肢が出る
+  await page.locator('#message-window').click();
+  await expect(page.locator('#choices')).toBeVisible();
+  await expect(page.locator('#story-text')).toContainText('廊下は真っ暗だ');
+  await expect(page.locator('#story-text')).not.toContainText('文化祭を明日に控えた');
+});
+
 test('読み上げの自動再生は、選択肢の場面で止まる', async ({ page }) => {
   await page.goto('/');
   await beginStory(page);
@@ -669,6 +687,8 @@ test('デバッグモード: バージョンを 5 回タップで操作パネル
   for (let i = 0; i < 5; i++) await page.locator('#version-line').click();
   await expect(panel).toBeVisible();
   await page.getByRole('button', { name: /最後の選択肢へ飛ぶ/ }).click();
+  // 選択肢は、文章が出たあとタッチで出す仕様
+  await page.locator('#message-window').click();
   await expect(page.locator('#choices')).toBeVisible();
   await page.locator('#choices button', { hasText: '裏口へ走る' }).click();
   await playToEnding(page, []);

@@ -63,6 +63,8 @@ let cheated = false;
 let lastNodeId = '';
 /** 結末の文章をまず読んでもらい、もう一度押してから結末パネルを出すための状態 */
 let endingRevealed = false;
+/** 選択肢の場面で、選択肢そのものを出したかどうか。まず文章だけを見せ、タッチで出す */
+let choicesRevealed = false;
 let currentBg: SceneBg = 'classroom';
 /** 表示中の文章。読み進めると左へ追加されていき、選択肢が出ると消える */
 let segments: string[] = [];
@@ -249,36 +251,38 @@ function renderGame(): void {
   $('speaker').textContent = node.speaker ?? '';
   if (node.id !== lastNodeId) {
     endingRevealed = false;
+    choicesRevealed = false;
     const prev = lastNodeId ? story.nodes[lastNodeId] : undefined;
     if (node.ending) {
       // 結末は独立したページにする（前の文章と重なって読めなくならないように）
-      segments = [node.text];
-    } else if (node.choices) {
-      // 選択肢の場面では、それまでの文章は消し、直前の文章（その場面の文章）だけを残す
       segments = [node.text];
     } else if (prev?.choices) {
       // 選択肢を選んだあとは、まっさらな状態から文章が足されていく
       segments = [node.text];
     } else {
+      // 選択肢の場面も、まずは普通の文章として足していく（選択肢はタッチで出す）
       segments = [...segments, node.text];
     }
   }
+  // 選択肢を出すときは、直前の一文とセットにする（それまでの文章は消す）
+  if (node.choices && choicesRevealed) segments = [node.text];
   renderStoryText(segments);
   // ページめくり: 文章が画面いっぱいになってはみ出したら、ページをめくる感じで
   // 全部消して、その文章だけを右から始める（前のページは「読み返す」で読める）
-  if (!node.choices && !node.ending) {
+  if ((!node.choices || !choicesRevealed) && !node.ending) {
     const textEl = $('story-text');
     if (segments.length > 1 && textEl.scrollWidth > textEl.clientWidth + 1) {
       segments = [node.text];
       renderStoryText(segments);
     }
   }
-  // 結末では、パネルを出すまでは「進む」合図を出して、もう一度押してもらう
-  $('next-hint').hidden = !!node.choices || (!!node.ending && endingRevealed);
+  // 結末では、パネルを出すまでは「進む」合図を出して、もう一度押してもらう。
+  // 選択肢も同じで、出すまでは合図を出しておく
+  $('next-hint').hidden = (!!node.choices && choicesRevealed) || (!!node.ending && endingRevealed);
 
   const choicesEl = $('choices');
   choicesEl.replaceChildren();
-  choicesEl.hidden = !node.choices;
+  choicesEl.hidden = !node.choices || !choicesRevealed;
   (node.choices ?? []).forEach((choice, i) => {
     const b = document.createElement('button');
     b.type = 'button';
@@ -292,7 +296,7 @@ function renderGame(): void {
     });
     choicesEl.append(b);
   });
-  if (node.choices) fitChoiceButtons(choicesEl);
+  if (node.choices && choicesRevealed) fitChoiceButtons(choicesEl);
 
   const endingPanel = $('ending-panel');
   // 結末パネルは先に出さない。文章を表示し、もう一度押されたら出す
@@ -413,6 +417,14 @@ function advanceReading(): void {
   if (ending && !endingRevealed) {
     endingRevealed = true;
     playEndingJingle(ending.kind);
+    render();
+    return;
+  }
+  // 選択肢の場面では、まず文章だけを見せる。タッチされたら選択肢を出す
+  const current = nodeOf(story, state);
+  if (current.choices && !choicesRevealed) {
+    choicesRevealed = true;
+    playAdvanceSound();
     render();
     return;
   }
