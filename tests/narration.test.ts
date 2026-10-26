@@ -23,7 +23,7 @@ describe('読み上げ音声', () => {
   const spokenText = (key: string, text: string): string => (SPOKEN_TEXT_OVERRIDES[key] ?? text).replace(/AI/g, 'エーアイ');
   // 物語ごとの語り手プロファイルの tag（scripts/build-narration.mjs の VOICE_PROFILES と合わせること）。
   // 声や後加工が違う本は、ハッシュに tag を混ぜて区別する
-  const VOICE_PROFILE_TAGS: Record<string, string> = { 'sunday-well': 'g-mod3a' };
+  const VOICE_PROFILE_TAGS: Record<string, string> = { 'sunday-well': 'g-mod3a', 'maou-diner': 'g-mod3a' };
   const expectedHash = (key: string, text: string): string => {
     const spoken = spokenText(key, text);
     const tag = VOICE_PROFILE_TAGS[key.split('/')[0]];

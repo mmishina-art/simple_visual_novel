@@ -41,7 +41,7 @@ export interface Story {
   /** 本棚で表紙に使う背景（省略時は 'classroom'） */
   cover?: SceneBg;
   /** 表紙の帯の色・形（省略時は 'red'） */
-  coverObi?: 'red' | 'cream' | 'navy' | 'silver' | 'orange' | 'indigo';
+  coverObi?: 'red' | 'cream' | 'navy' | 'silver' | 'orange' | 'indigo' | 'moss';
   /** 表紙の題字の改行位置（言葉の途中では切らない）。連結すると title と一致すること */
   coverLines?: string[];
   /** 題字の置き方。絵の落ち着いた場所に合わせて選ぶ（通常は右上の縦書き） */
