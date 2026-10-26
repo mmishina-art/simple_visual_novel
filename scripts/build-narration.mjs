@@ -33,6 +33,12 @@ const { STORIES } = require(join('..', tmpDir, 'stories', 'index.js'));
 
 const hashOf = (text) => createHash('sha1').update(text).digest('hex').slice(0, 10);
 
+// 読み上げ専用の読み替え（画面の表示は変えない）。英字の略語は、そのままだと
+// 英語読みになってしまうので、カタカナに置き換えてから読み上げる。
+// ※ tests/narration.test.ts 側にも同じ表があるので、直すときは両方直すこと。
+const READING_OVERRIDES = [[/AI/g, 'エーアイ']];
+const spokenText = (text) => READING_OVERRIDES.reduce((t, [re, yomi]) => t.replace(re, yomi), text);
+
 const manifest = existsSync(MANIFEST) ? JSON.parse(readFileSync(MANIFEST, 'utf8')) : {};
 const wanted = new Map();
 for (const story of STORIES) {
@@ -43,10 +49,11 @@ for (const story of STORIES) {
 
 const jobs = [];
 for (const [key, text] of wanted) {
-  const hash = hashOf(text);
+  const spoken = spokenText(text);
+  const hash = hashOf(spoken);
   const file = join(OUT_DIR, `${key}.mp3`);
   if (manifest[key]?.hash === hash && existsSync(file)) continue;
-  jobs.push({ key, text, hash, file });
+  jobs.push({ key, text: spoken, hash, file });
 }
 console.log(`読み上げ: 全${wanted.size}場面、新規・更新 ${jobs.length}件`);
 
