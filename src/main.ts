@@ -7,7 +7,7 @@ import { STORIES, storyById } from './stories';
 import { setupDebug } from './debug';
 import { setupInstallGuide } from './install';
 import { applyUpdate, checkForUpdate, onUpdateAvailable, setupPwa } from './pwa';
-import { isSoundOn, playAdvanceSound, playBookOpenSound, playButtonSound, playEndingJingle, playSceneSound, setSound, startBgm, startTitleBgm, stopBgm } from './sound';
+import { isSoundOn, playAdvanceSound, playBookOpenSound, playButtonSound, playEndingJingle, playSceneSound, resumeAudioContext, setSound, startBgm, startTitleBgm, stopBgm, suspendAudioContext } from './sound';
 import { isNarrationOn, onNarrationFinish, resetNarration, setNarration, stopNarration, suspendNarration, syncNarration } from './narration';
 import { exportBackup, importBackup, load, migrateStorage, remove, requestPersist, save } from './storage';
 
@@ -464,6 +464,35 @@ document.addEventListener('pointerdown', () => {
   if (screen !== 'game' && screen !== 'backlog') startTitleBgm();
 });
 // 読み上げが終わったら自動で次へ。ただし選択肢の場面では、選んでもらうために止まる
+// スマホでバックグラウンドに移ったら、音はすべて止める（BGM・読み上げ・効果音）。
+// 戻ってきたら、その画面で鳴っているはずの音だけを戻す（読み上げは本編だけ）
+let silencedForBackground = false;
+const silenceForBackground = (): void => {
+  if (silencedForBackground) return;
+  silencedForBackground = true;
+  stopBgm();
+  suspendNarration();
+  suspendAudioContext();
+};
+const restoreFromBackground = (): void => {
+  if (!silencedForBackground) return;
+  silencedForBackground = false;
+  resumeAudioContext();
+  if ((screen === 'game' || screen === 'backlog') && state) {
+    const node = nodeOf(story, state);
+    startBgm(node.ending && endingRevealed ? node.ending.kind : 'normal', story.bgm);
+    if (screen === 'game') syncNarration(story.id, state.nodeId);
+  } else {
+    startTitleBgm();
+  }
+};
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) silenceForBackground();
+  else restoreFromBackground();
+});
+window.addEventListener('pagehide', silenceForBackground);
+window.addEventListener('pageshow', restoreFromBackground);
+
 onNarrationFinish(() => {
   if (!state || screen !== 'game') return;
   // 選択肢が出ているときは進まない。まだ出ていないときは、読み終わりを合図に選択肢を出す
