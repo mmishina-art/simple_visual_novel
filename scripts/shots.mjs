@@ -10,6 +10,10 @@ import { mkdirSync, rmSync } from 'node:fs';
 const openStory = async (page) => {
   await page.click('#start-button');
   await page.click('.book-card');
+  // 読みかけの本では確認ポップアップが出るので、「つづきから読む」を選ぶ
+  if (await page.locator('#resume-dialog').isVisible()) {
+    await page.click('#resume-continue');
+  }
 };
 
 const SCREENS = [
