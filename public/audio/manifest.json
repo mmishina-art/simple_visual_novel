@@ -688,5 +688,83 @@
   },
   "maou-diner/end_closed": {
     "hash": "29661cdacb"
+  },
+  "yubisaki/start1": {
+    "hash": "70247fc14d"
+  },
+  "yubisaki/visit2": {
+    "hash": "d3ad4cdb66"
+  },
+  "yubisaki/start2": {
+    "hash": "cd8fba6ab4"
+  },
+  "yubisaki/choice_stay": {
+    "hash": "bdcb654ebc"
+  },
+  "yubisaki/stay1": {
+    "hash": "476b5489c1"
+  },
+  "yubisaki/close1": {
+    "hash": "c2654a7833"
+  },
+  "yubisaki/wine1": {
+    "hash": "60407a5c49"
+  },
+  "yubisaki/choice_past": {
+    "hash": "99993ee12a"
+  },
+  "yubisaki/wine2": {
+    "hash": "1ec260942b"
+  },
+  "yubisaki/past1": {
+    "hash": "420a00f8e1"
+  },
+  "yubisaki/now1": {
+    "hash": "1c669fa0c5"
+  },
+  "yubisaki/rain1": {
+    "hash": "0aabf05dc8"
+  },
+  "yubisaki/choice_night": {
+    "hash": "b77fdff0a2"
+  },
+  "yubisaki/taxi1": {
+    "hash": "10d1254a09"
+  },
+  "yubisaki/room1": {
+    "hash": "3c6cdaa2c2"
+  },
+  "yubisaki/end_door": {
+    "hash": "0c1ae7beeb"
+  },
+  "yubisaki/room2": {
+    "hash": "eebe1ff393"
+  },
+  "yubisaki/night1": {
+    "hash": "65412139ee"
+  },
+  "yubisaki/night2": {
+    "hash": "4223d7a45c"
+  },
+  "yubisaki/dawn1": {
+    "hash": "b9f328228c"
+  },
+  "yubisaki/choice_morning": {
+    "hash": "70af2d5bc9"
+  },
+  "yubisaki/farewell1": {
+    "hash": "1a58f4d70b"
+  },
+  "yubisaki/end_happy": {
+    "hash": "0cb43c1e78"
+  },
+  "yubisaki/visit1": {
+    "hash": "d8b5770ef5"
+  },
+  "yubisaki/end_dream": {
+    "hash": "243f3e1563"
+  },
+  "yubisaki/night3": {
+    "hash": "b523609ae9"
   }
 }
