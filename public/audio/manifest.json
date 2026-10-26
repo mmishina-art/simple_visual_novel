@@ -3,7 +3,7 @@
     "hash": "9d8474e2f5"
   },
   "midnight-school/start1": {
-    "hash": "7c29950b8c"
+    "hash": "22946b21f4"
   },
   "midnight-school/start2": {
     "hash": "132a8f308b"
@@ -210,7 +210,7 @@
     "hash": "70e914d8c8"
   },
   "moon-library/end_happy": {
-    "hash": "a38d7b2374"
+    "hash": "25cb611791"
   },
   "moon-library/end_missed": {
     "hash": "bccf7b156f"
@@ -225,7 +225,7 @@
     "hash": "56dc444bfd"
   },
   "missing-trophy/start3": {
-    "hash": "fb21ed6dfd"
+    "hash": "b5c90b7b5b"
   },
   "missing-trophy/choice_first": {
     "hash": "d6bebdcb56"
@@ -240,7 +240,7 @@
     "hash": "d61d79764d"
   },
   "missing-trophy/start5": {
-    "hash": "aab5fde154"
+    "hash": "c3d8a12b89"
   },
   "missing-trophy/key1": {
     "hash": "189457673a"
@@ -276,7 +276,7 @@
     "hash": "1dfb621a84"
   },
   "missing-trophy/win_case1": {
-    "hash": "60955e7c2b"
+    "hash": "ccaede06ca"
   },
   "missing-trophy/win_check1": {
     "hash": "2103738df3"
@@ -300,10 +300,10 @@
     "hash": "45a47bd413"
   },
   "missing-trophy/end_truth": {
-    "hash": "a13cf791c9"
+    "hash": "a7739c4493"
   },
   "missing-trophy/end_wrong": {
-    "hash": "e6b035b572"
+    "hash": "23a1683e60"
   },
   "missing-trophy/end_late": {
     "hash": "7b5cf1fd8a"
@@ -327,7 +327,7 @@
     "hash": "2215d83d16"
   },
   "stardust-station/decode2": {
-    "hash": "6174324769"
+    "hash": "47e3fdae88"
   },
   "stardust-station/locate1": {
     "hash": "2822ab1b00"
@@ -369,7 +369,7 @@
     "hash": "f7746c9377"
   },
   "stardust-station/transfer2": {
-    "hash": "aa59d8b479"
+    "hash": "71791eda1b"
   },
   "stardust-station/transfer1": {
     "hash": "8478bc44aa"
@@ -387,7 +387,7 @@
     "hash": "d5103052eb"
   },
   "stardust-station/send1": {
-    "hash": "0acf1adf54"
+    "hash": "94de51c0a5"
   },
   "stardust-station/wait2": {
     "hash": "35f880abca"
@@ -411,10 +411,10 @@
     "hash": "c65764b54a"
   },
   "cafe-tsubame/start3": {
-    "hash": "cfccb90ffa"
+    "hash": "4017eb001b"
   },
   "cafe-tsubame/start1": {
-    "hash": "4c7a0122c7"
+    "hash": "758ba82798"
   },
   "stardust-station/end_happy": {
     "hash": "f91a85078d"
@@ -426,7 +426,7 @@
     "hash": "2d0cc8b5f8"
   },
   "cafe-tsubame/feed1": {
-    "hash": "a184230a7a"
+    "hash": "aef318a988"
   },
   "cafe-tsubame/open1": {
     "hash": "63327377f9"
@@ -444,7 +444,7 @@
     "hash": "d0fd1f5452"
   },
   "cafe-tsubame/guess1": {
-    "hash": "d66c262079"
+    "hash": "5aef815519"
   },
   "cafe-tsubame/choice_power": {
     "hash": "084d4e551a"
@@ -456,7 +456,7 @@
     "hash": "e9a0912e5d"
   },
   "cafe-tsubame/call2": {
-    "hash": "9d63dce010"
+    "hash": "af7f4c9405"
   },
   "cafe-tsubame/call1": {
     "hash": "e86f603179"
@@ -465,52 +465,52 @@
     "hash": "5872dfb63f"
   },
   "cafe-tsubame/end_chaos": {
-    "hash": "9908082fcc"
+    "hash": "ed925e1626"
   },
   "cafe-tsubame/final1": {
-    "hash": "271781a13e"
+    "hash": "c916119905"
   },
   "cafe-tsubame/dusk1": {
-    "hash": "cc622b68c5"
+    "hash": "8f7bad7e94"
   },
   "cafe-tsubame/legend1": {
     "hash": "a863d0207a"
   },
   "cafe-tsubame/legend2": {
-    "hash": "fc806588a7"
+    "hash": "f3fa49a887"
   },
   "cafe-tsubame/plain1": {
     "hash": "86cdff95da"
   },
   "cafe-tsubame/end_pasta": {
-    "hash": "ba7f272239"
+    "hash": "522f4b6b08"
   },
   "cafe-tsubame/recipe1": {
     "hash": "e28db73cc0"
   },
   "cafe-tsubame/recipe2": {
-    "hash": "c97887f9d3"
+    "hash": "66d32c378e"
   },
   "cafe-tsubame/end_happy": {
     "hash": "f48515bf81"
   },
   "sunday-well/start4": {
-    "hash": "e43c509e6a"
+    "hash": "88411d140b"
   },
   "sunday-well/start2": {
-    "hash": "856a3c49f9"
+    "hash": "d6b94af69d"
   },
   "sunday-well/start3": {
     "hash": "fee114f220"
   },
   "sunday-well/start1": {
-    "hash": "d2ea4344f7"
+    "hash": "011ecbdaca"
   },
   "sunday-well/choice_tools": {
     "hash": "5b21ac7089"
   },
   "sunday-well/pre1": {
-    "hash": "4466490528"
+    "hash": "d51ab53e51"
   },
   "sunday-well/start6": {
     "hash": "2aec521fd6"
@@ -522,7 +522,7 @@
     "hash": "79bec95b30"
   },
   "sunday-well/nopre1": {
-    "hash": "d22cf66ae8"
+    "hash": "5404ac368d"
   },
   "sunday-well/down1": {
     "hash": "8ceeb0d0c0"
@@ -534,7 +534,7 @@
     "hash": "6daf5fb847"
   },
   "sunday-well/down3": {
-    "hash": "65429af54e"
+    "hash": "1eae49bc56"
   },
   "sunday-well/find2": {
     "hash": "7066a70262"
@@ -558,22 +558,22 @@
     "hash": "95fb1f321d"
   },
   "sunday-well/sit_b": {
-    "hash": "46805d937a"
+    "hash": "634450c31b"
   },
   "sunday-well/sit_a": {
-    "hash": "bddcc88353"
+    "hash": "b40518b096"
   },
   "sunday-well/bad_mud": {
-    "hash": "a8188fe1c2"
+    "hash": "a353921115"
   },
   "sunday-well/climb_slip": {
     "hash": "be7e35475d"
   },
   "sunday-well/night1": {
-    "hash": "50906c3648"
+    "hash": "dd88121b74"
   },
   "sunday-well/eve_a": {
-    "hash": "b8a2b385a3"
+    "hash": "50c07b4786"
   },
   "sunday-well/climb_safe_a": {
     "hash": "7861d36ed8"
@@ -594,10 +594,10 @@
     "hash": "71c11fa720"
   },
   "sunday-well/end_happy": {
-    "hash": "4a0a4ed322"
+    "hash": "7f6c0b6a09"
   },
   "sunday-well/happy1": {
-    "hash": "f1e0ace73c"
+    "hash": "02951617d5"
   },
   "maou-diner/meet1": {
     "hash": "03dc21ca67"
@@ -606,7 +606,7 @@
     "hash": "6600067e52"
   },
   "maou-diner/meet2": {
-    "hash": "39f63cbed8"
+    "hash": "929f7a0647"
   },
   "maou-diner/choice_menu": {
     "hash": "b19ee7c6fe"
@@ -615,7 +615,7 @@
     "hash": "162a5dec91"
   },
   "maou-diner/dashi1": {
-    "hash": "d4d9a03609"
+    "hash": "747842f986"
   },
   "maou-diner/pro1": {
     "hash": "9cfe1dd513"
@@ -678,7 +678,7 @@
     "hash": "3b370781b3"
   },
   "maou-diner/end_happy": {
-    "hash": "8d1aea0f7a"
+    "hash": "061a4abe4a"
   },
   "maou-diner/last2": {
     "hash": "ae5c0a2bb6"
@@ -714,10 +714,10 @@
     "hash": "99993ee12a"
   },
   "yubisaki/wine2": {
-    "hash": "1ec260942b"
+    "hash": "a41f645836"
   },
   "yubisaki/now1": {
-    "hash": "727f03d0d6"
+    "hash": "f282a0098d"
   },
   "yubisaki/past1": {
     "hash": "0db934cd84"
@@ -762,7 +762,7 @@
     "hash": "0cb43c1e78"
   },
   "yubisaki/night3": {
-    "hash": "026ca3420a"
+    "hash": "613e81f624"
   },
   "yubisaki/end_dream": {
     "hash": "243f3e1563"

@@ -87,6 +87,10 @@ const READING_OVERRIDES = [
   [/行き倒れ/g, 'いきたおれ'],
   [/椀/g, 'わん'],
   [/粥/g, 'かゆ'],
+  [/軍手/g, 'ぐんて'],
+  [/茹で/g, 'ゆで'],
+  [/太麺/g, 'ふとめん'],
+  [/河原/g, 'かわら'],
 ];
 
 // 場面ごとの読み上げ文の差し替え（画面の表示は変えない）。
@@ -107,6 +111,9 @@ const SPOKEN_TEXT_OVERRIDES = {
   'cafe-tsubame/recipe2': '太麺をよく炒めて、ケチャップを寝かせて、最後に隠し味。運ばれた皿を見て、美食家の目がはっきりと見開かれた。これだ。この味だ。',
   'yubisaki/night3': 'ランプの橙の中で、彼は何度も「律子、律子」と私の名を呼んだ。そのたびに私は、若かった自分と今の自分が、ひとつの身体の中で重なっていくのを感じた。激しさよりも、確かさだった。求める手つきに迷いがなく、委ねることに怖さがなかった。雨はまだ降っていた。けれどこの部屋だけは、世界のどこよりも静かで、温かかった。',
 };
+// 試験中：かな化した読み上げ文（scripts/kana-texts.json）があれば、それを正とする。
+// かな化は scripts/kana-convert.mjs で生成し、変換結果は全文を確認してから入れること。
+const KANA_TEXTS = existsSync('scripts/kana-texts.json') ? JSON.parse(readFileSync('scripts/kana-texts.json', 'utf8')) : {};
 const spokenText = (key, text) => READING_OVERRIDES.reduce((t, [re, yomi]) => t.replace(re, yomi), SPOKEN_TEXT_OVERRIDES[key] ?? text);
 
 // 文の組み合わせで合成が崩れる場面（2026-10-26、文字起こし点検で発覚）は、
@@ -151,7 +158,7 @@ for (const story of STORIES) {
 
 const jobs = [];
 for (const [key, text] of wanted) {
-  const spoken = spokenText(key, text);
+  const spoken = KANA_TEXTS[key] ?? spokenText(key, text);
   const profile = profileOf(key);
   const base = profile ? `${spoken}|${profile.tag}` : spoken;
   const chunked = CHUNKED_NARRATION.has(key);
