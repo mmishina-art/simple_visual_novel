@@ -504,7 +504,7 @@ button.big {
 }
 
 .game-title {
-  font-size: 0.95rem;
+  font-size: 1.12rem;
   letter-spacing: 0.12em;
   line-height: 1.2;
   color: var(--muted);
