@@ -450,12 +450,6 @@ button.big {
   margin-top: 8px;
 }
 
-.book-action {
-  color: var(--primary);
-  font-weight: 700;
-  margin-top: 2px;
-}
-
 .book-restart {
   align-self: center;
   width: fit-content;

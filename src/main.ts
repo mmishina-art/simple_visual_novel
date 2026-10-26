@@ -197,8 +197,7 @@ function renderShelf(): void {
     const endings = load<string[]>(skey('endings', item), []);
     card.append(buildCover(item));
     const meta = spanOf('book-meta muted', `読了目安 ${item.length} ／ 到達した結末: ${endings.length} / ${endingsOf(item).length}`);
-    const action = spanOf('book-action', resume ? 'つづきから読む' : 'この物語を読む');
-    card.append(meta, action);
+    card.append(meta);
     if (resume) card.append(spanOf('book-restart', '最初から読み直す'));
     card.addEventListener('click', (e) => {
       const fromRestart = (e.target as HTMLElement).closest('.book-restart') !== null;
