@@ -248,16 +248,16 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
   mystery: {
     normal: {
       chords: [
-        [110.0, 130.81, 164.81], // Am
-        [110.0, 130.81, 164.81],
-        [87.31, 110.0, 130.81, 174.61], // F
-        [82.41, 103.83, 123.47, 164.81], // E
+        [110.0, 220.0, 261.63, 329.63], // Am（高めに開く）
+        [174.61, 220.0, 261.63, 349.23], // F
+        [130.81, 196.0, 261.63, 392.0], // C（長調で少し軽く）
+        [164.81, 207.65, 246.94, 329.63], // E（最後に緊張を戻す）
       ],
-      bells: [220.0, 261.63, 329.63, 196.0],
+      bells: [329.63, 392.0, 440.0, 523.25],
       drone: [55, 82.41],
-      chordSec: 5.5, bellChance: 0.22, bellGain: 0.05, wind: 0, padGain: 0.015,
-      padWave: 'triangle', padCutoff: 1100, droneGain: 0, bellWave: 'triangle', bellDecay: 0.55,
-      stab: true, stabDecay: 1.5,
+      chordSec: 5.5, bellChance: 0.28, bellGain: 0.05, wind: 0, padGain: 0.015,
+      padWave: 'triangle', padCutoff: 1600, droneGain: 0, bellWave: 'triangle', bellDecay: 0.8,
+      stab: true, stabDecay: 1.7,
     },
     happy: {
       chords: [
@@ -269,8 +269,8 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       bells: [440.0, 523.25, 659.25, 783.99],
       drone: [65.41, 98.0],
       chordSec: 6, bellChance: 0.4, bellGain: 0.042, wind: 0, padGain: 0.016,
-      padWave: 'triangle', padCutoff: 1300, droneGain: 0, bellWave: 'triangle', bellDecay: 0.9,
-      stab: true, stabDecay: 1.9,
+      padWave: 'triangle', padCutoff: 1700, droneGain: 0, bellWave: 'triangle', bellDecay: 0.9,
+      stab: true, stabDecay: 2.1,
     },
     bad: {
       chords: [
@@ -282,8 +282,8 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       bells: [110.0, 116.54, 220.0],
       drone: [55, 58.27],
       chordSec: 7, bellChance: 0.14, bellGain: 0.05, wind: 0, padGain: 0.016,
-      padWave: 'triangle', padCutoff: 800, droneGain: 0, bellWave: 'triangle', bellDecay: 0.5,
-      stab: true, stabDecay: 1.3,
+      padWave: 'triangle', padCutoff: 1000, droneGain: 0, bellWave: 'triangle', bellDecay: 0.5,
+      stab: true, stabDecay: 1.4,
     },
   },
 };
