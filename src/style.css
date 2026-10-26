@@ -380,6 +380,16 @@ button.link {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
 }
 
+.obi-silver .book-obi {
+  background: #c9cedb;
+  color: #26303e;
+}
+
+.obi-orange .book-obi {
+  background: #cf7226;
+  color: #fff6e8;
+}
+
 .obi-navy .book-obi {
   left: 12px;
   right: 24px;

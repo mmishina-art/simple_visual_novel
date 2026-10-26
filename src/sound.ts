@@ -81,6 +81,8 @@ export function playSceneSound(key: SceneSound): void {
       case 'door': tone(96, 0.5, 'sawtooth', 0.03, 0, 58); break;
       case 'thunder': noise(1.6, 180, 0.14); break;
       case 'whisper': noise(0.7, 2400, 0.035, 0, 'bandpass'); noise(0.5, 1800, 0.03, 0.5, 'bandpass'); break;
+      case 'beep': tone(880, 0.07, 'square', 0.03); tone(880, 0.07, 'square', 0.03, 0.13); tone(1320, 0.09, 'square', 0.025, 0.26); break;
+      case 'bell': tone(1568, 0.5, 'triangle', 0.045); tone(2093, 0.35, 'sine', 0.02); break;
     }
     document.dispatchEvent(new CustomEvent('app:sound', { detail: { key } }));
   } catch {
@@ -166,7 +168,7 @@ interface BgmConfig {
   stabDecay?: number;
 }
 
-export type BgmTheme = 'horror' | 'romance' | 'mystery';
+export type BgmTheme = 'horror' | 'romance' | 'mystery' | 'sf' | 'comedy';
 
 const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
   // ホラー（『午前0時の校舎』）：夜の校舎。短調のパッドと、まばらなピアノ、風の音
@@ -284,6 +286,87 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       chordSec: 7, bellChance: 0.14, bellGain: 0.05, wind: 0, padGain: 0.016,
       padWave: 'triangle', padCutoff: 1000, droneGain: 0, bellWave: 'triangle', bellDecay: 0.5,
       stab: true, stabDecay: 1.4,
+    },
+  },
+  // SF（『星屑ステーション』）：無重力に漂う音。サイン波の浮遊する和音と、遠くの信号のような高い単音
+  sf: {
+    normal: {
+      chords: [
+        [110.0, 220.0, 246.94, 329.63],
+        [87.31, 174.61, 261.63, 392.0],
+        [130.81, 196.0, 293.66, 493.88],
+        [98.0, 196.0, 293.66, 349.23],
+      ],
+      bells: [880.0, 1174.66, 1318.5, 1760.0],
+      drone: [220.0, 220.4],
+      chordSec: 11, bellChance: 0.16, bellGain: 0.03, wind: 0, padGain: 0.014,
+      padWave: 'sine', padCutoff: 2200, droneGain: 0.008, bellDecay: 5,
+    },
+    happy: {
+      chords: [
+        [130.81, 196.0, 293.66, 493.88],
+        [87.31, 174.61, 261.63, 392.0],
+        [110.0, 220.0, 261.63, 493.88],
+        [98.0, 196.0, 293.66, 392.0],
+      ],
+      bells: [1174.66, 1318.5, 1760.0, 2349.32],
+      drone: [196.0, 196.3],
+      chordSec: 10, bellChance: 0.3, bellGain: 0.03, wind: 0, padGain: 0.015,
+      padWave: 'sine', padCutoff: 2400, droneGain: 0.008, bellDecay: 5,
+    },
+    bad: {
+      chords: [
+        [110.0, 220.0, 261.63],
+        [103.83, 207.65, 311.13],
+        [87.31, 174.61, 207.65],
+        [110.0, 220.0, 261.63],
+      ],
+      bells: [440.0, 415.3],
+      drone: [110.0, 110.5],
+      chordSec: 13, bellChance: 0.1, bellGain: 0.032, wind: 0, padGain: 0.014,
+      padWave: 'sine', padCutoff: 1200, droneGain: 0.01, bellDecay: 5.5,
+    },
+  },
+  // コメディ（『喫茶つばめの災難』）：軽快で跳ねる音。短く打つ長調の和音と、転がるような単音
+  comedy: {
+    normal: {
+      chords: [
+        [130.81, 164.81, 196.0, 261.63],
+        [87.31, 174.61, 220.0, 261.63],
+        [130.81, 164.81, 196.0, 261.63],
+        [98.0, 196.0, 246.94, 293.66],
+      ],
+      bells: [523.25, 587.33, 659.25, 783.99],
+      drone: [65.41, 98.0],
+      chordSec: 4.5, bellChance: 0.5, bellGain: 0.045, wind: 0, padGain: 0.014,
+      padWave: 'triangle', padCutoff: 1800, droneGain: 0, bellWave: 'triangle', bellDecay: 0.7,
+      stab: true, stabDecay: 0.8,
+    },
+    happy: {
+      chords: [
+        [130.81, 164.81, 196.0, 261.63],
+        [98.0, 196.0, 246.94, 293.66],
+        [110.0, 164.81, 220.0, 329.63],
+        [87.31, 174.61, 220.0, 349.23],
+      ],
+      bells: [659.25, 783.99, 880.0, 1046.5],
+      drone: [65.41, 98.0],
+      chordSec: 4, bellChance: 0.6, bellGain: 0.045, wind: 0, padGain: 0.015,
+      padWave: 'triangle', padCutoff: 2000, droneGain: 0, bellWave: 'triangle', bellDecay: 0.8,
+      stab: true, stabDecay: 0.9,
+    },
+    bad: {
+      chords: [
+        [110.0, 164.81, 220.0, 261.63],
+        [87.31, 174.61, 220.0, 261.63],
+        [146.83, 174.61, 220.0, 293.66],
+        [82.41, 164.81, 207.65, 246.94],
+      ],
+      bells: [392.0, 440.0, 523.25],
+      drone: [55, 82.41],
+      chordSec: 5.5, bellChance: 0.3, bellGain: 0.04, wind: 0, padGain: 0.014,
+      padWave: 'triangle', padCutoff: 1400, droneGain: 0, bellWave: 'triangle', bellDecay: 0.9,
+      stab: true, stabDecay: 1.1,
     },
   },
 };
