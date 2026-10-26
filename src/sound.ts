@@ -573,6 +573,16 @@ export function stopBgm(): void {
   stopBgmInternal(true);
 }
 
+/** バックグラウンドに移ったときに、音の出口そのものを止める（取りこぼし防止） */
+export function suspendAudioContext(): void {
+  if (ctx && ctx.state === 'running') void ctx.suspend().catch(() => {});
+}
+
+/** フォアグラウンドに戻ったときに、音の出口を再開する */
+export function resumeAudioContext(): void {
+  if (ctx && ctx.state === 'suspended') void ctx.resume().catch(() => {});
+}
+
 function stopBgmInternal(clearWanted: boolean): void {
   if (clearWanted) bgmWanted = false;
   bgmKind = undefined;
