@@ -150,6 +150,15 @@
       <button type="button" data-close>とじる</button>
     </dialog>
 
+    <!-- 読みかけの本を開くときの確認（つづきから／最初から） -->
+    <dialog id="resume-dialog" class="install-dialog" aria-labelledby="resume-title">
+      <h2 id="resume-title"></h2>
+      <p class="muted">読みかけの記録があります。どうやって読みますか？</p>
+      <button id="resume-continue" type="button" class="primary">つづきから読む</button>
+      <button id="resume-restart" type="button">最初から読む</button>
+      <button id="resume-cancel" type="button">キャンセル</button>
+    </dialog>
+
     <!-- デバッグモードのときだけ出る操作（src/debug.ts。バージョンの表示を続けて 5 回タップで切り替え） -->
     <div id="debug-panel" class="debug-panel" hidden></div>
 

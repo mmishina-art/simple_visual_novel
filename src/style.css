@@ -450,18 +450,6 @@ button.big {
   margin-top: 8px;
 }
 
-.book-restart {
-  align-self: center;
-  width: fit-content;
-  padding: 3px 12px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: rgba(240, 232, 216, 0.06);
-  color: var(--ink);
-  font-size: 0.85rem;
-  text-decoration: none;
-}
-
 /* ---- タイトル画面 / 本編の画面（2画面は独立させる） ---- */
 
 .game-header {

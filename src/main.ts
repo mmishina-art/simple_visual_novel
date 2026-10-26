@@ -198,14 +198,23 @@ function renderShelf(): void {
     card.append(buildCover(item));
     const meta = spanOf('book-meta muted', `読了目安 ${item.length} ／ 到達した結末: ${endings.length} / ${endingsOf(item).length}`);
     card.append(meta);
-    if (resume) card.append(spanOf('book-restart', '最初から読み直す'));
-    card.addEventListener('click', (e) => {
-      const fromRestart = (e.target as HTMLElement).closest('.book-restart') !== null;
-      openStory(item, fromRestart ? 'new' : resume ? 'resume' : 'new');
+    card.addEventListener('click', () => {
+      // 読みかけの本は、つづきから読むか最初から読むかをポップアップで選んでもらう
+      if (resume) askResume(item);
+      else openStory(item, 'new');
     });
     list.append(card);
   }
 
+}
+
+let resumeTarget: Story | null = null;
+
+/** 読みかけの本を選んだとき：つづきから／最初からの確認を出す */
+function askResume(item: Story): void {
+  resumeTarget = item;
+  $('resume-title').textContent = `『${item.title}』`;
+  $<HTMLDialogElement>('resume-dialog').showModal();
 }
 
 /** 本棚で作品を選んだとき。本編の画面へ移る */
@@ -345,6 +354,7 @@ document.addEventListener('click', (e) => {
   if (button.id === 'sound-button' || button.id === 'sound-button-game') return;
   if (button.classList.contains('book-card')) return; // 本を開く音が鳴るので、ボタンの音は出さない
   if (button.id === 'update-button' || button.id === 'boot-repair') return;
+  if (button.id === 'resume-continue' || button.id === 'resume-restart') return;
   if (button.closest('#debug-panel')) return;
   playButtonSound();
 });
@@ -356,6 +366,22 @@ $('start-button').addEventListener('click', () => {
 $('shelf-back').addEventListener('click', () => {
   screen = 'title';
   render();
+});
+$('resume-continue').addEventListener('click', () => {
+  const target = resumeTarget;
+  $<HTMLDialogElement>('resume-dialog').close();
+  if (target) openStory(target, 'resume');
+});
+$('resume-restart').addEventListener('click', () => {
+  const target = resumeTarget;
+  $<HTMLDialogElement>('resume-dialog').close();
+  if (target) openStory(target, 'new');
+});
+$('resume-cancel').addEventListener('click', () => {
+  $<HTMLDialogElement>('resume-dialog').close();
+});
+$<HTMLDialogElement>('resume-dialog').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) $<HTMLDialogElement>('resume-dialog').close();
 });
 $('settings-button').addEventListener('click', () => {
   screen = 'settings';

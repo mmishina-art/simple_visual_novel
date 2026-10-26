@@ -24,6 +24,15 @@ async function playToEnding(page: Page, labels: string[]): Promise<void> {
 async function beginStory(page: Page): Promise<void> {
   await page.getByRole('button', { name: 'はじめる' }).click();
   await page.locator('.book-card').first().click();
+  // 読みかけの本では確認が出るので、そのときは「つづきから読む」を選ぶ
+  for (let i = 0; i < 10; i++) {
+    if (await page.locator('#resume-dialog').isVisible()) {
+      await page.getByRole('button', { name: 'つづきから読む' }).click();
+      break;
+    }
+    if (await page.locator('#story-text').isVisible()) break;
+    await page.waitForTimeout(100);
+  }
 }
 
 async function startAndAdvanceToFirstChoice(page: Page): Promise<void> {
@@ -71,7 +80,10 @@ test('正しく選ぶとハッピーエンドになり、タイトルに結末�
   await page.locator('#ending-title-button').click();
   await expect(page.locator('#shelf-screen')).toBeVisible();
   await expect(page.locator('.book-card').first()).toContainText('到達した結末: 1 / 3');
-  await expect(page.locator('.book-card').first()).not.toContainText('最初から読み直す');
+  // 進行は消えているので、確認は出ずに最初から始まる
+  await page.locator('.book-card').first().click();
+  await expect(page.locator('#resume-dialog')).not.toBeVisible();
+  await expect(page.locator('#story-text')).toContainText('文化祭を明日に控えた');
 });
 
 test('途中で閉じても、つづきから再開できる', async ({ page }) => {
@@ -81,8 +93,9 @@ test('途中で閉じても、つづきから再開できる', async ({ page }) 
   await page.locator('#message-window').click();
   await page.reload();
   await page.getByRole('button', { name: 'はじめる' }).click();
-  await expect(page.locator('.book-card').first()).toContainText('最初から読み直す');
   await page.locator('.book-card').first().click();
+  await expect(page.locator('#resume-dialog')).toBeVisible();
+  await page.getByRole('button', { name: 'つづきから読む' }).click();
   await expect(page.locator('#story-text')).toContainText('仕上がった看板を壁に立てかけた');
 });
 
@@ -90,12 +103,12 @@ test('本棚から物語を選び直し、途中でも最初から読み直せ�
   await page.goto('/');
   await beginStory(page);
   await page.locator('#message-window').click();
-  // 本棚へ戻ると、カードに「最初から読み直す」が出る
   await page.locator('#to-title-button').click();
   await expect(page.locator('.book-card').first()).toContainText('午前0時の校舎');
-  await expect(page.locator('.book-card').first()).toContainText('最初から読み直す');
-  // 「最初から読み直す」を選ぶと、物語の先頭から始まる
-  await page.locator('.book-restart').click();
+  // 本を選ぶと確認が出て、「最初から読む」を選ぶと物語の先頭から始まる
+  await page.locator('.book-card').first().click();
+  await expect(page.locator('#resume-dialog')).toBeVisible();
+  await page.getByRole('button', { name: '最初から読む' }).click();
   await expect(page.locator('#story-text')).toContainText('文化祭を明日に控えた');
 });
 
@@ -556,14 +569,22 @@ test('記録をファイルに書き出し、消えたあとに読み込んで�
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   await page.getByRole('button', { name: 'はじめる' }).click();
-  await expect(page.locator('.book-card').first()).not.toContainText('最初から読み直す');
+  // 記録が消えているので、確認は出ずに最初から始まる
+  await page.locator('.book-card').first().click();
+  await expect(page.locator('#resume-dialog')).not.toBeVisible();
+  await expect(page.locator('#story-text')).toContainText('文化祭を明日に控えた');
+  await page.locator('#to-title-button').click();
   await page.getByRole('button', { name: 'タイトルに戻る' }).click();
   await page.getByRole('button', { name: '設定' }).click();
   await page.getByText('記録のバックアップ').click();
   await page.locator('#backup-import').setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(text) });
   await expect(page.locator('#backup-message')).toContainText('読み込みました');
   await page.getByRole('button', { name: 'はじめる' }).click();
-  await expect(page.locator('.book-card').first()).toContainText('最初から読み直す');
+  // 記録が戻っているので、本を選ぶと確認が出る
+  await page.locator('.book-card').first().click();
+  await expect(page.locator('#resume-dialog')).toBeVisible();
+  await page.getByRole('button', { name: 'キャンセル' }).click();
+  await expect(page.locator('#resume-dialog')).not.toBeVisible();
 });
 
 test('おかしいバックアップファイルは、理由を表示して読み込まない', async ({ page }) => {
