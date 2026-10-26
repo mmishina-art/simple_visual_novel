@@ -7,7 +7,8 @@ import { moonLibrary } from './moon-library';
 import { stardustStation } from './stardust-station';
 import { cafeTsubame } from './cafe-tsubame';
 import { sundayWell } from './sunday-well';
+import { maouDiner } from './maou-diner';
 
-export const STORIES: Story[] = [midnightSchool, moonLibrary, missingTrophy, stardustStation, cafeTsubame, sundayWell];
+export const STORIES: Story[] = [midnightSchool, moonLibrary, missingTrophy, stardustStation, cafeTsubame, sundayWell, maouDiner];
 
 export const storyById = (id: string): Story | undefined => STORIES.find((s) => s.id === id);

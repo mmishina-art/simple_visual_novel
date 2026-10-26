@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+  <!-- 木の食堂の店内。カウンターと大鍋、窓の光（『魔王のいない国の食堂』の表紙・背景） -->
+  <rect width="800" height="600" fill="#4a3520"/>
+  <rect width="800" height="600" fill="#5a4128" opacity="0.55"/>
+  <!-- 天井の梁 -->
+  <rect y="0" width="800" height="34" fill="#332414"/>
+  <rect x="120" y="0" width="26" height="90" fill="#3d2a16"/>
+  <rect x="640" y="0" width="26" height="90" fill="#3d2a16"/>
+  <!-- 窓と光 -->
+  <rect x="556" y="96" width="180" height="210" fill="#f4d894"/>
+  <rect x="556" y="96" width="180" height="210" fill="none" stroke="#332414" stroke-width="12"/>
+  <line x1="646" y1="96" x2="646" y2="306" stroke="#332414" stroke-width="8"/>
+  <line x1="556" y1="200" x2="736" y2="200" stroke="#332414" stroke-width="8"/>
+  <path d="M556 306 L736 306 L800 470 L620 470 Z" fill="#ffd98f" opacity="0.16"/>
+  <!-- 棚と瓶 -->
+  <rect x="52" y="150" width="300" height="14" fill="#332414"/>
+  <g>
+    <rect x="76" y="104" width="34" height="46" rx="6" fill="#8a9a5b"/>
+    <rect x="124" y="96" width="28" height="54" rx="6" fill="#b0703a"/>
+    <rect x="166" y="108" width="38" height="42" rx="6" fill="#7a6a9a"/>
+    <rect x="218" y="100" width="30" height="50" rx="6" fill="#a34a3a"/>
+    <rect x="262" y="110" width="44" height="40" rx="8" fill="#c2a15a"/>
+  </g>
+  <rect x="52" y="238" width="300" height="14" fill="#332414"/>
+  <g>
+    <circle cx="104" cy="216" r="20" fill="#d8cdb2"/>
+    <circle cx="160" cy="216" r="20" fill="#cbbd9c"/>
+    <rect x="206" y="192" width="52" height="46" rx="6" fill="#6d7f4e"/>
+    <rect x="276" y="198" width="40" height="40" rx="6" fill="#96683c"/>
+  </g>
+  <!-- 吊るしハーブと干し肉 -->
+  <g stroke="#2f4423" stroke-width="4">
+    <line x1="420" y1="34" x2="420" y2="86"/>
+    <line x1="470" y1="34" x2="470" y2="98"/>
+  </g>
+  <g fill="#55703c">
+    <ellipse cx="420" cy="104" rx="16" ry="24"/>
+    <ellipse cx="406" cy="96" rx="12" ry="18"/>
+    <ellipse cx="434" cy="96" rx="12" ry="18"/>
+    <ellipse cx="470" cy="118" rx="15" ry="26"/>
+    <ellipse cx="457" cy="108" rx="11" ry="18"/>
+    <ellipse cx="483" cy="108" rx="11" ry="18"/>
+  </g>
+  <!-- かまどと大鍋 -->
+  <rect x="386" y="352" width="150" height="96" fill="#6b6f75"/>
+  <rect x="386" y="352" width="150" height="16" fill="#585c61"/>
+  <ellipse cx="461" cy="368" rx="56" ry="12" fill="#3b3e42"/>
+  <path d="M410 368 a51 26 0 0 0 102 0 Z" fill="#22242a"/>
+  <ellipse cx="461" cy="366" rx="48" ry="9" fill="#7a4a26"/>
+  <path d="M428 352 q10 -18 0 -30 M461 352 q10 -18 0 -30 M494 352 q10 -18 0 -30" stroke="#e8e2d2" stroke-width="5" fill="none" opacity="0.5" stroke-linecap="round"/>
+  <g fill="#e07b2a">
+    <path d="M420 448 q10 -16 20 0 q-10 8 -20 0Z"/>
+    <path d="M452 448 q10 -20 22 0 q-11 9 -22 0Z"/>
+    <path d="M486 448 q9 -14 18 0 q-9 7 -18 0Z"/>
+  </g>
+  <!-- カウンター -->
+  <rect x="40" y="420" width="330" height="26" fill="#7a5a34"/>
+  <rect x="52" y="446" width="306" height="80" fill="#5f4526"/>
+  <g fill="#8a6a40">
+    <rect x="70" y="462" width="60" height="48" rx="4"/>
+    <rect x="150" y="462" width="60" height="48" rx="4"/>
+    <rect x="230" y="462" width="60" height="48" rx="4"/>
+  </g>
+  <!-- 椅子 -->
+  <g fill="#4c3619">
+    <rect x="86" y="526" width="52" height="12" rx="6"/>
+    <rect x="94" y="538" width="10" height="40"/>
+    <rect x="120" y="538" width="10" height="40"/>
+    <rect x="196" y="526" width="52" height="12" rx="6"/>
+    <rect x="204" y="538" width="10" height="40"/>
+    <rect x="230" y="538" width="10" height="40"/>
+    <rect x="306" y="526" width="52" height="12" rx="6"/>
+    <rect x="314" y="538" width="10" height="40"/>
+    <rect x="340" y="538" width="10" height="40"/>
+  </g>
+  <!-- カウンターの上の椀と湯気 -->
+  <path d="M120 420 a26 12 0 0 0 52 0 Z" fill="#ddd3ba"/>
+  <path d="M252 420 a26 12 0 0 0 52 0 Z" fill="#cbbd9c"/>
+  <path d="M140 402 q6 -12 0 -22 M146 402 q6 -12 0 -22" stroke="#efe9da" stroke-width="4" fill="none" opacity="0.55" stroke-linecap="round"/>
+  <!-- 床 -->
+  <rect y="578" width="800" height="22" fill="#332414"/>
+</svg>

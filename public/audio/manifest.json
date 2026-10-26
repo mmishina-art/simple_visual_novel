@@ -598,5 +598,95 @@
   },
   "sunday-well/happy1": {
     "hash": "f1e0ace73c"
+  },
+  "maou-diner/meet1": {
+    "hash": "5b7791d58a"
+  },
+  "maou-diner/pro2": {
+    "hash": "4f45a5a16a"
+  },
+  "maou-diner/meet2": {
+    "hash": "39f63cbed8"
+  },
+  "maou-diner/choice_menu": {
+    "hash": "b19ee7c6fe"
+  },
+  "maou-diner/work1": {
+    "hash": "3f8fc4910e"
+  },
+  "maou-diner/dashi1": {
+    "hash": "d4d9a03609"
+  },
+  "maou-diner/pro1": {
+    "hash": "74425f7f8d"
+  },
+  "maou-diner/local1": {
+    "hash": "9f98d2d0eb"
+  },
+  "maou-diner/day1": {
+    "hash": "b58573b2f5"
+  },
+  "maou-diner/day2": {
+    "hash": "0b0f62f465"
+  },
+  "maou-diner/hero1": {
+    "hash": "aa61b34a07"
+  },
+  "maou-diner/choice_taste": {
+    "hash": "ddb2b1ecc3"
+  },
+  "maou-diner/listen1": {
+    "hash": "8294af2973"
+  },
+  "maou-diner/hero2": {
+    "hash": "65a1a7a025"
+  },
+  "maou-diner/truth1": {
+    "hash": "b7d288fecb"
+  },
+  "maou-diner/choice_welcome": {
+    "hash": "8e0e2a7ae2"
+  },
+  "maou-diner/demon1": {
+    "hash": "aef7e259e6"
+  },
+  "maou-diner/cook1": {
+    "hash": "eb28069437"
+  },
+  "maou-diner/welcome1": {
+    "hash": "f17c1a0dcd"
+  },
+  "maou-diner/truth2": {
+    "hash": "2c4db5414c"
+  },
+  "maou-diner/choice_dish": {
+    "hash": "c5ed0c6874"
+  },
+  "maou-diner/fair1": {
+    "hash": "fc68f76bde"
+  },
+  "maou-diner/fair_fail": {
+    "hash": "95082f25ca"
+  },
+  "maou-diner/refuse1": {
+    "hash": "7469d9b304"
+  },
+  "maou-diner/porridge1": {
+    "hash": "9ff4784b7a"
+  },
+  "maou-diner/last1": {
+    "hash": "3b370781b3"
+  },
+  "maou-diner/end_happy": {
+    "hash": "070ebbe521"
+  },
+  "maou-diner/last2": {
+    "hash": "28216ed644"
+  },
+  "maou-diner/end_taste": {
+    "hash": "0f8e5e6a3d"
+  },
+  "maou-diner/end_closed": {
+    "hash": "13fd30d453"
   }
 }

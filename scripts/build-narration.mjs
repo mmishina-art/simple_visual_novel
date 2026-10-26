@@ -19,6 +19,12 @@ const SPEED = '112';
 // 『日曜日、井戸の底で』: G（Even Pond）を速度104で合成し、ピッチ0.95と輪郭の強調を
 // かける「改3クリアA」相当（2026-10-26 ユーザー選択）。
 const VOICE_PROFILES = {
+  'maou-diner': {
+    voice: 'avocado_v2:qvd_02415',
+    speed: '104',
+    tag: 'g-mod3a',
+    post: 'rubberband=pitch=0.95,equalizer=f=3500:t=q:w=1:g=3,highshelf=f=8000:g=2',
+  },
   'sunday-well': {
     voice: 'avocado_v2:qvd_02415',
     speed: '104',

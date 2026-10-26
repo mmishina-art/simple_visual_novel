@@ -178,7 +178,7 @@ interface BgmConfig {
   stabDecay?: number;
 }
 
-export type BgmTheme = 'horror' | 'romance' | 'mystery' | 'sf' | 'comedy' | 'literary';
+export type BgmTheme = 'horror' | 'romance' | 'mystery' | 'sf' | 'comedy' | 'literary' | 'tavern';
 
 const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
   // ホラー（『午前0時の校舎』）：夜の校舎。短調のパッドと、まばらなピアノ、風の音
@@ -416,6 +416,45 @@ const BGM_THEMES: Record<BgmTheme, Record<BgmMood, BgmConfig>> = {
       drone: [55, 82.41],
       chordSec: 13, bellChance: 0.18, bellGain: 0.03, wind: 0.002, padGain: 0.015,
       droneGain: 0.01, padWave: 'sine', padCutoff: 800, bellDecay: 5.5,
+    },
+  },
+  // 異世界食堂（『魔王のいない国の食堂』）：温かい木の店内。フォーク調の和音と、弾くような単音
+  tavern: {
+    normal: {
+      chords: [
+        [98.0, 146.83, 246.94, 293.66], // G(add9)
+        [130.81, 196.0, 329.63, 392.0], // C
+        [82.41, 164.81, 246.94, 392.0], // Em
+        [73.42, 146.83, 220.0, 293.66], // D
+      ],
+      bells: [587.33, 659.25, 783.99, 880.0, 987.77, 1174.66],
+      drone: [49.0, 98.0],
+      chordSec: 8, bellChance: 0.5, bellGain: 0.03, wind: 0.002, padGain: 0.014,
+      droneGain: 0.01, padWave: 'triangle', padCutoff: 950, bellWave: 'triangle', bellDecay: 1.8,
+    },
+    happy: {
+      chords: [
+        [98.0, 196.0, 293.66, 392.0], // G
+        [130.81, 196.0, 329.63, 392.0], // C
+        [110.0, 220.0, 329.63, 440.0], // Am
+        [146.83, 220.0, 293.66, 369.99], // D7
+      ],
+      bells: [659.25, 783.99, 880.0, 987.77, 1174.66, 1318.51],
+      drone: [49.0, 98.0],
+      chordSec: 8, bellChance: 0.6, bellGain: 0.03, wind: 0.0015, padGain: 0.015,
+      droneGain: 0.01, padWave: 'triangle', padCutoff: 1100, bellWave: 'triangle', bellDecay: 1.8,
+    },
+    bad: {
+      chords: [
+        [82.41, 164.81, 246.94], // Em
+        [110.0, 164.81, 220.0], // Am
+        [61.74, 123.47, 196.0], // B
+        [82.41, 146.83, 196.0], // Em(add)
+      ],
+      bells: [329.63, 392.0, 493.88],
+      drone: [41.2, 82.41],
+      chordSec: 11, bellChance: 0.2, bellGain: 0.028, wind: 0.003, padGain: 0.014,
+      droneGain: 0.011, padWave: 'triangle', padCutoff: 700, bellWave: 'triangle', bellDecay: 2.6,
     },
   },
 };

@@ -211,6 +211,23 @@ test('六冊目（純文学）は、道具なしで一気に登るとバッド�
   await expect(page.locator('#ending-panel')).toContainText('濡れた手紙');
 });
 
+test('七冊目（異世界転生）を選んで、ハッピーエンドまで読める', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'はじめる' }).click();
+  await page.locator('.book-card').nth(6).click();
+  await expect(page.locator('body')).toHaveAttribute('data-bgm-theme', 'tavern');
+  await playToEnding(page, ['出汁の汁物', 'まず聞く', '迎え入れる', '郷土料理']);
+  await expect(page.locator('#ending-panel')).toContainText('ひだまりの食卓');
+});
+
+test('七冊目（異世界転生）は、魔族を断るとバッドエンドになる', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'はじめる' }).click();
+  await page.locator('.book-card').nth(6).click();
+  await playToEnding(page, ['定番シチュー', 'まず聞く', 'お断りする', '出汁の汁物']);
+  await expect(page.locator('#ending-panel')).toContainText('閉店');
+});
+
 test('追加した本では、BGMのテーマが物語に合っている', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'はじめる' }).click();

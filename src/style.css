@@ -485,6 +485,10 @@ button.big {
   background: linear-gradient(90deg, #2c3a5e, #43538a 55%, #2c3a5e);
   color: #e9ecf5;
 }
+.obi-moss .book-obi {
+  background: linear-gradient(90deg, #55663a, #74875a 55%, #55663a);
+  color: #f2f0dd;
+}
 
 .book-colophon {
   position: absolute;
