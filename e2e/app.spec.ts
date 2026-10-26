@@ -162,6 +162,24 @@ test('本を選ぶと、どの本でも共通の「本を開く音」が鳴る',
   }
 });
 
+test('四冊目（SF）を選んで、ハッピーエンドまで読める', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'はじめる' }).click();
+  await page.locator('.book-card').nth(3).click();
+  await expect(page.locator('body')).toHaveAttribute('data-bgm-theme', 'sf');
+  await playToEnding(page, ['復元する', '話してから', '電力を送る', '海の音を送る']);
+  await expect(page.locator('#ending-panel')).toContainText('星の約束');
+});
+
+test('五冊目（コメディ）を選んで、ハッピーエンドまで読める', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'はじめる' }).click();
+  await page.locator('.book-card').nth(4).click();
+  await expect(page.locator('body')).toHaveAttribute('data-bgm-theme', 'comedy');
+  await playToEnding(page, ['餌をあげて', 'メモして', 'ろうそく', 'ナポリタンを']);
+  await expect(page.locator('#ending-panel')).toContainText('伝説のナポリタン');
+});
+
 test('追加した本では、BGMのテーマが物語に合っている', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'はじめる' }).click();

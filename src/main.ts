@@ -20,9 +20,10 @@ import outside from './assets/scenes/outside.svg';
 import library from './assets/scenes/library.svg';
 import trophy from './assets/scenes/trophy.svg';
 import libraryhall from './assets/scenes/libraryhall.svg';
+import station from './assets/scenes/station.svg';
+import diner from './assets/scenes/diner.svg';
 
-const SCENES: Record<SceneBg, string> = { classroom, corridor, stairs, music, entrance, dark, outside, library, trophy, libraryhall };
-
+const SCENES: Record<SceneBg, string> = { classroom, corridor, stairs, music, entrance, dark, outside, library, trophy, libraryhall, station, diner };
 const $ = <T extends HTMLElement>(id: string): T => {
   const el = document.getElementById(id);
   if (!el) throw new Error(`#${id} not found`);
