@@ -390,7 +390,7 @@ button.big {
 .book-cover-vtitle.htitle {
   writing-mode: horizontal-tb;
   top: 30px;
-  left: 12px;
+  left: 10px;
   right: auto;
   max-height: none;
   line-height: 1.45;
@@ -398,8 +398,8 @@ button.big {
 
 /* 窓枠の中：枠の内側に縦書きで収める */
 .book-cover-vtitle.inwindow {
-  top: 26px;
-  left: 29px;
+  top: 25px;
+  left: 85px;
   right: auto;
 }
 
