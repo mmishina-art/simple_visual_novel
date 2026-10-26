@@ -37,7 +37,24 @@ const hashOf = (text) => createHash('sha1').update(text).digest('hex').slice(0, 
 // 英語読みになってしまうので、カタカナに置き換えてから読み上げる。
 // ※ tests/narration.test.ts 側にも同じ表があるので、直すときは両方直すこと。
 const READING_OVERRIDES = [[/AI/g, 'エーアイ']];
-const spokenText = (text) => READING_OVERRIDES.reduce((t, [re, yomi]) => t.replace(re, yomi), text);
+
+// 場面ごとの読み上げ文の差し替え（画面の表示は変えない）。
+// 生成エンジンが、本文のままだと英語で読み上げてしまう場面がある（2026-10-26、
+// 全場面を文字起こしで点検して発覚）。そうした場面は、意味を変えない範囲で
+// 言い回しを整えた文で読み上げる。差し替え文は、生成後に文字起こしして
+// 日本語で本文どおりに読まれていることを確認済みのものだけを入れること。
+// ※ tests/narration.test.ts 側にも同じ表があるので、直すときは両方直すこと。
+const SPOKEN_TEXT_OVERRIDES = {
+  'midnight-school/blackout1': '次の瞬間、非常灯がすべて消えた。完全な暗闇の中で、背後に人の気配があった。',
+  'midnight-school/choice_voice': '声が、もう一度、私の名前を呼んだ。',
+  'midnight-school/music4': '譜面台の上には、濡れた上履きが片方だけ置いてあった。サイズは私のものとよく似ていた。',
+  'missing-trophy/start5': '写真部の同級生、潤がカメラを下げて駆けつけた。式まで、あと三時間。犯人捜し、手伝うよ。まず、どこから調べよう。',
+  'missing-trophy/end_truth': '授与式。ステージの優勝杯はスポットライトを受けて輝いた。事情を知るのは、私と、潤と、部長だけ。部長の直した小さな傷跡は、優勝したクラスの、新しい歴史の始まりになった。',
+  'stardust-station/locate2': '四十年かけて描いた大きな弧の果てに、船は帰り道の上にいた。まるで、ずっと帰ろうとしていたみたいに。',
+  'cafe-tsubame/calm1': '嵐のような一日も、夕方が近づく頃には静かになった。社長はカウンターでうとうとしている。平和だ。平和が一番だ。',
+  'cafe-tsubame/recipe2': '太麺をよく炒めて、ケチャップを寝かせて、最後に隠し味。運ばれた皿を見て、美食家の目がはっきりと見開かれた。これだ。この味だ。',
+};
+const spokenText = (key, text) => READING_OVERRIDES.reduce((t, [re, yomi]) => t.replace(re, yomi), SPOKEN_TEXT_OVERRIDES[key] ?? text);
 
 const manifest = existsSync(MANIFEST) ? JSON.parse(readFileSync(MANIFEST, 'utf8')) : {};
 const wanted = new Map();
@@ -49,7 +66,7 @@ for (const story of STORIES) {
 
 const jobs = [];
 for (const [key, text] of wanted) {
-  const spoken = spokenText(text);
+  const spoken = spokenText(key, text);
   const hash = hashOf(spoken);
   const file = join(OUT_DIR, `${key}.mp3`);
   if (manifest[key]?.hash === hash && existsSync(file)) continue;
