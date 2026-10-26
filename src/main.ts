@@ -444,7 +444,8 @@ document.addEventListener('pointerdown', () => {
 // 読み上げが終わったら自動で次へ。ただし選択肢の場面では、選んでもらうために止まる
 onNarrationFinish(() => {
   if (!state || screen !== 'game') return;
-  if (nodeOf(story, state).choices) return;
+  // 選択肢が出ているときは進まない。まだ出ていないときは、読み終わりを合図に選択肢を出す
+  if (nodeOf(story, state).choices && choicesRevealed) return;
   advanceReading();
 });
 $('retry-button').addEventListener('click', () => {

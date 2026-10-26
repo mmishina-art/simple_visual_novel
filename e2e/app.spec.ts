@@ -67,7 +67,8 @@ test('選択を誤るとバッドエンドになり、最後の選択からや�
   await expect(page.locator('#story-text')).toContainText('冷たい手が私の肩に');
   await expect(page.locator('#story-text')).not.toContainText('振り返った先');
   await page.getByRole('button', { name: '最後の選択からやり直す' }).click();
-  // 声の選択肢まで戻っている
+  // 声の選択肢まで戻っている（選択肢はタッチで出す仕様）
+  await page.locator('#message-window').click();
   await expect(page.locator('#choices')).toBeVisible();
   await expect(page.locator('#choices button', { hasText: '返事をせず' })).toBeVisible();
 });
