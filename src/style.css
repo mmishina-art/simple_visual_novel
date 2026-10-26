@@ -386,6 +386,23 @@ button.big {
   letter-spacing: 0.06em;
 }
 
+/* 横書き：落ち着いた面の上に、行を積む */
+.book-cover-vtitle.htitle {
+  writing-mode: horizontal-tb;
+  top: 30px;
+  left: 10px;
+  right: auto;
+  max-height: none;
+  line-height: 1.45;
+}
+
+/* 窓枠の中：枠の内側に縦書きで収める */
+.book-cover-vtitle.inwindow {
+  top: 31px;
+  left: 93px;
+  right: auto;
+}
+
 .book-cover-vline {
   display: block;
   white-space: nowrap;

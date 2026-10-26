@@ -44,6 +44,8 @@ export interface Story {
   coverObi?: 'red' | 'cream' | 'navy' | 'silver' | 'orange';
   /** 表紙の題字の改行位置（言葉の途中では切らない）。連結すると title と一致すること */
   coverLines?: string[];
+  /** 題字の置き方。絵の落ち着いた場所に合わせて選ぶ（通常は右上の縦書き） */
+  coverTitleLayout?: 'vertical' | 'horizontal' | 'window';
   /** BGM のテーマ（省略時は 'horror'） */
   bgm?: 'horror' | 'romance' | 'mystery' | 'sf' | 'comedy';
   /** 表紙の色調（省略時は 'dark'）。明るい絵には 'light' */
