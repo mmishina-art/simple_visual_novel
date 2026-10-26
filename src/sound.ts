@@ -107,9 +107,9 @@ export function playButtonSound(): void {
 export function playBookOpenSound(): void {
   if (!enabled) return;
   try {
-    // コト：本を置くような、低い小さな音
-    tone(145, 0.1, 'sine', 0.07, 0, 92);
-    noise(0.04, 420, 0.032, 0, 'lowpass');
+    // コト：本を置くような乾いた打音。響くサイン波は使わない（「ポーン」と聞こえるため）
+    noise(0.035, 360, 0.055, 0, 'lowpass');
+    tone(118, 0.04, 'sine', 0.022, 0, 84);
     // パラ：ページが開いて落ち着く、短い紙の音
     noise(0.05, 2000, 0.05, 0.15, 'bandpass');
     noise(0.06, 1500, 0.055, 0.22, 'bandpass');
