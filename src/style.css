@@ -114,8 +114,8 @@ button.big {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
-  padding: 8px 18px;
+  min-height: 34px;
+  padding: 4px 16px;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: rgba(240, 232, 216, 0.07);
@@ -232,7 +232,7 @@ button.big {
   z-index: 2;
   background: #2b1a0e;
   box-shadow: 0 10px 14px -10px rgba(0, 0, 0, 0.8);
-  padding-bottom: 6px;
+  padding: 4px 8px 6px;
 }
 
 #shelf-screen .header {
@@ -240,13 +240,13 @@ button.big {
 }
 
 #shelf-screen h1 {
-  font-size: 1.15rem;
-  margin: 2px 0;
+  font-size: 1.05rem;
+  margin: 0;
 }
 
 #shelf-screen .shelf-head .muted {
-  margin: 0;
-  font-size: 0.88rem;
+  margin: 1px 0 0;
+  font-size: 0.84rem;
 }
 
 #shelf-screen .shelf-list {
@@ -254,7 +254,7 @@ button.big {
   min-height: 0;
   overflow-y: auto;
   margin: 0;
-  padding: 16px 2px 20px;
+  padding: 12px 2px 20px;
   scrollbar-width: thin;
   /* 行が画面の高さに合わせて潰れないようにし、あふれた分はスクロールさせる */
   align-content: start;
@@ -464,7 +464,7 @@ button.big {
 .book-restart {
   align-self: center;
   width: fit-content;
-  padding: 6px 14px;
+  padding: 3px 12px;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: rgba(240, 232, 216, 0.06);
