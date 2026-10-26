@@ -244,11 +244,6 @@ button.big {
   margin: 0;
 }
 
-#shelf-screen .shelf-head .muted {
-  margin: 1px 0 0;
-  font-size: 0.84rem;
-}
-
 #shelf-screen .shelf-list {
   flex: 1;
   min-height: 0;
