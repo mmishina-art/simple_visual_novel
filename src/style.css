@@ -503,14 +503,6 @@ button.big {
   gap: 6px;
 }
 
-.game-header .btn-pill {
-  height: 44px;
-  min-height: 44px;
-  padding: 0 14px;
-  font-size: 0.85rem;
-  white-space: nowrap;
-}
-
 .game-title {
   font-size: 0.95rem;
   letter-spacing: 0.12em;
