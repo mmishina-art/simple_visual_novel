@@ -8,7 +8,7 @@ export const sundayWell: Story = {
   description: '離婚して一年の翻訳者。日曜日、隣の空き家の井戸に降りる。そこには猫と、17年前に届かなかった手紙があった。',
   length: '5〜10分',
   cover: 'well',
-  coverTone: 'light',
+  coverTone: 'dark',
   coverObi: 'indigo',
   coverLines: ['日曜日、', '井戸の底で'],
   bgm: 'literary',
