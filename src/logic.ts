@@ -2,7 +2,7 @@
 // シナリオのデータは src/stories/ に分けて置く（このファイルはデータを持たない）。
 
 /** 背景イラストの種類（src/assets/scenes/ の SVG と対応する） */
-export type SceneBg = 'classroom' | 'corridor' | 'stairs' | 'music' | 'entrance' | 'dark' | 'outside' | 'library' | 'trophy' | 'libraryhall' | 'station' | 'diner';
+export type SceneBg = 'classroom' | 'corridor' | 'stairs' | 'music' | 'entrance' | 'dark' | 'outside' | 'library' | 'trophy' | 'archlibrary' | 'station' | 'diner';
 
 /** 場面で鳴らす音の種類（src/sound.ts の合成音と対応する） */
 export type SceneSound = 'rain' | 'phone' | 'steps' | 'piano' | 'chime' | 'knock' | 'door' | 'thunder' | 'whisper' | 'beep' | 'bell';
