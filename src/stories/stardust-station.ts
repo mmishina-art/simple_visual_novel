@@ -5,7 +5,7 @@ import type { Story } from '../logic';
 export const stardustStation: Story = {
   id: 'stardust-station',
   title: '星屑ステーション',
-  description: '40年前に消えた探査船からの信号。軌道ステーションの通信士と、船に残されたAIの、遠くて近い会話。',
+  description: '40年前に消えた探査船の信号。通信士と、船に残されたAIの遠くて近い会話。',
   length: '5〜10分',
   cover: 'station',
   coverObi: 'silver',

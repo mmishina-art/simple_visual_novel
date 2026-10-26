@@ -5,7 +5,7 @@ import type { Story } from '../logic';
 export const missingTrophy: Story = {
   id: 'missing-trophy',
   title: '消えた優勝杯',
-  description: '文化祭の朝、展示室の優勝杯が消えた。鍵は内側から掛かっていた――密室の謎を解く。',
+  description: '文化祭の朝、優勝杯が消えた。鍵は内側から掛かっていた――密室の謎。',
   length: '10〜15分',
   cover: 'trophy',
   coverObi: 'navy',
