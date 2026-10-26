@@ -103,7 +103,6 @@ export const moonLibrary: Story = {
     },
     rain2: {
       id: 'rain2',
-      speaker: '篠宮先輩',
       text: '「すみません、閉館でしたか」――図書委員長の篠宮先輩。三年で、来年の春には卒業する人。',
       next: 'rain3',
     },

@@ -564,17 +564,6 @@ button.big {
   cursor: pointer;
 }
 
-.speaker {
-  position: absolute;
-  top: 14px;
-  right: 10px;
-  writing-mode: vertical-rl;
-  margin: 0;
-  color: var(--accent);
-  font-weight: 700;
-  letter-spacing: 0.1em;
-}
-
 .story-text {
   /* 並べ方は横方向の flex（文章のまとまりを右から左へ）。縦書きは各 .segment 側で指定する
      （ここに vertical-rl を付けると flex の主軸まで縦になってしまう） */
