@@ -246,41 +246,32 @@ button.big {
   height: calc(100dvh - max(16px, var(--safe-top)) - max(24px, env(safe-area-inset-bottom)));
 }
 
-/* 固定部分は、タイトル画面と同じアーチ書庫の絵をあしらう */
+/* 固定部分は細い帯に、アーチ書庫の絵をくっきり敷く（画面全体の背景は、同じ絵をぼかしたもの） */
 .shelf-head {
   flex: none;
   position: relative;
   z-index: 2;
-  height: min(168px, 24dvh);
   background-image:
-    linear-gradient(rgba(14, 10, 6, 0) 52%, rgba(14, 10, 6, 0.5)),
+    linear-gradient(rgba(14, 10, 6, 0.42), rgba(14, 10, 6, 0.42)),
     url('./assets/scenes/archlibrary.svg');
-  background-size: 122% auto;
-  background-position: 50% 20%;
+  background-size: cover;
+  background-position: 50% 30%;
   box-shadow: 0 10px 14px -10px rgba(0, 0, 0, 0.8);
+  padding: 4px 8px 6px;
 }
 
 #shelf-screen .header {
   margin: 0;
-  position: absolute;
-  inset: 0;
 }
 
 #shelf-screen h1 {
-  position: absolute;
-  left: 16px;
-  bottom: 10px;
-  font-size: 1.35rem;
-  letter-spacing: 0.18em;
+  font-size: 1.05rem;
   color: #f5ecd7;
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7), 0 0 2px rgba(0, 0, 0, 0.85);
   margin: 0;
 }
 
 #shelf-back {
-  position: absolute;
-  top: 10px;
-  right: 10px;
   background: rgba(22, 13, 6, 0.55);
 }
 
@@ -296,7 +287,8 @@ button.big {
   grid-auto-rows: max-content;
 }
 
-/* 背景は main の余白の分だけはみ出させて、画面いっぱいに広げる（木目＋板の継ぎ目） */
+/* 背景は main の余白の分だけはみ出させて、画面いっぱいに広げる。
+   タイトル画面と同じアーチ書庫の絵をぼかして敷き、モチーフの気配だけを残す */
 #shelf-screen::before {
   content: '';
   position: absolute;
@@ -305,10 +297,8 @@ button.big {
   bottom: calc(-1 * max(24px, env(safe-area-inset-bottom)));
   left: calc(-1 * max(16px, env(safe-area-inset-left)));
   z-index: -1;
-  background:
-    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.16) 0 2px, transparent 2px 118px),
-    linear-gradient(rgba(255, 214, 150, 0.07), rgba(0, 0, 0, 0.14) 55%, rgba(0, 0, 0, 0.3)),
-    linear-gradient(100deg, #3a2817, #2e1f12 55%, #352412);
+  background: url('./assets/scenes/archlibrary.svg') 50% 28% / cover no-repeat, #241708;
+  filter: blur(5px) brightness(0.72);
 }
 
 #shelf-screen .muted {
