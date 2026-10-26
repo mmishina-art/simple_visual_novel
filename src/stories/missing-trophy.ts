@@ -13,7 +13,7 @@ export const missingTrophy: Story = {
   start: 'start1',
   nodes: {
     start1: {
-      id: 'start1', bg: 'trophy', se: 'chime',
+      id: 'start1', bg: 'trophy',
       text: '文化祭の朝。クラス対抗展の優勝杯を展示室へ運ぶ係は、私、高嶺あかりだった。式は昼から。優勝杯はステージに飾られる。',
       next: 'start2',
     },

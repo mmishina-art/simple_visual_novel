@@ -14,7 +14,7 @@ export const moonLibrary: Story = {
   start: 'start1',
   nodes: {
     start1: {
-      id: 'start1', bg: 'library', se: 'chime',
+      id: 'start1', bg: 'library',
       text: '金曜日の放課後。図書委員の当番は、私、森下栞の番だった。夕日の図書室で、返却ポストの本を一冊ずつ棚に戻していく。',
       next: 'start2',
     },
