@@ -405,7 +405,7 @@ button.big {
 /* 窓枠の中：枠の内側に縦書きで収める */
 .book-cover-vtitle.inwindow {
   top: 31px;
-  left: 93px;
+  left: 100px;
   right: auto;
 }
 
@@ -450,8 +450,8 @@ button.big {
 }
 
 .obi-navy .book-obi {
-  left: 12px;
-  right: 24px;
+  left: 6px;
+  right: 14px;
   bottom: 20px;
   border-radius: 3px;
   background: #1e324e;

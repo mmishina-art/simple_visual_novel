@@ -5,7 +5,7 @@ import type { Story } from '../logic';
 export const cafeTsubame: Story = {
   id: 'cafe-tsubame',
   title: '喫茶つばめの災難',
-  description: 'バイト初日の喫茶店。注文は聞き間違える、インコの社長は好き放題。ドタバタの一日の終わりに、伝説のメニューが復活する？',
+  description: 'バイト初日の喫茶店。インコの社長は好き放題。伝説のメニューが復活する？',
   length: '5〜10分',
   cover: 'diner',
   coverTone: 'light',
