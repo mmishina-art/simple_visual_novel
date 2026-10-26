@@ -398,8 +398,8 @@ button.big {
 
 /* 窓枠の中：枠の内側に縦書きで収める */
 .book-cover-vtitle.inwindow {
-  top: 25px;
-  left: 85px;
+  top: 31px;
+  left: 93px;
   right: auto;
 }
 
