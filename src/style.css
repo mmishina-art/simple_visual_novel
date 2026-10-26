@@ -207,6 +207,29 @@ button.link {
   position: relative;
 }
 
+/* 見出しと「タイトルに戻る」は固定し、本のリストだけがスクロールする */
+#shelf-screen:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - max(16px, var(--safe-top)) - max(24px, env(safe-area-inset-bottom)));
+}
+
+.shelf-head {
+  flex: none;
+}
+
+#shelf-screen .shelf-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 0;
+  padding: 16px 2px 20px;
+  scrollbar-width: thin;
+  /* 行が画面の高さに合わせて潰れないようにし、あふれた分はスクロールさせる */
+  align-content: start;
+  grid-auto-rows: max-content;
+}
+
 /* 背景は main の余白の分だけはみ出させて、画面いっぱいに広げる（木目＋板の継ぎ目） */
 #shelf-screen::before {
   content: '';
