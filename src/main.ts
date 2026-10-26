@@ -207,7 +207,14 @@ function renderShelf(): void {
     card.className = 'book-card';
     const resume = savedProgressOf(item) !== null;
     const endings = load<string[]>(skey('endings', item), []);
-    card.append(buildCover(item));
+    const cover = buildCover(item);
+    // ハッピーエンドを見た本には、表紙の右上から小さなしおり紐を垂らす（さりげない達成の印）
+    if (hasSeenHappyEnding(item, endings)) {
+      const bookmark = spanOf('happy-bookmark', '');
+      bookmark.setAttribute('aria-hidden', 'true');
+      cover.append(bookmark);
+    }
+    card.append(cover);
     const meta = spanOf('book-meta muted', `読了目安 ${item.length} ／ 到達した結末: ${endings.length} / ${endingsOf(item).length}`);
     card.append(meta);
     card.addEventListener('click', () => {

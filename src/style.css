@@ -380,6 +380,20 @@ button.big {
 
 /* 表紙: 単行本の装丁（右綴じ）。背の陰影は右、題字は縦書き、
    あらすじは赤い帯、奥付は左上 */
+/* ハッピーエンド達成の印：表紙の右上から垂れる小さなしおり紐 */
+.happy-bookmark {
+  position: absolute;
+  top: 0;
+  right: 12px;
+  z-index: 3;
+  width: 8px;
+  height: 26px;
+  background: linear-gradient(90deg, #8e2f24, #a03a2a 50%, #84301f);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 84%, 0 100%);
+  opacity: 0.92;
+  pointer-events: none;
+}
+
 .book-cover {
   position: relative;
   display: block;
