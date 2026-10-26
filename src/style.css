@@ -504,6 +504,8 @@ button.big {
 }
 
 .game-title {
+  /* 明朝体は行ボックスの中で字面が少し上に寄るので、見た目の中心を隣のボタンに合わせる */
+  transform: translateY(2px);
   font-size: 1.12rem;
   letter-spacing: 0.12em;
   line-height: 1.2;
