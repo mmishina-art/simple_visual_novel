@@ -66,24 +66,30 @@ export function beep(frequency = 660, seconds = 0.08): void {
   }
 }
 
-/** 場面に合った音を合成して鳴らす（src/logic.ts の SceneSound と対応） */
+/**
+ * 場面に合った音の対応表（src/logic.ts の SceneSound と対応）。
+ * 音の種類を足すときは、SceneSound への追加と、ここへの1行が要る（無いと型で落ちる）。
+ */
+const SCENE_SOUNDS: Record<SceneSound, () => void> = {
+  rain: () => noise(1.8, 700, 0.05),
+  phone: () => { tone(140, 0.09, 'square', 0.05); tone(140, 0.09, 'square', 0.05, 0.16); tone(140, 0.09, 'square', 0.05, 0.32); },
+  steps: () => { tone(82, 0.13, 'sine', 0.16); tone(76, 0.13, 'sine', 0.16, 0.38); },
+  piano: () => { tone(196, 1.4, 'triangle', 0.12); tone(98, 1.4, 'sine', 0.06); },
+  chime: () => { tone(392, 1.6, 'sine', 0.09); tone(784, 1.2, 'sine', 0.03); },
+  knock: () => { tone(120, 0.07, 'sine', 0.18); tone(120, 0.07, 'sine', 0.18, 0.28); tone(120, 0.07, 'sine', 0.18, 0.56); },
+  door: () => tone(96, 0.5, 'sawtooth', 0.03, 0, 58),
+  thunder: () => noise(1.6, 180, 0.14),
+  whisper: () => { noise(0.7, 2400, 0.035, 0, 'bandpass'); noise(0.5, 1800, 0.03, 0.5, 'bandpass'); },
+  beep: () => { tone(880, 0.07, 'square', 0.03); tone(880, 0.07, 'square', 0.03, 0.13); tone(1320, 0.09, 'square', 0.025, 0.26); },
+  bell: () => { tone(1568, 0.5, 'triangle', 0.045); tone(2093, 0.35, 'sine', 0.02); },
+};
+
+/** 場面に合った音を合成して鳴らす */
 export function playSceneSound(key: SceneSound): void {
   if (!enabled) return;
   try {
     ac();
-    switch (key) {
-      case 'rain': noise(1.8, 700, 0.05); break;
-      case 'phone': tone(140, 0.09, 'square', 0.05); tone(140, 0.09, 'square', 0.05, 0.16); tone(140, 0.09, 'square', 0.05, 0.32); break;
-      case 'steps': tone(82, 0.13, 'sine', 0.16); tone(76, 0.13, 'sine', 0.16, 0.38); break;
-      case 'piano': tone(196, 1.4, 'triangle', 0.12); tone(98, 1.4, 'sine', 0.06); break;
-      case 'chime': tone(392, 1.6, 'sine', 0.09); tone(784, 1.2, 'sine', 0.03); break;
-      case 'knock': tone(120, 0.07, 'sine', 0.18); tone(120, 0.07, 'sine', 0.18, 0.28); tone(120, 0.07, 'sine', 0.18, 0.56); break;
-      case 'door': tone(96, 0.5, 'sawtooth', 0.03, 0, 58); break;
-      case 'thunder': noise(1.6, 180, 0.14); break;
-      case 'whisper': noise(0.7, 2400, 0.035, 0, 'bandpass'); noise(0.5, 1800, 0.03, 0.5, 'bandpass'); break;
-      case 'beep': tone(880, 0.07, 'square', 0.03); tone(880, 0.07, 'square', 0.03, 0.13); tone(1320, 0.09, 'square', 0.025, 0.26); break;
-      case 'bell': tone(1568, 0.5, 'triangle', 0.045); tone(2093, 0.35, 'sine', 0.02); break;
-    }
+    SCENE_SOUNDS[key]();
     document.dispatchEvent(new CustomEvent('app:sound', { detail: { key } }));
   } catch {
     // 音が出せなくても続行する

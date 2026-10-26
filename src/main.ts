@@ -10,20 +10,8 @@ import { applyUpdate, checkForUpdate, onUpdateAvailable, setupPwa } from './pwa'
 import { isSoundOn, playAdvanceSound, playBookOpenSound, playButtonSound, playEndingJingle, playSceneSound, setSound, startBgm, stopBgm } from './sound';
 import { exportBackup, importBackup, load, migrateStorage, remove, requestPersist, save } from './storage';
 
-import classroom from './assets/scenes/classroom.svg';
-import corridor from './assets/scenes/corridor.svg';
-import stairs from './assets/scenes/stairs.svg';
-import music from './assets/scenes/music.svg';
-import entrance from './assets/scenes/entrance.svg';
-import dark from './assets/scenes/dark.svg';
-import outside from './assets/scenes/outside.svg';
-import library from './assets/scenes/library.svg';
-import trophy from './assets/scenes/trophy.svg';
-import archlibrary from './assets/scenes/archlibrary.svg';
-import station from './assets/scenes/station.svg';
-import diner from './assets/scenes/diner.svg';
+import { SCENES } from './scenes';
 
-const SCENES: Record<SceneBg, string> = { classroom, corridor, stairs, music, entrance, dark, outside, library, trophy, archlibrary, station, diner };
 const $ = <T extends HTMLElement>(id: string): T => {
   const el = document.getElementById(id);
   if (!el) throw new Error(`#${id} not found`);
