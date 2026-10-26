@@ -19,11 +19,11 @@ import dark from './assets/scenes/dark.svg';
 import outside from './assets/scenes/outside.svg';
 import library from './assets/scenes/library.svg';
 import trophy from './assets/scenes/trophy.svg';
-import libraryhall from './assets/scenes/libraryhall.svg';
+import archlibrary from './assets/scenes/archlibrary.svg';
 import station from './assets/scenes/station.svg';
 import diner from './assets/scenes/diner.svg';
 
-const SCENES: Record<SceneBg, string> = { classroom, corridor, stairs, music, entrance, dark, outside, library, trophy, libraryhall, station, diner };
+const SCENES: Record<SceneBg, string> = { classroom, corridor, stairs, music, entrance, dark, outside, library, trophy, archlibrary, station, diner };
 const $ = <T extends HTMLElement>(id: string): T => {
   const el = document.getElementById(id);
   if (!el) throw new Error(`#${id} not found`);
@@ -464,7 +464,7 @@ $<HTMLInputElement>('backup-import').addEventListener('change', async (e) => {
 });
 
 document.querySelector('.game-title')!.textContent = story.title;
-$<HTMLImageElement>('title-bg').src = SCENES.libraryhall;
+$<HTMLImageElement>('title-bg').src = SCENES.archlibrary;
 $('version').textContent = __APP_VERSION__;
 // デバッグモード: バージョンの表示を続けて 5 回タップで切り替え
 setupDebug($('debug-panel'), $('version-line'), [

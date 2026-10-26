@@ -205,11 +205,17 @@ button.big {
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
 }
 
+/* 「はじめる」「設定」は、背景の椅子の背もたれの高さに置く（絵は高さいっぱいに表示されるので、高さ比で合わせる） */
 .title-actions {
-  margin-top: auto;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 70dvh;
 }
 
-.title-actions .version {
+.title-content .version {
+  margin-top: auto;
+  text-align: center;
   color: #aeb6bd;
 }
 
