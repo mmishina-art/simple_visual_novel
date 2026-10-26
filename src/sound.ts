@@ -1,5 +1,6 @@
 // 効果音は Web Audio で合成する（音声ファイルは持たない）。オン/オフ設定は必ず用意する。
 import { load, save } from './storage';
+import { TITLE_BPM, TITLE_LOOP_BEATS, buildTitleEvents, type TitleEvent } from './title-song';
 import type { SceneSound } from './logic';
 
 let ctx: AudioContext | undefined;
@@ -11,6 +12,7 @@ export function setSound(on: boolean): void {
   enabled = on;
   save('sound', on);
   if (!on) stopBgmInternal(false);
+  else if (titleWanted) startTitleBgm();
   else if (bgmWanted) startBgm();
 }
 
@@ -145,6 +147,8 @@ export function playAdvanceSound(): void {
 // 音声ファイルは持たず、開始操作（ユーザーのタップ）を起点に鳴らす。
 
 let bgmWanted = false;
+let titleWanted = false;
+let bgmKind: 'story' | 'title' | undefined;
 let bgmNodes: { master: GainNode; timer: ReturnType<typeof setInterval>; sources: OscillatorNode[] } | undefined;
 
 export type BgmMood = 'normal' | 'happy' | 'bad';
@@ -382,10 +386,12 @@ let bgmTheme: BgmTheme = 'horror';
 
 export function startBgm(mood?: BgmMood, theme?: BgmTheme): void {
   bgmWanted = true;
+  titleWanted = false;
   const target = mood ?? bgmMood;
   const targetTheme = theme ?? bgmTheme;
-  if (bgmNodes && target === bgmMood && targetTheme === bgmTheme) return;
+  if (bgmNodes && bgmKind === 'story' && target === bgmMood && targetTheme === bgmTheme) return;
   if (bgmNodes) stopBgmInternal(false);
+  bgmKind = 'story';
   bgmMood = target;
   bgmTheme = targetTheme;
   if (!enabled) return;
@@ -563,11 +569,13 @@ export function playEndingJingle(kind: 'happy' | 'bad'): void {
 }
 
 export function stopBgm(): void {
+  titleWanted = false;
   stopBgmInternal(true);
 }
 
 function stopBgmInternal(clearWanted: boolean): void {
   if (clearWanted) bgmWanted = false;
+  bgmKind = undefined;
   if (!bgmNodes) {
     document.body.dataset.bgm = 'off';
     delete document.body.dataset.bgmMood;
@@ -593,4 +601,144 @@ function stopBgmInternal(clearWanted: boolean): void {
   delete document.body.dataset.bgmMood;
   delete document.body.dataset.bgmTheme;
   document.dispatchEvent(new CustomEvent('app:bgm', { detail: { on: false } }));
+}
+
+// ---- タイトルBGM：固定の作曲（src/title-song.ts）を再生する ----
+// 物語のBGM（生成型）とは別に、タイトル・本棚・設定の画面で流す。
+// 音の作りは、やわらかいピアノ＋静かなベース＋ブラシ＋ライド風のチッ。
+// 全体にローパスをかけて角を取り、ビブラートやトレモロは使わない。
+
+const midiFreq = (midi: number): number => 440 * Math.pow(2, (midi - 69) / 12);
+
+function titlePiano(c: AudioContext, dest: AudioNode, midi: number, at: number, durSec: number, gain: number, pan: number): void {
+  const f = midiFreq(midi);
+  const panner = c.createStereoPanner();
+  panner.pan.value = pan;
+  panner.connect(dest);
+  const harm = (mult: number, peak: number, tau: number): void => {
+    const o = c.createOscillator();
+    o.type = 'sine';
+    o.frequency.value = f * mult;
+    const g = c.createGain();
+    g.gain.setValueAtTime(0, at);
+    g.gain.linearRampToValueAtTime(peak, at + 0.014);
+    g.gain.setTargetAtTime(0, at + 0.014, tau);
+    o.connect(g).connect(panner);
+    o.start(at);
+    o.stop(at + durSec + 1.6);
+  };
+  harm(1, gain, 0.69);
+  harm(2, gain * 0.3, 0.22);
+  harm(3, gain * 0.09, 0.125);
+}
+
+function titleBass(c: AudioContext, dest: AudioNode, midi: number, at: number, durSec: number, gain: number): void {
+  const f = midiFreq(midi);
+  const harm = (mult: number, peak: number, tau: number): void => {
+    const o = c.createOscillator();
+    o.type = 'sine';
+    o.frequency.value = f * mult;
+    const g = c.createGain();
+    g.gain.setValueAtTime(0, at);
+    g.gain.linearRampToValueAtTime(peak, at + 0.011);
+    g.gain.setTargetAtTime(0, at + 0.011, tau);
+    o.connect(g).connect(dest);
+    o.start(at);
+    o.stop(at + durSec + 1.4);
+  };
+  harm(1, gain, 1.0);
+  harm(2, gain * 0.13, 0.33);
+}
+
+function titleBrush(c: AudioContext, dest: AudioNode, noiseBuf: AudioBuffer, at: number, durSec: number, gain: number): void {
+  const src = c.createBufferSource();
+  src.buffer = noiseBuf;
+  const lp = c.createBiquadFilter();
+  lp.type = 'lowpass';
+  lp.frequency.value = 750;
+  const g = c.createGain();
+  g.gain.setValueAtTime(0, at);
+  g.gain.linearRampToValueAtTime(gain, at + 0.6);
+  g.gain.setTargetAtTime(0, at + 0.6, 0.5);
+  src.connect(lp).connect(g).connect(dest);
+  src.start(at, Math.random() * 1.2);
+  src.stop(at + durSec + 1.0);
+}
+
+function titleTick(c: AudioContext, dest: AudioNode, noiseBuf: AudioBuffer, at: number, gain: number): void {
+  const src = c.createBufferSource();
+  src.buffer = noiseBuf;
+  const hp = c.createBiquadFilter();
+  hp.type = 'highpass';
+  hp.frequency.value = 5200;
+  const g = c.createGain();
+  g.gain.setValueAtTime(gain, at);
+  g.gain.exponentialRampToValueAtTime(0.0001, at + 0.05);
+  src.connect(hp).connect(g).connect(dest);
+  src.start(at, Math.random() * 1.5);
+  src.stop(at + 0.08);
+}
+
+export function startTitleBgm(): void {
+  titleWanted = true;
+  if (bgmNodes && bgmKind === 'title') return;
+  if (bgmNodes) stopBgmInternal(false);
+  bgmKind = 'title';
+  bgmWanted = false;
+  if (!enabled) return;
+  try {
+    const c = ac();
+    const master = c.createGain();
+    master.gain.setValueAtTime(0, c.currentTime);
+    master.gain.linearRampToValueAtTime(0.9, c.currentTime + 2.5);
+    const lp = c.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 4800;
+    lp.Q.value = 0.3;
+    master.connect(lp).connect(c.destination);
+
+    const noiseBuf = c.createBuffer(1, c.sampleRate * 2, c.sampleRate);
+    const nd = noiseBuf.getChannelData(0);
+    for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+
+    const events = buildTitleEvents();
+    const beatSec = 60 / TITLE_BPM;
+    let idx = 0;
+    let loopStart = c.currentTime + 0.15;
+    const schedule = (ev: TitleEvent, at: number): void => {
+      if (ev.kind === 'bass') titleBass(c, master, ev.midi, at, ev.durBeats * beatSec, ev.gain);
+      else if (ev.kind === 'pad') titlePiano(c, master, ev.midi, at + ev.staggerSec, 3.2, ev.gain, -0.03);
+      else if (ev.kind === 'melody') titlePiano(c, master, ev.midi, at, Math.max(2.0, ev.lenBeats * beatSec * 1.05), ev.gain, 0.05);
+      else if (ev.kind === 'brush') titleBrush(c, master, noiseBuf, at, ev.durBeats * beatSec, ev.gain);
+      else titleTick(c, master, noiseBuf, at, ev.gain);
+    };
+    const timer = setInterval(() => {
+      if (c.state === 'suspended') void c.resume();
+      const horizon = c.currentTime + 0.9;
+      for (;;) {
+        const ev = events[idx];
+        const at = loopStart + ev.beat * beatSec;
+        if (at > horizon) break;
+        if (at >= c.currentTime - 0.3) schedule(ev, at);
+        idx += 1;
+        if (idx >= events.length) {
+          idx = 0;
+          loopStart += TITLE_LOOP_BEATS * beatSec;
+        }
+      }
+    }, 300);
+
+    bgmNodes = { master, timer, sources: [] };
+    document.body.dataset.bgm = 'on';
+    document.body.dataset.bgmTheme = 'title';
+    delete document.body.dataset.bgmMood;
+    document.dispatchEvent(new CustomEvent('app:bgm', { detail: { on: true } }));
+  } catch {
+    // 音が出せなくても続行する
+  }
+}
+
+export function stopTitleBgm(): void {
+  titleWanted = false;
+  if (bgmKind === 'title') stopBgmInternal(false);
 }
