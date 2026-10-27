@@ -8,7 +8,7 @@ import { setupDebug } from './debug';
 import { setupInstallGuide } from './install';
 import { applyUpdate, checkForUpdate, onUpdateAvailable, setupPwa } from './pwa';
 import { isSoundOn, playAdvanceSound, playBookOpenSound, playButtonSound, playEndingJingle, playSceneSound, resumeAudioContext, setSound, startBgm, startTitleBgm, stopBgm, suspendAudioContext } from './sound';
-import { isNarrationOn, onNarrationFinish, resetNarration, setNarration, stopNarration, suspendNarration, syncNarration } from './narration';
+import { cycleNarrationSpeed, formatNarrationSpeed, isNarrationOn, onNarrationFinish, resetNarration, setNarration, stopNarration, suspendNarration, syncNarration } from './narration';
 import { isFuriganaOn, resetRubyTracker, rubyTracker, setFurigana } from './furigana';
 import { parseRuby } from './ruby';
 import { exportBackup, importBackup, load, migrateStorage, remove, requestPersist, save } from './storage';
@@ -183,6 +183,10 @@ function renderTitle(): void {
   }
   for (const id of ['narration-button', 'narration-button-game']) {
     $(id).setAttribute('aria-pressed', String(isNarrationOn()));
+  }
+  // 朗読の速度ボタンは設定画面と本編の両方にあるので、表示をそろえる
+  for (const id of ['speed-button', 'speed-button-game']) {
+    $(id).textContent = formatNarrationSpeed();
   }
   $('furigana-button').setAttribute('aria-pressed', String(isFuriganaOn()));
 }
@@ -621,6 +625,13 @@ $('furigana-button').addEventListener('click', () => {
   setFurigana(!isFuriganaOn());
   render();
 });
+// 朗読の速度ボタン（設定画面・本編共通）：押すたびに候補を順に切り替える
+for (const id of ['speed-button', 'speed-button-game']) {
+  $(id).addEventListener('click', () => {
+    cycleNarrationSpeed();
+    render();
+  });
+}
 
 $('backup-export').addEventListener('click', () => {
   const blob = new Blob([exportBackup()], { type: 'application/json' });

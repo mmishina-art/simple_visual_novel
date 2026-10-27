@@ -6,6 +6,39 @@
 import { load, save } from './storage';
 
 let enabled = load('narration', false);
+
+/** 読み上げの速度の候補（倍率）。設定画面と本編のボタンで、順に切り替える */
+export const NARRATION_SPEEDS = [0.8, 1, 1.25, 1.5, 2] as const;
+export type NarrationSpeed = (typeof NARRATION_SPEEDS)[number];
+
+const normalizeSpeed = (value: unknown): NarrationSpeed =>
+  (NARRATION_SPEEDS as readonly number[]).includes(value as number) ? (value as NarrationSpeed) : 1;
+
+let speed: NarrationSpeed = normalizeSpeed(load('narration-speed', 1));
+
+export const getNarrationSpeed = (): NarrationSpeed => speed;
+
+/** 速度ボタンの表示（1 は「1.0x」、1.25 は「1.25x」） */
+export const formatNarrationSpeed = (value: NarrationSpeed = speed): string =>
+  `${value % 1 === 0 ? value.toFixed(1) : value}x`;
+
+export function setNarrationSpeed(next: NarrationSpeed): void {
+  speed = next;
+  save('narration-speed', next);
+  if (audio) {
+    // src を差し替えると playbackRate は defaultPlaybackRate に戻るので、両方に設定する
+    audio.defaultPlaybackRate = next;
+    audio.playbackRate = next;
+  }
+}
+
+/** 次の候補に切り替える（一番速い候補の次は、一番遅い候補に戻る）。新しい速度を返す */
+export function cycleNarrationSpeed(): NarrationSpeed {
+  const next = NARRATION_SPEEDS[(NARRATION_SPEEDS.indexOf(speed) + 1) % NARRATION_SPEEDS.length];
+  setNarrationSpeed(next);
+  return next;
+}
+
 let audio: HTMLAudioElement | null = null;
 let currentKey = '';
 let finishHandler: (() => void) | null = null;
@@ -31,6 +64,10 @@ const ensureAudio = (): HTMLAudioElement => {
     audio = new Audio();
     audio.id = 'narration-audio';
     audio.preload = 'auto';
+    // 速度を変えても音程は変えない（ブラウザの既定のまま、明示だけしておく）
+    audio.preservesPitch = true;
+    audio.defaultPlaybackRate = speed;
+    audio.playbackRate = speed;
     audio.addEventListener('ended', () => {
       clearFallback();
       finishHandler?.();
@@ -72,6 +109,7 @@ export function syncNarration(storyId: string, nodeId: string): void {
   const key = `${storyId}/${nodeId}`;
   const a = ensureAudio();
   if (key === currentKey) {
+    a.playbackRate = speed;
     if (a.paused && !a.ended && a.currentTime > 0) playCurrent(a, key, generation);
     return;
   }
@@ -79,6 +117,9 @@ export function syncNarration(storyId: string, nodeId: string): void {
   currentKey = key;
   clearFallback();
   a.src = `audio/${key}.mp3`;
+  // src の差し替えで速度が 1.0 に戻るので、差し替えた後に選び直す（場面が替わっても速度を維持する）
+  a.defaultPlaybackRate = speed;
+  a.playbackRate = speed;
   playCurrent(a, key, generation);
 }
 

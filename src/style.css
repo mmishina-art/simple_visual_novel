@@ -152,6 +152,15 @@ button.big {
   cursor: pointer;
 }
 
+/* 朗読の速度ボタン（設定画面と本編のヘッダーで共用）。
+   「1.25x」などラベルの長さで横幅ががたつかないよう、最小幅と等幅数字でそろえる */
+.speed-button {
+  min-width: 68px;
+  min-height: 30px;
+  padding: 2px 12px;
+  font-variant-numeric: tabular-nums;
+}
+
 .btn-center {
   display: flex;
   width: fit-content;
