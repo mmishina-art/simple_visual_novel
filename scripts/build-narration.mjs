@@ -16,21 +16,13 @@ const SPEED = '112';
 // 物語ごとの語り手（既定は上の Lily C1）。声・速度・後加工が違う本はここに足す。
 // ハッシュには profile の tag を混ぜ、声や加工を変えたら作り直されるようにする
 // （tests/narration.test.ts にも同じ表がある。変えるときは両方を直すこと）。
-// 『日曜日、井戸の底で』: G（Even Pond）を速度104で合成し、ピッチ0.95と輪郭の強調を
-// かける「改3クリアA」相当（2026-10-26 ユーザー選択）。
+// 男性主人公の2冊は AivisSpeech「阿井田 茂 Calm」で生成する（2026-10-28 ユーザー選択。
+// それまでの G 声＋ピッチ加工から差し替え）。テンポは全場面で分速300字にそろえ、
+// speedScale を場面ごとに実測で補正する（ピッチ変更・EQ はしない）。
+// 生成には AivisSpeech エンジン（http://127.0.0.1:10101）の起動が必要。
 const VOICE_PROFILES = {
-  'maou-diner': {
-    voice: 'avocado_v2:qvd_02415',
-    speed: '104',
-    tag: 'g-mod3a',
-    post: 'rubberband=pitch=0.95,equalizer=f=3500:t=q:w=1:g=3,highshelf=f=8000:g=2',
-  },
-  'sunday-well': {
-    voice: 'avocado_v2:qvd_02415',
-    speed: '104',
-    tag: 'g-mod3a',
-    post: 'rubberband=pitch=0.95,equalizer=f=3500:t=q:w=1:g=3,highshelf=f=8000:g=2',
-  },
+  'maou-diner': { engine: 'aivis', speaker: 1310138977, speedScale: 0.8, tag: 'aivis-aida-calm' },
+  'sunday-well': { engine: 'aivis', speaker: 1310138977, speedScale: 0.8, tag: 'aivis-aida-calm' },
 };
 const profileOf = (key) => VOICE_PROFILES[key.split('/')[0]];
 const CONCURRENCY = 4;
@@ -202,7 +194,74 @@ const concatChunks = (parts, output) =>
     execFile('ffmpeg', args, { timeout: 60_000 }, (err) => (err ? reject(err) : resolve()));
   });
 
+// AivisSpeech（VOICEVOX 互換 API）で1つの文を合成する。
+// text はクエリ文字列で渡すこと（ボディで渡すと 422 になる）。
+const AIVIS_BASE = 'http://127.0.0.1:10101';
+const aivisSynth = async (text, profile, speedScale, outWav) => {
+  const queryRes = await fetch(`${AIVIS_BASE}/audio_query?${new URLSearchParams({ text, speaker: String(profile.speaker) })}`, { method: 'POST' });
+  if (!queryRes.ok) throw new Error(`Aivis audio_query failed: ${queryRes.status}`);
+  const query = await queryRes.json();
+  query.speedScale = speedScale;
+  const res = await fetch(`${AIVIS_BASE}/synthesis?${new URLSearchParams({ speaker: String(profile.speaker) })}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(query),
+  });
+  if (!res.ok) throw new Error(`Aivis synthesis failed: ${res.status}`);
+  writeFileSync(outWav, Buffer.from(await res.arrayBuffer()));
+};
+
+const probeDuration = (file) =>
+  Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file]).toString().trim());
+
+// Aivis 場面の生成。仕上がりが分速300字（298〜305字/分）に近づくよう speedScale を
+// 実測比で補正して合成し直し（最大5回）、最も300に近かった結果を採用する。
+// 長い場面は文単位に分けてつなぐ。
+const TARGET_CPM = 300;
+const speakAivis = async (job) => {
+  mkdirSync(dirname(job.file), { recursive: true });
+  const units = job.chunked || job.text.length > 150 ? splitSentences(job.text) : [job.text];
+  let scale = job.profile.speedScale;
+  let best = null;
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const wavs = [];
+    for (let i = 0; i < units.length; i += 1) {
+      const wav = `${job.file}.av${i}.wav`;
+      await aivisSynth(units[i], job.profile, scale, wav);
+      wavs.push(wav);
+    }
+    const tmpOut = `${job.file}.tmp.mp3`;
+    if (wavs.length === 1) {
+      execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', wavs[0], '-ar', '24000', '-ac', '1', '-b:a', '64k', tmpOut]);
+    } else {
+      await concatChunks(wavs, tmpOut);
+    }
+    for (const w of wavs) rmSync(w, { force: true });
+    const cpm = (job.text.length / probeDuration(tmpOut)) * 60;
+    if (!best || Math.abs(cpm - TARGET_CPM) < Math.abs(best.cpm - TARGET_CPM)) {
+      if (best) rmSync(best.file, { force: true });
+      const bestFile = `${job.file}.best.mp3`;
+      execFileSync('mv', [tmpOut, bestFile]);
+      best = { file: bestFile, cpm, scale };
+    } else {
+      rmSync(tmpOut, { force: true });
+    }
+    if (cpm >= 298 && cpm <= 305) break;
+    scale *= TARGET_CPM / cpm;
+  }
+  execFileSync('mv', [best.file, job.file]);
+  console.log(`    ${job.key}: ${best.cpm.toFixed(0)}字/分（speedScale ${best.scale.toFixed(3)}）`);
+};
+
 const speak = async (job) => {
+  if (job.profile?.engine === 'aivis') {
+    try {
+      await speakAivis(job);
+    } catch (err) {
+      throw new Error(`${job.key}: ${err.message}`, { cause: err });
+    }
+    return;
+  }
   mkdirSync(dirname(job.file), { recursive: true });
   const rawOut = job.profile?.post || job.chunked ? `${job.file}.raw.mp3` : job.file;
   try {
