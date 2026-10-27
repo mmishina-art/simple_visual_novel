@@ -9,6 +9,8 @@ import { setupInstallGuide } from './install';
 import { applyUpdate, checkForUpdate, onUpdateAvailable, setupPwa } from './pwa';
 import { isSoundOn, playAdvanceSound, playBookOpenSound, playButtonSound, playEndingJingle, playSceneSound, resumeAudioContext, setSound, startBgm, startTitleBgm, stopBgm, suspendAudioContext } from './sound';
 import { isNarrationOn, onNarrationFinish, resetNarration, setNarration, stopNarration, suspendNarration, syncNarration } from './narration';
+import { isFuriganaOn, setFurigana } from './furigana';
+import { parseRuby } from './ruby';
 import { exportBackup, importBackup, load, migrateStorage, remove, requestPersist, save } from './storage';
 
 import { SCENES } from './scenes';
@@ -88,19 +90,38 @@ function recordEnding(): void {
   }
 }
 
-/** 本文を縦書きで出す。数字（11時57分など）は縦中横になるよう、数字の並びだけ span.tcy で包む */
-function buildSegment(text: string, className = 'segment'): HTMLSpanElement {
-  const seg = document.createElement('span');
-  seg.className = className;
+/** 文字列を span に足す。数字（11時57分など）は縦中横になるよう、数字の並びだけ span.tcy で包む */
+function appendText(parent: HTMLElement, text: string): void {
   for (const part of text.split(/(\d+%?)/g)) {
     if (!part) continue;
     if (/^\d/.test(part)) {
       const span = document.createElement('span');
       span.className = 'tcy';
       span.textContent = part;
-      seg.append(span);
+      parent.append(span);
     } else {
-      seg.append(document.createTextNode(part));
+      parent.append(document.createTextNode(part));
+    }
+  }
+}
+
+/**
+ * 本文を縦書きで出す。本文の「漢字《よみ》」記法は、フリガナ設定がオンなら <ruby> に、
+ * オフなら記法を取り除いた通常の文字にする。記法の無い本文は従来通り。
+ */
+function buildSegment(text: string, className = 'segment'): HTMLSpanElement {
+  const seg = document.createElement('span');
+  seg.className = className;
+  for (const part of parseRuby(text)) {
+    if (part.ruby && isFuriganaOn()) {
+      const ruby = document.createElement('ruby');
+      appendText(ruby, part.text);
+      const rt = document.createElement('rt');
+      rt.textContent = part.ruby;
+      ruby.append(rt);
+      seg.append(ruby);
+    } else {
+      appendText(seg, part.text);
     }
   }
   return seg;
@@ -145,6 +166,7 @@ function renderTitle(): void {
   for (const id of ['narration-button', 'narration-button-game']) {
     $(id).setAttribute('aria-pressed', String(isNarrationOn()));
   }
+  $('furigana-button').setAttribute('aria-pressed', String(isFuriganaOn()));
 }
 
 /** 本棚の画面。STORIES の作品を単行本の装丁で並べ、選ぶと本編が始まる */
@@ -576,6 +598,10 @@ for (const id of ['narration-button', 'narration-button-game']) {
     render();
   });
 }
+$('furigana-button').addEventListener('click', () => {
+  setFurigana(!isFuriganaOn());
+  render();
+});
 
 $('backup-export').addEventListener('click', () => {
   const blob = new Blob([exportBackup()], { type: 'application/json' });

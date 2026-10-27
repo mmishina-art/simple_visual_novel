@@ -114,7 +114,10 @@ const SPOKEN_TEXT_OVERRIDES = {
 // 試験中：かな化した読み上げ文（scripts/kana-texts.json）があれば、それを正とする。
 // かな化は scripts/kana-convert.mjs で生成し、変換結果は全文を確認してから入れること。
 const KANA_TEXTS = existsSync('scripts/kana-texts.json') ? JSON.parse(readFileSync('scripts/kana-texts.json', 'utf8')) : {};
-const spokenText = (key, text) => READING_OVERRIDES.reduce((t, [re, yomi]) => t.replace(re, yomi), SPOKEN_TEXT_OVERRIDES[key] ?? text);
+// 本文のフリガナ記法「漢字《よみ》」は表示専用。読み上げ文からは必ず取り除く
+// （src/ruby.ts の stripRuby と同じ規則：対象の漢字だけを残す）。
+const stripRuby = (text) => text.replace(/｜([^《]*)《[^》]*》/g, '$1').replace(/《[^》]*》/g, '');
+const spokenText = (key, text) => READING_OVERRIDES.reduce((t, [re, yomi]) => t.replace(re, yomi), SPOKEN_TEXT_OVERRIDES[key] ?? stripRuby(text));
 
 // 文の組み合わせで合成が崩れる場面（2026-10-26、文字起こし点検で発覚）は、
 // 一文ずつ合成してつなぐ。長い一括合成だと途中で意味不明の音声に崩れるため。

@@ -14,7 +14,7 @@ export const midnightSchool: Story = {
   nodes: {
     start1: {
       id: 'start1', bg: 'classroom',
-      text: '文化祭を明日に控えた金曜日。3年2組の教室で、クラス展示の看板を仕上げていたのは、私、久瀬遥、ただ一人だった。',
+      text: '文化祭を明日《あした》に控えた金曜日。3年2組の教室で、クラス展示の看板を仕上げていたのは、私、久瀬遥《くぜはるか》、ただ一人だった。',
       next: 'start2',
     },
     start2: {
@@ -24,7 +24,7 @@ export const midnightSchool: Story = {
     },
     start3: {
       id: 'start3',
-      text: '仕上がった看板を壁に立てかけたとき、急に眠気が来た。少しだけ、と机に伏せたのが間違いだった。',
+      text: '仕上がった看板を壁に立てかけたとき、急に眠気《ねむけ》が来た。少しだけ、と机に伏せたのが間違いだった。',
       next: 'start4',
     },
     start4: {
@@ -34,7 +34,7 @@ export const midnightSchool: Story = {
     },
     start5: {
       id: 'start5', se: 'phone',
-      text: 'スマホの電池は残り1%。同級生の佐伯に「まだ学校にいる」とだけ送ると、画面は黒く落ちた。',
+      text: 'スマホの電池は残り1%。同級生の佐伯《さえき》に「まだ学校にいる」とだけ送ると、画面は黒く落ちた。',
       next: 'choice_light',
     },
     choice_light: {
@@ -47,7 +47,7 @@ export const midnightSchool: Story = {
     },
     light_take1: {
       id: 'light_take1', set: ['flashlight'],
-      text: '防災用の懐中電灯。スイッチを入れると、思ったより明るく点いた。これなら足元は大丈夫だ。',
+      text: '防災用の懐中電灯《かいちゅうでんとう》。スイッチを入れると、思ったより明るく点いた。これなら足元は大丈夫だ。',
       next: 'light_take2',
     },
     light_take2: {
@@ -67,17 +67,17 @@ export const midnightSchool: Story = {
     },
     corridor1: {
       id: 'corridor1', bg: 'corridor',
-      text: '非常灯の緑色の明かりが、等間隔に廊下を照らしている。自分の上履きの音が、やけに大きく聞こえた。',
+      text: '非常灯《ひじょうとう》の緑色の明かりが、等間隔に廊下を照らしている。自分の｜上履き《うわばき》の音が、やけに大きく聞こえた。',
       next: 'corridor2',
     },
     corridor2: {
       id: 'corridor2',
-      text: 'ふと、階段の手前で足を止めた。床に、濡れた足跡があった。',
+      text: 'ふと、階段の手前で足を止めた。床に、濡れた足跡《あしあと》があった。',
       next: 'corridor3',
     },
     corridor3: {
       id: 'corridor3',
-      text: '小さな足跡だ。私のものじゃない。足跡は上の階から降りてきて——私の前で、止まっていた。',
+      text: '小さな足跡《あしあと》だ。私のものじゃない。足跡《あしあと》は上の階から降りてきて——私の前で、止まっていた。',
       next: 'choice_music',
     },
     choice_music: {
@@ -105,7 +105,7 @@ export const midnightSchool: Story = {
     },
     music4: {
       id: 'music4',
-      text: '譜面台の上には、濡れた片方だけの上履きが置いてあった。サイズは、私のものとよく似ていた。',
+      text: '譜面台《ふめんだい》の上には、濡れた片方だけの｜上履き《うわばき》が置いてあった。サイズは、私のものとよく似ていた。',
       next: 'stairs1',
     },
     down1: {
@@ -120,7 +120,7 @@ export const midnightSchool: Story = {
     },
     stairs1: {
       id: 'stairs1', bg: 'stairs', se: 'chime',
-      text: '階段を降りる。踊り場の時計の針が、0時を指した。',
+      text: '階段を降りる。｜踊り場《おどりば》の時計の針が、0時を指した。',
       next: 'stairs2',
     },
     stairs2: {
@@ -130,7 +130,7 @@ export const midnightSchool: Story = {
     },
     voice1: {
       id: 'voice1', se: 'whisper',
-      text: '『遥ー、どこー』　声は佐伯にそっくりだった。でも、佐伯が今ここにいるはずがない。',
+      text: '『遥《はるか》ー、どこー』　声は佐伯《さえき》にそっくりだった。でも、佐伯が今ここにいるはずがない。',
       next: 'choice_voice',
     },
     choice_voice: {
@@ -153,7 +153,7 @@ export const midnightSchool: Story = {
     },
     end_voice: {
       id: 'end_voice', bg: 'dark',
-      text: '振り返るより先に、冷たい手が私の肩に置かれた。——翌朝、教室の私の席には、濡れた上履きを履いた「私」が座っていたという。',
+      text: '振り返るより先に、冷たい手が私の肩に置かれた。——翌朝、教室の私の席には、濡れた｜上履き《うわばき》を履いた「私」が座っていたという。',
       ending: { kind: 'bad', title: 'バッドエンド「返事」' },
     },
     silent1: {
@@ -168,12 +168,12 @@ export const midnightSchool: Story = {
     },
     entrance1: {
       id: 'entrance1',
-      text: '私の下駄箱が、開いていた。中にあるはずの靴が、ない。',
+      text: '私の下駄箱《げたばこ》が、開いていた。中にあるはずの靴が、ない。',
       next: 'entrance2',
     },
     entrance2: {
       id: 'entrance2',
-      text: '代わりに、濡れた小さな足跡が、下駄箱から昇降口の真ん中まで続いていた。',
+      text: '代わりに、濡れた小さな足跡《あしあと》が、下駄箱《げたばこ》から昇降口の真ん中まで続いていた。',
       next: 'entrance3',
     },
     entrance3: {
@@ -188,7 +188,7 @@ export const midnightSchool: Story = {
     },
     blackout2: {
       id: 'blackout2',
-      text: '濡れた足跡の音が、ひとつ、またひとつと近づいてくる。ふりかえってはいけない、と本能が告げていた。',
+      text: '濡れた足跡《あしあと》の音が、ひとつ、またひとつと近づいてくる。ふりかえってはいけない、と本能が告げていた。',
       next: 'choice_final',
     },
     choice_final: {
@@ -206,7 +206,7 @@ export const midnightSchool: Story = {
     },
     run_light2: {
       id: 'run_light2', bg: 'outside', se: 'rain',
-      text: '裏口のドアノブに手をかけると、鍵は開いていた。文化祭の搬入で、夕方に開けたままだったのかもしれない。雨の中へ飛び出し、振り返らないまま、校門まで走った。',
+      text: '裏口のドアノブに手をかけると、鍵は開いていた。文化祭の搬入《はんにゅう》で、夕方に開けたままだったのかもしれない。雨の中へ飛び出し、振り返らないまま、校門まで走った。',
       next: 'end_happy',
     },
     run_dark1: {
@@ -221,12 +221,12 @@ export const midnightSchool: Story = {
     },
     end_caught: {
       id: 'end_caught', bg: 'dark',
-      text: 'そこにいたのは、私だった。濡れた上履きを履いた私が、笑って言った。『つぎは、わたしが かえるね』——翌朝、教室の私の席には、もう一人の「私」が座っていたという。',
+      text: 'そこにいたのは、私だった。濡れた｜上履き《うわばき》を履いた私が、笑って言った。『つぎは、わたしが かえるね』——翌朝、教室の私の席には、もう一人の「私」が座っていたという。',
       ending: { kind: 'bad', title: 'バッドエンド「振り返るな」' },
     },
     end_happy: {
       id: 'end_happy', bg: 'outside',
-      text: '家に帰り着いたのは、0時をだいぶ過ぎていた。翌朝、学校で私の靴は下駄箱に戻っていた。中には小さな紙が入っていた。『こんどは、かえしてあげる』。雨の匂いのする紙を、私は誰にも見せていない。',
+      text: '家に帰り着いたのは、0時をだいぶ過ぎていた。翌朝、学校で私の靴は下駄箱《げたばこ》に戻っていた。中には小さな紙が入っていた。『こんどは、かえしてあげる』。雨の匂いのする紙を、私は誰にも見せていない。',
       ending: { kind: 'happy', title: 'ハッピーエンド「夜明けの雨」' },
     },
   },

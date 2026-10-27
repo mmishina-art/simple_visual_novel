@@ -664,6 +664,18 @@ button.big {
   text-combine-upright: all;
 }
 
+/* フリガナ（ルビ）。縦書きでは本文の右側に小さく添える */
+.story-text ruby,
+.backlog-text ruby {
+  ruby-position: over;
+}
+
+.story-text rt,
+.backlog-text rt {
+  font-size: 0.52em;
+  letter-spacing: 0.05em;
+}
+
 /* 読み返し画面 */
 .backlog-screen {
   text-align: left;
