@@ -79,3 +79,38 @@ export function stripRuby(text: string): string {
 export function hasRuby(text: string): boolean {
   return parseRuby(text).some((p) => p.ruby !== undefined);
 }
+
+/**
+ * ルビを「初出だけ」にするための記録。一般の小説の慣例に合わせ、同じ語
+ * （対象の文字列＋読みの組）は、作品の中で最初に表示した場面でのみルビ付きにし、
+ * それ以降の場面では素の漢字だけにする。
+ *
+ * 場面（context）ごとに安定させるのが肝心で、同じ場面を再表示しても
+ * （再描画・設定の切り替え・読み返しなど）結果が変わらない。
+ * 作品を開き直したら reset() して、また初出から数え直す。
+ */
+export class RubyFirstOnlyTracker {
+  private firstContextByKey = new Map<string, string>();
+
+  reset(): void {
+    this.firstContextByKey.clear();
+  }
+
+  /**
+   * その部分をルビ付きで表示するか。
+   * context: 場面の識別子（場面ID）。同じ場面なら常に同じ値を渡すこと
+   * occurrence: その場面の本文の中で、同じ語が何回目に出てきたか（0始まり）。
+   *   初出の場面でも、2回目以降はルビを付けない
+   */
+  shouldShow(part: RubyPart, context: string, occurrence: number): boolean {
+    if (!part.ruby) return false;
+    const key = `${part.text}《${part.ruby}》`;
+    const first = this.firstContextByKey.get(key);
+    if (first === undefined) {
+      this.firstContextByKey.set(key, context);
+    } else if (first !== context) {
+      return false;
+    }
+    return occurrence === 0;
+  }
+}

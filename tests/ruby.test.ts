@@ -1,7 +1,23 @@
 import { describe, expect, it } from 'vitest';
-import { hasRuby, parseRuby, stripRuby } from '../src/ruby';
+import { hasRuby, parseRuby, RubyFirstOnlyTracker, stripRuby, type RubyPart } from '../src/ruby';
 import { STORIES } from '../src/stories';
 import { midnightSchool } from '../src/stories/midnight-school';
+
+/** 1場面分の本文を通し、ルビ表示する語（対象＋読み）の列を返す（buildSegment と同じ数え方） */
+function shownRubies(tracker: RubyFirstOnlyTracker, text: string, context: string): string[] {
+  const seen = new Map<string, number>();
+  const shown: string[] = [];
+  for (const part of parseRuby(text)) {
+    if (!part.ruby) continue;
+    const key = `${part.text}《${part.ruby}》`;
+    const occurrence = seen.get(key) ?? 0;
+    seen.set(key, occurrence + 1);
+    if (tracker.shouldShow(part, context, occurrence)) shown.push(key);
+  }
+  return shown;
+}
+
+const part = (text: string, ruby: string): RubyPart => ({ text, ruby });
 
 describe('フリガナ記法 parseRuby', () => {
   it('漢字の直後の《よみ》をルビとして分ける', () => {
@@ -92,5 +108,70 @@ describe('『午前0時の校舎』のルビ付け', () => {
         expect(hasRuby(node.text), `${story.id}/${node.id}`).toBe(false);
       }
     }
+  });
+});
+
+describe('ルビの初出だけ表示（RubyFirstOnlyTracker）', () => {
+  it('初出の場面では表示し、別の場面では表示しない', () => {
+    const tracker = new RubyFirstOnlyTracker();
+    expect(tracker.shouldShow(part('上履き', 'うわばき'), 'corridor1', 0)).toBe(true);
+    expect(tracker.shouldShow(part('上履き', 'うわばき'), 'music4', 0)).toBe(false);
+    expect(tracker.shouldShow(part('上履き', 'うわばき'), 'end_caught', 0)).toBe(false);
+  });
+
+  it('同じ場面を再表示しても、初出の場面では表示し続ける（再描画で消えない）', () => {
+    const tracker = new RubyFirstOnlyTracker();
+    expect(tracker.shouldShow(part('久瀬遥', 'くぜはるか'), 'start1', 0)).toBe(true);
+    // 再描画・設定の切り替えなどで同じ場面を何度描いても同じ結果になる
+    expect(tracker.shouldShow(part('久瀬遥', 'くぜはるか'), 'start1', 0)).toBe(true);
+    expect(tracker.shouldShow(part('久瀬遥', 'くぜはるか'), 'start1', 0)).toBe(true);
+  });
+
+  it('同じ場面の中でも、2回目以降の出現には付けない', () => {
+    const tracker = new RubyFirstOnlyTracker();
+    expect(tracker.shouldShow(part('足跡', 'あしあと'), 'start3', 0)).toBe(true);
+    expect(tracker.shouldShow(part('足跡', 'あしあと'), 'start3', 1)).toBe(false);
+    expect(tracker.shouldShow(part('足跡', 'あしあと'), 'start3', 2)).toBe(false);
+  });
+
+  it('読みが違えば別の語として扱い、それぞれ初出で表示する', () => {
+    const tracker = new RubyFirstOnlyTracker();
+    expect(tracker.shouldShow(part('明日', 'あした'), 'start1', 0)).toBe(true);
+    expect(tracker.shouldShow(part('明日', 'あす'), 'start2', 0)).toBe(true);
+    expect(tracker.shouldShow(part('明日', 'あした'), 'start3', 0)).toBe(false);
+  });
+
+  it('ルビの無い部分は常に対象外', () => {
+    const tracker = new RubyFirstOnlyTracker();
+    expect(tracker.shouldShow({ text: 'ただの文字' }, 'start1', 0)).toBe(false);
+  });
+
+  it('reset すると、また初出から数え直す（作品の切り替え）', () => {
+    const tracker = new RubyFirstOnlyTracker();
+    expect(tracker.shouldShow(part('上履き', 'うわばき'), 'corridor1', 0)).toBe(true);
+    expect(tracker.shouldShow(part('上履き', 'うわばき'), 'music4', 0)).toBe(false);
+    tracker.reset();
+    expect(tracker.shouldShow(part('上履き', 'うわばき'), 'music4', 0)).toBe(true);
+  });
+
+  it('『午前0時の校舎』を通して読むと、繰り返す語のルビは全体で1回だけになる', () => {
+    const tracker = new RubyFirstOnlyTracker();
+    const shown: string[] = [];
+    for (const node of Object.values(midnightSchool.nodes)) {
+      shown.push(...shownRubies(tracker, node.text, node.id));
+    }
+    // 上履きは4場面に出るが、ルビが付くのは初出の1回だけ
+    expect(shown.filter((k) => k === '上履き《うわばき》')).toHaveLength(1);
+    // 記法のある語は、どれも必ず1回はルビ付きで出る（初出がどこかにはある）
+    const annotated = new Set<string>();
+    for (const node of Object.values(midnightSchool.nodes)) {
+      for (const p of parseRuby(node.text)) {
+        if (p.ruby) annotated.add(`${p.text}《${p.ruby}》`);
+      }
+    }
+    for (const key of annotated) {
+      expect(shown.filter((k) => k === key), key).toHaveLength(1);
+    }
+    expect(shown.length).toBe(annotated.size);
   });
 });

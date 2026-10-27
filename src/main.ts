@@ -9,7 +9,7 @@ import { setupInstallGuide } from './install';
 import { applyUpdate, checkForUpdate, onUpdateAvailable, setupPwa } from './pwa';
 import { isSoundOn, playAdvanceSound, playBookOpenSound, playButtonSound, playEndingJingle, playSceneSound, resumeAudioContext, setSound, startBgm, startTitleBgm, stopBgm, suspendAudioContext } from './sound';
 import { isNarrationOn, onNarrationFinish, resetNarration, setNarration, stopNarration, suspendNarration, syncNarration } from './narration';
-import { isFuriganaOn, setFurigana } from './furigana';
+import { isFuriganaOn, resetRubyTracker, rubyTracker, setFurigana } from './furigana';
 import { parseRuby } from './ruby';
 import { exportBackup, importBackup, load, migrateStorage, remove, requestPersist, save } from './storage';
 
@@ -38,8 +38,9 @@ function savedProgressOf(target: Story): PlayState | null {
   return saved && storyById(saved.storyId)?.id === target.id ? saved : null;
 }
 
-/** 読み返し用の履歴。文章と、選んだ選択肢だけを記録する（選ばなかった選択肢は残らない）。進行と一緒に保存する */
-type BacklogEntry = { kind: 'text' | 'choice'; text: string };
+/** 読み返し用の履歴。文章と、選んだ選択肢だけを記録する（選ばなかった選択肢は残らない）。進行と一緒に保存する。
+ * nodeId は文章が属する場面で、ルビの「初出だけ」判定を本編と読み返しでそろえるために使う（古い記録には無い） */
+type BacklogEntry = { kind: 'text' | 'choice'; text: string; nodeId?: string };
 let backlog: BacklogEntry[] = [];
 
 function loadBacklogOf(target: Story): BacklogEntry[] {
@@ -68,8 +69,9 @@ let endingRevealed = false;
 /** 選択肢の場面で、選択肢そのものを出したかどうか。まず文章だけを見せ、タッチで出す */
 let choicesRevealed = false;
 let currentBg: SceneBg = 'classroom';
-/** 表示中の文章。読み進めると左へ追加されていき、選択肢が出ると消える */
-let segments: string[] = [];
+/** 表示中の文章。読み進めると左へ追加されていき、選択肢が出ると消える。
+ * nodeId はルビの「初出だけ」判定の場面キーに使う */
+let segments: { nodeId: string; text: string }[] = [];
 
 function persist(): void {
   if (state && !isEnding(story, state)) {
@@ -108,12 +110,22 @@ function appendText(parent: HTMLElement, text: string): void {
 /**
  * 本文を縦書きで出す。本文の「漢字《よみ》」記法は、フリガナ設定がオンなら <ruby> に、
  * オフなら記法を取り除いた通常の文字にする。記法の無い本文は従来通り。
+ * ルビは「初出だけ」：同じ語は作品の中で最初に出た場面（context = 場面ID）でのみ読みを添え、
+ * 2回目以降の場面と、同じ場面の中の2回目以降は素の漢字だけにする。
  */
-function buildSegment(text: string, className = 'segment'): HTMLSpanElement {
+function buildSegment(text: string, className = 'segment', context = ''): HTMLSpanElement {
   const seg = document.createElement('span');
   seg.className = className;
+  const seenInText = new Map<string, number>();
   for (const part of parseRuby(text)) {
+    let showRuby = false;
     if (part.ruby && isFuriganaOn()) {
+      const key = `${part.text}《${part.ruby}》`;
+      const occurrence = seenInText.get(key) ?? 0;
+      seenInText.set(key, occurrence + 1);
+      showRuby = rubyTracker.shouldShow(part, context, occurrence);
+    }
+    if (part.ruby && showRuby) {
       const ruby = document.createElement('ruby');
       appendText(ruby, part.text);
       const rt = document.createElement('rt');
@@ -127,10 +139,10 @@ function buildSegment(text: string, className = 'segment'): HTMLSpanElement {
   return seg;
 }
 
-function renderStoryText(texts: string[]): void {
+function renderStoryText(parts: { nodeId: string; text: string }[]): void {
   const el = $('story-text');
   el.replaceChildren();
-  texts.forEach((text) => el.append(buildSegment(text)));
+  parts.forEach((part) => el.append(buildSegment(part.text, 'segment', part.nodeId)));
   el.scrollLeft = 0;
 }
 
@@ -139,10 +151,16 @@ function renderBacklog(): void {
   el.replaceChildren();
   if (backlog.length === 0) el.append(buildSegment('まだ文章がありません。'));
   for (const entry of backlog) {
+    // ルビの初出判定を本編とそろえるため、文章の属する場面を context にする。
+    // 古い記録で場面IDが無い場合は、本文が一致する場面を探す（無ければ本文自体をキーにする）
+    const context =
+      entry.nodeId ??
+      Object.values(story.nodes).find((n) => n.text === entry.text)?.id ??
+      entry.text;
     el.append(
       entry.kind === 'choice'
-        ? buildSegment(`▶ ${entry.text}`, 'segment choice-entry')
-        : buildSegment(entry.text),
+        ? buildSegment(`▶ ${entry.text}`, 'segment choice-entry', context)
+        : buildSegment(entry.text, 'segment', context),
     );
   }
   // 開いたときは先頭（右端）ではなく、いちばん新しい文章（左端）から表示する。
@@ -261,6 +279,7 @@ function askResume(item: Story): void {
 /** 本棚で作品を選んだとき。本編の画面へ移る */
 function openStory(target: Story, mode: 'new' | 'resume'): void {
   playBookOpenSound();
+  resetRubyTracker(); // 作品を開き直したら、ルビの初出はまた最初から数える
   story = target;
   loadForStory(target);
   document.querySelector('.game-title')!.textContent = target.title;
@@ -299,24 +318,24 @@ function renderGame(): void {
     const prev = lastNodeId ? story.nodes[lastNodeId] : undefined;
     if (node.ending) {
       // 結末は独立したページにする（前の文章と重なって読めなくならないように）
-      segments = [node.text];
+      segments = [{ nodeId: node.id, text: node.text }];
     } else if (prev?.choices) {
       // 選択肢を選んだあとは、まっさらな状態から文章が足されていく
-      segments = [node.text];
+      segments = [{ nodeId: node.id, text: node.text }];
     } else {
       // 選択肢の場面も、まずは普通の文章として足していく（選択肢はタッチで出す）
-      segments = [...segments, node.text];
+      segments = [...segments, { nodeId: node.id, text: node.text }];
     }
   }
   // 選択肢を出すときは、直前の一文とセットにする（それまでの文章は消す）
-  if (node.choices && choicesRevealed) segments = [node.text];
+  if (node.choices && choicesRevealed) segments = [{ nodeId: node.id, text: node.text }];
   renderStoryText(segments);
   // ページめくり: 文章が画面いっぱいになってはみ出したら、ページをめくる感じで
   // 全部消して、その文章だけを右から始める（前のページは「読み返す」で読める）
   if ((!node.choices || !choicesRevealed) && !node.ending) {
     const textEl = $('story-text');
     if (segments.length > 1 && textEl.scrollWidth > textEl.clientWidth + 1) {
-      segments = [node.text];
+      segments = [{ nodeId: node.id, text: node.text }];
       renderStoryText(segments);
     }
   }
@@ -355,7 +374,7 @@ function renderGame(): void {
   // 場面が変わったときだけ、その場面の音を鳴らし、読み返し用に文章を記録する
   if (node.id !== lastNodeId) {
     lastNodeId = node.id;
-    backlog = [...backlog, { kind: 'text', text: node.text }];
+    backlog = [...backlog, { kind: 'text', text: node.text, nodeId: node.id }];
     if (node.se) playSceneSound(node.se);
     if (node.ending) {
       recordEnding();
@@ -440,8 +459,8 @@ function startGame(fromState: PlayState, resume = false): void {
   resetNarration();
   state = fromState;
   if (!resume) backlog = [];
-  else if (backlog.length === 0) backlog = [{ kind: 'text', text: nodeOf(story, fromState).text }];
-  segments = resume ? [nodeOf(story, fromState).text] : [];
+  else if (backlog.length === 0) backlog = [{ kind: 'text', text: nodeOf(story, fromState).text, nodeId: fromState.nodeId }];
+  segments = resume ? [{ nodeId: fromState.nodeId, text: nodeOf(story, fromState).text }] : [];
   lastNodeId = resume ? fromState.nodeId : '';
   currentBg = bgAtNode(fromState.nodeId);
   screen = 'game';
