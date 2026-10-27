@@ -152,6 +152,15 @@ button.big {
   cursor: pointer;
 }
 
+/* 朗読の速度ボタン（設定画面と本編のヘッダーで共用）。
+   「1.25x」などラベルの長さで横幅ががたつかないよう、最小幅と等幅数字でそろえる */
+.speed-button {
+  min-width: 68px;
+  min-height: 30px;
+  padding: 2px 12px;
+  font-variant-numeric: tabular-nums;
+}
+
 .btn-center {
   display: flex;
   width: fit-content;
@@ -662,6 +671,18 @@ button.big {
 .story-text .tcy,
 .backlog-text .tcy {
   text-combine-upright: all;
+}
+
+/* フリガナ（ルビ）。縦書きでは本文の右側に小さく添える */
+.story-text ruby,
+.backlog-text ruby {
+  ruby-position: over;
+}
+
+.story-text rt,
+.backlog-text rt {
+  font-size: 0.52em;
+  letter-spacing: 0.05em;
 }
 
 /* 読み返し画面 */

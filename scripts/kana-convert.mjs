@@ -33,7 +33,9 @@ const applyAll = (t) =>
 
 const src = readFileSync(`${REPO}/src/stories/${STORY}.ts`, 'utf8');
 const nodes = {};
-for (const m of src.matchAll(/id: '([a-z_0-9]+)'[^{]*?text: '([^']*)'/gs)) nodes[m[1]] = m[2];
+// フリガナ記法「漢字《よみ》」は表示専用。かな化の対象は記法を取り除いた本文にする
+const stripRuby = (t) => t.replace(/｜([^《]*)《[^》]*》/g, '$1').replace(/《[^》]*》/g, '');
+for (const m of src.matchAll(/id: '([a-z_0-9]+)'[^{]*?text: '([^']*)'/gs)) nodes[m[1]] = stripRuby(m[2]);
 
 const tokenizer = await new Promise((resolve, reject) => {
   kuromoji.builder({ dicPath: `${REPO}/node_modules/kuromoji/dict` }).build((err, t) => (err ? reject(err) : resolve(t)));

@@ -61,8 +61,11 @@ describe('読み上げ音声', () => {
   [/太麺/g, 'ふとめん'],
   [/河原/g, 'かわら'],
   ];
+  // フリガナ記法「漢字《よみ》」は表示専用なので、読み上げ文からは取り除く
+  // （scripts/build-narration.mjs の stripRuby と同じ規則）
+  const stripRuby = (text: string): string => text.replace(/｜([^《]*)《[^》]*》/g, '$1').replace(/《[^》]*》/g, '');
   const spokenText = (key: string, text: string): string =>
-    READING_OVERRIDES.reduce((x, [re, yomi]) => x.replace(re, yomi), SPOKEN_TEXT_OVERRIDES[key] ?? text);
+    READING_OVERRIDES.reduce((x, [re, yomi]) => x.replace(re, yomi), SPOKEN_TEXT_OVERRIDES[key] ?? stripRuby(text));
   // 物語ごとの語り手プロファイルの tag（scripts/build-narration.mjs の VOICE_PROFILES と合わせること）。
   // 声や後加工が違う本は、ハッシュに tag を混ぜて区別する
   const VOICE_PROFILE_TAGS: Record<string, string> = { 'sunday-well': 'g-mod3a', 'maou-diner': 'g-mod3a' };
