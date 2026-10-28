@@ -14,6 +14,8 @@
   --border: #2c3644;
   --primary: #8f1d22;
   --primary-text: #f5ecec;
+  /* トグルスイッチのオン色。主ボタン（赤）とは意味を分け、オン＝緑で示す */
+  --switch-on: #35a05f;
   --accent: #c9b458;
   --off: #e5484d;
   --debug: #d29922;
@@ -370,38 +372,56 @@ button.big {
   opacity: 0.85;
 }
 
-/* トグルスイッチ（設定画面のオン/オフ項目で共用） */
+/* トグルスイッチ（設定画面のオン/オフ項目で共用）。
+   ボタン自体はタップ領域として 44px の高さを保ち、見た目のレールは ::before で
+   横長の楕円（56×32）に描く。button の min-height: 44px がレールを押し広げて
+   丸く見える事故があったため、レールの大きさはボタン本体と切り離す。 */
 .switch {
   position: relative;
-  width: 52px;
-  height: 30px;
+  width: 56px;
+  height: 44px;
   padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  flex: none;
+}
+
+.switch::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 56px;
+  height: 32px;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--surface-2);
-  cursor: pointer;
-  flex: none;
+  transform: translateY(-50%);
+  transition: background-color 0.18s ease, border-color 0.18s ease;
 }
 
 .switch-knob {
   position: absolute;
   top: 50%;
   left: 3px;
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: var(--muted);
   transform: translateY(-50%);
   transition: left 0.18s ease, background-color 0.18s ease;
+  z-index: 1;
 }
 
-.switch[aria-checked="true"] {
-  background: var(--primary);
-  border-color: var(--primary);
+.switch[aria-checked="true"]::before {
+  background: var(--switch-on);
+  border-color: var(--switch-on);
 }
 
 .switch[aria-checked="true"] .switch-knob {
-  left: calc(100% - 25px);
+  left: calc(100% - 29px);
   background: var(--primary-text);
 }
 
