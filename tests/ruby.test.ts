@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { hasRuby, parseRuby, RubyFirstOnlyTracker, stripRuby, type RubyPart } from '../src/ruby';
 import { STORIES } from '../src/stories';
@@ -217,5 +218,82 @@ describe('ルビの初出だけ表示（RubyFirstOnlyTracker）', () => {
       expect(shown.filter((k) => k === key), key).toHaveLength(1);
     }
     expect(shown.length).toBe(annotated.size);
+  });
+});
+
+describe('多読語の固定読み（2026-10-28 監査で確定した読み）', () => {
+  // 多読語は辞書の代表読みでは決めず、文脈判断で確定した読みをここに固定する。
+  // 表示（ルビ）と読み上げ（scripts/kana-texts.json）の両方で同じ読みになること。
+  const storyText = (id: string): string => {
+    const story = STORIES.find((s) => s.id === id);
+    if (!story) throw new Error(`story not found: ${id}`);
+    return Object.values(story.nodes).map((n) => n.text).join('\n');
+  };
+  const KANA_TEXTS = JSON.parse(readFileSync('scripts/kana-texts.json', 'utf8')) as Record<string, string>;
+
+  it('『魔王のいない国の食堂』: 被る=かぶ、額=ひたい、角=つの、単独の戦=いくさ', () => {
+    const text = storyText('maou-diner');
+    expect(text).toContain('被《かぶ》った');
+    expect(text).not.toContain('被《こうむ》');
+    expect(text).toContain('額《ひたい》');
+    expect(text).not.toContain('額《がく》');
+    expect(text).toContain('角《つの》');
+    expect(text).not.toContain('角《かく》');
+    expect(text).toContain('戦《いくさ》が');
+    expect(text).toContain('戦《いくさ》の');
+    expect(text).not.toContain('戦《たたか》が');
+    expect(text).not.toContain('戦《たたか》の話');
+    expect(text).not.toContain('戦《たたか》の最中');
+    // 複合語・動詞は対象外（現行維持）: 戦う、戦争、最終決戦
+    expect(text).toContain('戦《たたか》う');
+    expect(KANA_TEXTS['maou-diner/meet2']).toContain('いくさが終われば');
+    expect(KANA_TEXTS['maou-diner/day1']).toContain('いくさの話');
+    expect(KANA_TEXTS['maou-diner/day2']).toContain('いくさの最中');
+    expect(KANA_TEXTS['maou-diner/demon1']).toContain('かぶった');
+    expect(KANA_TEXTS['maou-diner/demon1']).toContain('ひたいには');
+    expect(KANA_TEXTS['maou-diner/demon1']).toContain('つのの痕');
+    expect(KANA_TEXTS['maou-diner/last1']).toContain('ひたいのつのは');
+  });
+
+  it('時間の読み: 十分=じっぷん、三分=さんぷん、三十分=さんじゅっぷん、四十分=よんじゅっぷん', () => {
+    const cafe = storyText('cafe-tsubame');
+    expect(cafe).toContain('十分《じっぷん》');
+    expect(cafe).not.toContain('十分《じゅうふん》');
+    expect(cafe).not.toContain('十分《じゅうぶん》');
+    expect(cafe).toContain('三軒《さんげん》');
+    expect(KANA_TEXTS['cafe-tsubame/candle1']).toContain('じっぷんご');
+    expect(KANA_TEXTS['cafe-tsubame/call1']).toContain('じっぷんご');
+    expect(KANA_TEXTS['cafe-tsubame/call1']).toContain('さんげん');
+
+    const trophy = storyText('missing-trophy');
+    expect(trophy).toContain('三十分《さんじゅっぷん》');
+    expect(trophy).not.toContain('さんじゅうふん');
+    expect(KANA_TEXTS['missing-trophy/choice_photo']).toContain('さんじゅっぷん');
+
+    const yubi = storyText('yubisaki');
+    expect(yubi).toContain('三分《さんぷん》');
+    expect(yubi).toContain('四十分《よんじゅっぷん》');
+    expect(yubi).not.toContain('さんふん');
+    expect(yubi).not.toContain('よんじゅうふん');
+    // 「それで十分だった」の十分は じゅうぶん（「足りる」の意）で正しい
+    expect(yubi).toContain('十分《じゅうぶん》');
+    expect(KANA_TEXTS['yubisaki/close1']).toContain('さんぷんご');
+    expect(KANA_TEXTS['yubisaki/taxi1']).toContain('よんじゅっぷん');
+  });
+
+  it('助数詞の促音: 一冊=いっさつ、一本=いっぽん', () => {
+    const moon = storyText('moon-library');
+    expect(moon).toContain('一冊《いっさつ》');
+    expect(moon).toContain('一本《いっぽん》');
+    expect(moon).not.toContain('いちさつ');
+    expect(moon).not.toContain('いちほん');
+    expect(KANA_TEXTS['moon-library/start1']).toContain('いっさつずつ');
+    expect(KANA_TEXTS['moon-library/start2']).toContain('いっさつは');
+    expect(KANA_TEXTS['moon-library/choice_rain']).toContain('いっぽん');
+  });
+
+  it('『日曜日、井戸の底で』: 井戸の縁=ふち、一文字=いちもじ（読み上げ側）', () => {
+    expect(KANA_TEXTS['sunday-well/start6']).toContain('このふちに座った');
+    expect(KANA_TEXTS['sunday-well/happy1']).toContain('いちもじもらった');
   });
 });

@@ -92,6 +92,7 @@ describe('読み上げ音声', () => {
     'maou-diner/end_taste',
     'yubisaki/visit1',
     'yubisaki/night3',
+    'yubisaki/close1',
     'yubisaki/end_dream',
     'missing-trophy/end_truth',
     'yubisaki/past1',

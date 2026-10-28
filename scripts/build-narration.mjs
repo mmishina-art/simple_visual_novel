@@ -138,6 +138,7 @@ const CHUNKED_NARRATION = new Set([
   'maou-diner/end_taste',
   'yubisaki/visit1',
   'yubisaki/night3',
+  'yubisaki/close1',
   'yubisaki/end_dream',
   'missing-trophy/end_truth',
   'yubisaki/past1',
