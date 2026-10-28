@@ -778,7 +778,9 @@ button.big {
   display: flex;
   flex-direction: row-reverse;
   gap: 1.1em;
-  height: min(60vh, 540px);
+  /* 枠の大きさは本編のステージとそろえる */
+  height: min(680px, calc(100dvh - 168px));
+  min-height: 420px;
   padding: 18px 16px;
   border: 1px solid var(--border);
   border-radius: 14px;
