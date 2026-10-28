@@ -670,6 +670,7 @@ button.big {
   position: relative;
   /* 枠は画面の高さいっぱいまで伸ばす（旧: 幅基準の 4/5 固定で、下に大きな余白が残った）。
      背景の絵は幅に合わせて上詰めで置き、余った下部は絵の基調に近い暗色で受ける */
+  height: min(680px, calc(100vh - 168px));
   height: min(680px, calc(100dvh - 168px));
   min-height: 420px;
   border-radius: 14px;
@@ -779,6 +780,7 @@ button.big {
   flex-direction: row-reverse;
   gap: 1.1em;
   /* 枠の大きさは本編のステージとそろえる */
+  height: min(680px, calc(100vh - 168px));
   height: min(680px, calc(100dvh - 168px));
   min-height: 420px;
   padding: 18px 16px;
