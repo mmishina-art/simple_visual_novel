@@ -323,24 +323,28 @@ test('読み返しは、いちばん新しい文章から表示される', async
   for (let i = 0; i < 4; i++) await page.locator('#message-window').click();
   await page.locator('#backlog-button').click();
   await expect(page.locator('#backlog-screen')).toBeVisible();
-  const state = await page.evaluate(() => {
-    const el = document.querySelector('#backlog-text');
-    if (!el) return null;
-    const segments = el.querySelectorAll('.segment');
-    const newest = segments[segments.length - 1];
-    const er = el.getBoundingClientRect();
-    const nr = newest?.getBoundingClientRect();
-    return {
-      scrollLeft: el.scrollLeft,
-      newestVisible: !!nr && nr.left >= er.left - 1 && nr.right <= er.right + 1,
-      newestText: newest?.textContent ?? '',
-    };
-  });
+  // 開いた直後はスクロール位置がまだ整っていないことがあるため、最終状態をポーリングで待つ
   await expect
     .poll(async () => page.evaluate(() => document.querySelector('#backlog-text')?.scrollLeft ?? 0))
     .toBeLessThan(0);
-  expect(state?.newestVisible).toBe(true);
-  expect(state?.newestText).toContain('スマホの電池は残り');
+  await expect
+    .poll(async () =>
+      page.evaluate(() => {
+        const el = document.querySelector('#backlog-text');
+        if (!el) return false;
+        const segments = el.querySelectorAll('.segment');
+        const newest = segments[segments.length - 1];
+        const er = el.getBoundingClientRect();
+        const nr = newest?.getBoundingClientRect();
+        return (
+          !!nr &&
+          nr.left >= er.left - 1 &&
+          nr.right <= er.right + 1 &&
+          (newest?.textContent ?? '').includes('スマホの電池は残り')
+        );
+      }),
+    )
+    .toBe(true);
 });
 
 test('結末は文章だけが先に表示され、もう一度押すとパネルが出る', async ({ page }) => {
