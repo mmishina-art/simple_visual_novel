@@ -13,7 +13,11 @@ test('素早くタップしても、読み上げは表示中の場面とずれ�
   await page.getByRole('button', { name: 'はじめる' }).click();
   await page.locator('.book-card').first().click();
   await expect(page.locator('#story-text')).toContainText('文化祭を明日に控えた');
-  await page.locator('#narration-button-game').click();
+  // 読み上げの操作は設定画面に集約されているので、本編から設定を開いてオンにする
+  await page.locator('#settings-button-game').click();
+  await page.locator('#narration-button').click();
+  await page.locator('#settings-back').click();
+  await expect(page.locator('#game-screen')).toBeVisible();
   // 素早く3回タップして start4 まで進める
   for (let i = 0; i < 3; i++) {
     await page.locator('#message-window').click();

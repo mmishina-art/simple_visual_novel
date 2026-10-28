@@ -119,40 +119,6 @@ button.big {
   padding: 12px 20px;
 }
 
-/* オン/オフの表現はアプリ全体で統一: オフのときは、同じアイコンに斜線を重ねる
-   （対象は aria-pressed を持つトグル全部: 音・読み上げ・フリガナ。設定画面と本編ヘッダーで共用） */
-.icon-button[aria-pressed] {
-  position: relative;
-}
-
-.icon-button[aria-pressed="false"]::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 30px;
-  height: 2.5px;
-  border-radius: 2px;
-  background: var(--off);
-  transform: translate(-50%, -50%) rotate(-45deg);
-  pointer-events: none;
-}
-
-/* アイコンだけのボタンは、絵文字ごとの大きさの差で上下・間隔ががたつかないよう、箱の大きさをそろえる */
-.icon-button {
-  border: 0;
-  background: transparent;
-  font-size: 1.25rem;
-  width: 38px;
-  height: 38px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  flex: none;
-}
-
 /* 押せるものはボタンらしく見せる（全体ルール）：ピル型の共通ボタン */
 .btn-pill {
   display: inline-flex;
@@ -658,12 +624,9 @@ button.big {
 
 /* ---- タイトル画面 / 本編の画面（2画面は独立させる） ---- */
 
-/* ヘッダーは2段構成: 1段目はタイトル＋「本棚へ」（右端）、2段目は再生系の操作。
-   全部を1行に詰めると狭い画面（iPhone等）で右端のアイコンが見切れるため */
+/* ヘッダーは1段だけ: タイトル＋「本棚に戻る」「設定」のピル2つ。
+   再生系の操作（音・読み上げ・速度）は設定画面に集約し、ここには置かない */
 .game-header {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
   margin-bottom: 8px;
 }
 
@@ -673,36 +636,19 @@ button.big {
   gap: 8px;
 }
 
-/* 「本棚へ」はタイトルに押し出されて見切れないよう、縮まない側に置く */
-.game-header-top .icon-button {
+/* ピル2つはタイトルに押し出されて見切れないよう、縮まない側に置く。
+   余白は少し詰めて、長いタイトルが入る幅を稼ぐ */
+.game-header-top .btn-pill {
   flex: none;
-}
-
-.game-header-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-/* 朗読のまとまり: 親スイッチ（読み上げオン/オフ）と付随する調整（速度）を、
-   囲みでひとまとまりに見せる。音はこの囲みの外に離して置く */
-.narration-group {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  padding: 3px 6px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface);
+  margin: 0;
+  padding: 4px 12px;
 }
 
 .game-title {
   flex: 1 1 auto;
   min-width: 0;
-  font-size: 1.12rem;
-  letter-spacing: 0.12em;
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
   line-height: 1.2;
   color: var(--muted);
   /* 長いタイトルはタイトル側を「…」で省略し、「本棚へ」は常に全文見せる */

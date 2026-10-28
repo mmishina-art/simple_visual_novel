@@ -35,20 +35,21 @@ test.describe('朗読の速度変更', () => {
     await expect(page.locator('#speed-button')).toHaveText('1.5x');
   });
 
-  test('本編のボタンで速度が音声に反映され、場面が替わっても維持される。設定画面とも連動する', async ({ page }) => {
+  test('本編から開いた設定で速度を変えると音声に反映され、場面が替わっても維持される', async ({ page }) => {
     await page.goto('/');
     await beginStory(page);
-    const gameButton = page.locator('#speed-button-game');
-    await expect(gameButton).toHaveText('1.0x');
 
-    // 読み上げをオンにすると、音声要素ができて速度 1.0 で再生される
-    await page.locator('#narration-button-game').click();
+    // 本編から設定を開き、読み上げをオンにして速度を 1.25x にする
+    await page.locator('#settings-button-game').click();
+    await expect(page.locator('#speed-button')).toHaveText('1.0x');
+    await page.locator('#narration-button').click();
+    await page.locator('#speed-button').click();
+    await expect(page.locator('#speed-button')).toHaveText('1.25x');
+    await page.locator('#settings-back').click();
+    await expect(page.locator('#game-screen')).toBeVisible();
+
+    // 本編に戻ると、音声要素ができて速度 1.25 で再生される
     await expect(page.locator('#narration-audio')).toBeAttached();
-    await expect.poll(() => narrationRate(page)).toBe(1);
-
-    // 本編のボタンで 1.25x にすると、再生中の音声へすぐ反映される
-    await gameButton.click();
-    await expect(gameButton).toHaveText('1.25x');
     await expect.poll(() => narrationRate(page)).toBe(1.25);
 
     // タップで次の場面へ進んでも、速度は維持される
@@ -56,7 +57,7 @@ test.describe('朗読の速度変更', () => {
     await expect(page.locator('#narration-audio')).toHaveAttribute('src', /midnight-school\/start2\.mp3$/);
     await expect.poll(() => narrationRate(page)).toBe(1.25);
 
-    // 設定画面のボタンとも連動している
+    // タイトル側の設定でも同じ値になっている（保存先は1か所）
     await page.locator('#to-title-button').click();
     await page.locator('#shelf-back').click();
     await page.getByRole('button', { name: '設定' }).click();

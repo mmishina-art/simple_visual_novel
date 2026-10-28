@@ -28,6 +28,8 @@ migrateStorage();
 let story: Story = STORIES[0];
 
 let screen: 'title' | 'shelf' | 'settings' | 'game' | 'backlog' = 'title';
+/** 設定画面の戻り先。タイトルから開いたらタイトルへ、本編から開いたら今の本へ戻る */
+let settingsReturn: 'title' | 'game' = 'title';
 const skey = (base: string, target: Story = story): string => `story:${target.id}:${base}`;
 let state: PlayState | null = null;
 let seenEndings: string[] = [];
@@ -182,21 +184,10 @@ function setToggle(el: HTMLElement, on: boolean): void {
 }
 
 function renderTitle(): void {
-  // 音ボタンは設定画面（スイッチ型）と本編の画面（アイコン型）の両方にあるので、表示をそろえる
-  for (const id of ['sound-button', 'sound-button-game']) {
-    const sound = $(id);
-    // アイコン型はオン/オフで絵を差し替えず、オフは斜線で示す（style.css の .icon-button[aria-pressed="false"]）。
-    // スイッチ型の中身（つまみ）は書き換えない
-    if (!sound.classList.contains('switch')) sound.textContent = '🔊';
-    setToggle(sound, isSoundOn());
-  }
-  for (const id of ['narration-button', 'narration-button-game']) {
-    setToggle($(id), isNarrationOn());
-  }
-  // 朗読の速度ボタンは設定画面と本編の両方にあるので、表示をそろえる
-  for (const id of ['speed-button', 'speed-button-game']) {
-    $(id).textContent = formatNarrationSpeed();
-  }
+  // 音・読み上げ・速度・フリガナの操作は設定画面に集約（読書画面には置かない）
+  setToggle($('sound-button'), isSoundOn());
+  setToggle($('narration-button'), isNarrationOn());
+  $('speed-button').textContent = formatNarrationSpeed();
   setToggle($('furigana-button'), isFuriganaOn());
 }
 
@@ -398,6 +389,11 @@ function renderGame(): void {
   }
 }
 
+/** 物語側のBGMが担当する文脈か。本編・読み返しに加え、本編から開いた設定画面も含む
+    （設定を開いただけで、物語のBGMをタイトル曲に切り替えないため） */
+const storyBgmContext = (): boolean =>
+  screen === 'game' || screen === 'backlog' || (screen === 'settings' && settingsReturn === 'game');
+
 function render(): void {
   // 読み上げは本編の画面だけ。読み返しでは一時停止、その他の画面では止める
   if (screen === 'backlog') suspendNarration();
@@ -413,7 +409,7 @@ function render(): void {
   renderGame();
   if (screen === 'backlog') renderBacklog();
   // タイトル・本棚・設定の画面ではタイトルのBGMを流す（本編と読み返しでは物語側のBGMが担当する）
-  if (screen !== 'game' && screen !== 'backlog') startTitleBgm();
+  if (!storyBgmContext()) startTitleBgm();
 }
 
 // 本編・読み返しの画面では Wake Lock を取り、読み上げ中に画面が暗くなったり
@@ -488,8 +484,8 @@ document.addEventListener('click', (e) => {
   const target = e.target as HTMLElement;
   const button = target.closest('button');
   if (!button) return;
-  if (button.id === 'sound-button' || button.id === 'sound-button-game') return;
-  if (button.id === 'narration-button' || button.id === 'narration-button-game') return;
+  if (button.id === 'sound-button') return;
+  if (button.id === 'narration-button') return;
   if (button.classList.contains('book-card')) return; // 本を開く音が鳴るので、ボタンの音は出さない
   if (button.id === 'update-button' || button.id === 'boot-repair') return;
   if (button.id === 'resume-continue' || button.id === 'resume-restart') return;
@@ -522,11 +518,19 @@ $<HTMLDialogElement>('resume-dialog').addEventListener('click', (e) => {
   if (e.target === e.currentTarget) $<HTMLDialogElement>('resume-dialog').close();
 });
 $('settings-button').addEventListener('click', () => {
+  settingsReturn = 'title';
+  $('settings-back').textContent = 'タイトルに戻る';
+  screen = 'settings';
+  render();
+});
+$('settings-button-game').addEventListener('click', () => {
+  settingsReturn = 'game';
+  $('settings-back').textContent = '本に戻る';
   screen = 'settings';
   render();
 });
 $('settings-back').addEventListener('click', () => {
-  screen = 'title';
+  screen = settingsReturn === 'game' ? 'game' : 'title';
   render();
 });
 $('backlog-button').addEventListener('click', () => {
@@ -568,7 +572,7 @@ function advanceReading(): void {
 $('message-window').addEventListener('click', advanceReading);
 // 最初のタップで音声が解放されたら、タイトルBGMの開始をもう一度試みる
 document.addEventListener('pointerdown', () => {
-  if (screen !== 'game' && screen !== 'backlog') startTitleBgm();
+  if (!storyBgmContext()) startTitleBgm();
 });
 // 読み上げが終わったら自動で次へ。ただし選択肢の場面では、選んでもらうために止まる
 // スマホでバックグラウンドに移ったら、音はすべて止める（BGM・読み上げ・効果音）。
@@ -585,7 +589,7 @@ const restoreFromBackground = (): void => {
   if (!silencedForBackground) return;
   silencedForBackground = false;
   resumeAudioContext();
-  if ((screen === 'game' || screen === 'backlog') && state) {
+  if (storyBgmContext() && state) {
     const node = nodeOf(story, state);
     startBgm(node.ending && endingRevealed ? node.ending.kind : 'normal', story.bgm);
     if (screen === 'game') syncNarration(story.id, state.nodeId);
@@ -618,29 +622,23 @@ const toShelf = (): void => {
 };
 $('ending-title-button').addEventListener('click', toShelf);
 $('to-title-button').addEventListener('click', toShelf);
-for (const id of ['sound-button', 'sound-button-game']) {
-  $(id).addEventListener('click', () => {
-    setSound(!isSoundOn());
-    render();
-  });
-}
-for (const id of ['narration-button', 'narration-button-game']) {
-  $(id).addEventListener('click', () => {
-    setNarration(!isNarrationOn());
-    render();
-  });
-}
+$('sound-button').addEventListener('click', () => {
+  setSound(!isSoundOn());
+  render();
+});
+$('narration-button').addEventListener('click', () => {
+  setNarration(!isNarrationOn());
+  render();
+});
 $('furigana-button').addEventListener('click', () => {
   setFurigana(!isFuriganaOn());
   render();
 });
-// 朗読の速度ボタン（設定画面・本編共通）：押すたびに候補を順に切り替える
-for (const id of ['speed-button', 'speed-button-game']) {
-  $(id).addEventListener('click', () => {
-    cycleNarrationSpeed();
-    render();
-  });
-}
+// 朗読の速度ボタン（設定画面）：押すたびに候補を順に切り替える
+$('speed-button').addEventListener('click', () => {
+  cycleNarrationSpeed();
+  render();
+});
 
 $('backup-export').addEventListener('click', () => {
   const blob = new Blob([exportBackup()], { type: 'application/json' });
