@@ -19,10 +19,12 @@ const SPEED = '112';
 // 男性主人公の2冊は AivisSpeech「阿井田 茂 Calm」で生成する（2026-10-28 ユーザー選択。
 // それまでの G 声＋ピッチ加工から差し替え）。テンポは全場面で分速300字にそろえ、
 // speedScale を場面ごとに実測で補正する（ピッチ変更・EQ はしない）。
+// 抑揚（intonationScale）は 0.2 に弱める（2026-10-28 ユーザーが試聴して正式採用。
+// 初期値 1.0 だと抑揚の付け方が不自然で聞き疲れするとの評価だった）。
 // 生成には AivisSpeech エンジン（http://127.0.0.1:10101）の起動が必要。
 const VOICE_PROFILES = {
-  'maou-diner': { engine: 'aivis', speaker: 1310138977, speedScale: 0.8, tag: 'aivis-aida-calm' },
-  'sunday-well': { engine: 'aivis', speaker: 1310138977, speedScale: 0.8, tag: 'aivis-aida-calm' },
+  'maou-diner': { engine: 'aivis', speaker: 1310138977, speedScale: 0.8, intonationScale: 0.2, tag: 'aivis-aida-calm-int02' },
+  'sunday-well': { engine: 'aivis', speaker: 1310138977, speedScale: 0.8, intonationScale: 0.2, tag: 'aivis-aida-calm-int02' },
 };
 const profileOf = (key) => VOICE_PROFILES[key.split('/')[0]];
 const CONCURRENCY = 4;
@@ -202,6 +204,7 @@ const aivisSynth = async (text, profile, speedScale, outWav) => {
   if (!queryRes.ok) throw new Error(`Aivis audio_query failed: ${queryRes.status}`);
   const query = await queryRes.json();
   query.speedScale = speedScale;
+  if (profile.intonationScale !== undefined) query.intonationScale = profile.intonationScale;
   const res = await fetch(`${AIVIS_BASE}/synthesis?${new URLSearchParams({ speaker: String(profile.speaker) })}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
