@@ -80,14 +80,12 @@ describe('『午前0時の校舎』のルビ付け', () => {
   const texts = Object.values(midnightSchool.nodes).map((n) => n.text);
   const all = texts.join('');
 
-  it('ルビは一部の場面だけに付き、全漢字には振らない', () => {
-    const withRuby = texts.filter((t) => hasRuby(t));
-    expect(withRuby.length).toBeGreaterThan(0);
-    expect(withRuby.length).toBeLessThan(texts.length);
+  it('全場面にルビ記法が付く（他作品と同じ全文フリガナ）', () => {
+    for (const text of texts) {
+      expect(hasRuby(text)).toBe(true);
+    }
     const rubyCount = (all.match(/《/g) ?? []).length;
-    const kanjiCount = (all.match(/[一-龥]/g) ?? []).length;
-    expect(rubyCount).toBeGreaterThanOrEqual(20);
-    expect(rubyCount * 10).toBeLessThan(kanjiCount); // ルビ対象は漢字総数の1割未満
+    expect(rubyCount).toBeGreaterThanOrEqual(300);
   });
 
   it('記法を取り除くと、元の本文と一致する（表示以外のデータは変えない）', () => {
@@ -108,23 +106,16 @@ describe('全作品のルビ付け（2026-10-28 全文フリガナ展開）', ()
   it('新規7冊は全場面にルビ記法が付き、全8冊で記法を取り除ける', () => {
     for (const story of STORIES) {
       for (const node of Object.values(story.nodes)) {
-        // 『午前0時の校舎』は既存の選択的な付け方を維持（ルビの無い場面もある）
-        if (story.id !== 'midnight-school') {
-          expect(hasRuby(node.text), `${story.id}/${node.id}`).toBe(true);
-        }
+        expect(hasRuby(node.text), `${story.id}/${node.id}`).toBe(true);
         expect(stripRuby(node.text)).not.toContain('《');
         expect(stripRuby(node.text)).not.toContain('》');
       }
     }
   });
 
-  it('『午前0時の校舎』以外は rubyAll（初出に限らず全出現に付ける）で、校舎は初出だけのまま', () => {
+  it('全8冊とも rubyAll（初出に限らず全出現に付ける）', () => {
     for (const story of STORIES) {
-      if (story.id === 'midnight-school') {
-        expect(story.rubyAll).toBeUndefined();
-      } else {
-        expect(story.rubyAll, story.id).toBe(true);
-      }
+      expect(story.rubyAll, story.id).toBe(true);
     }
   });
 
@@ -205,8 +196,8 @@ describe('ルビの初出だけ表示（RubyFirstOnlyTracker）', () => {
     for (const node of Object.values(midnightSchool.nodes)) {
       shown.push(...shownRubies(tracker, node.text, node.id));
     }
-    // 上履きは4場面に出るが、ルビが付くのは初出の1回だけ
-    expect(shown.filter((k) => k === '上履き《うわばき》')).toHaveLength(1);
+    // 上履き（語幹は 上履《うわば》）は4場面に出るが、トラッカー表示では初出の1回だけ
+    expect(shown.filter((k) => k === '上履《うわば》')).toHaveLength(1);
     // 記法のある語は、どれも必ず1回はルビ付きで出る（初出がどこかにはある）
     const annotated = new Set<string>();
     for (const node of Object.values(midnightSchool.nodes)) {
