@@ -149,7 +149,29 @@ test.describe('フリガナ表示', () => {
     await expect(ruby.locator('rt')).toHaveText('うわばき');
   });
 
-  test('ルビ記法の無い他の作品は、オンでも従来通り表示される', async ({ page }) => {
+  test('全文フリガナの作品では、同じ語の2回目以降にもルビが付く', async ({ page }) => {
+    await page.goto('/');
+    await toggleFuriganaFromSettings(page);
+    await page.getByRole('button', { name: 'はじめる' }).click();
+    // 『日曜日、井戸の底で』は本棚の6冊目（index 5）
+    await page.locator('.book-card').nth(5).click();
+    for (let i = 0; i < 10; i++) {
+      if (await page.locator('#story-text').isVisible()) break;
+      await page.waitForTimeout(100);
+    }
+    // 「井戸」が2回出る場面（start5）まで読み進める
+    for (let i = 0; i < 20; i++) {
+      if ((await storyPlainText(page)).includes('――井戸だ')) break;
+      await page.locator('#message-window').click();
+      await page.waitForTimeout(120);
+    }
+    expect(await storyPlainText(page)).toContain('――井戸だ');
+    const storyText = page.locator('#story-text');
+    // 初出だけの作品なら1つだけだが、全文フリガナでは両方に付く
+    await expect(storyText.locator('ruby', { hasText: '井戸' })).toHaveCount(2);
+  });
+
+  test('他の作品にもルビが付き、記法は本文に残らない', async ({ page }) => {
     await page.goto('/');
     await toggleFuriganaFromSettings(page);
     await page.getByRole('button', { name: 'はじめる' }).click();
@@ -160,7 +182,7 @@ test.describe('フリガナ表示', () => {
       await page.waitForTimeout(100);
     }
     const storyText = page.locator('#story-text');
-    await expect(storyText.locator('ruby')).toHaveCount(0);
+    await expect(storyText.locator('ruby').first()).toBeVisible();
     await expect(storyText).not.toContainText('《');
   });
 });

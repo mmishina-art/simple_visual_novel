@@ -52,6 +52,8 @@ export interface Story {
   coverTone?: 'dark' | 'light';
   /** 隠し本：他の全冊でハッピーエンドを見るまで本棚に現れない */
   hidden?: boolean;
+  /** 全文フリガナ：ルビを初出だけでなく、すべての出現に付ける（省略時は初出だけ） */
+  rubyAll?: boolean;
   start: string;
   nodes: Record<string, StoryNode>;
 }

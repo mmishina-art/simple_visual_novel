@@ -101,13 +101,57 @@ describe('『午前0時の校舎』のルビ付け', () => {
     expect(all).toContain('佐伯《さえき》');
   });
 
-  it('他の作品にはルビ記法が混ざっていない', () => {
+});
+
+describe('全作品のルビ付け（2026-10-28 全文フリガナ展開）', () => {
+  it('新規7冊は全場面にルビ記法が付き、全8冊で記法を取り除ける', () => {
     for (const story of STORIES) {
-      if (story.id === 'midnight-school') continue;
       for (const node of Object.values(story.nodes)) {
-        expect(hasRuby(node.text), `${story.id}/${node.id}`).toBe(false);
+        // 『午前0時の校舎』は既存の選択的な付け方を維持（ルビの無い場面もある）
+        if (story.id !== 'midnight-school') {
+          expect(hasRuby(node.text), `${story.id}/${node.id}`).toBe(true);
+        }
+        expect(stripRuby(node.text)).not.toContain('《');
+        expect(stripRuby(node.text)).not.toContain('》');
       }
     }
+  });
+
+  it('『午前0時の校舎』以外は rubyAll（初出に限らず全出現に付ける）で、校舎は初出だけのまま', () => {
+    for (const story of STORIES) {
+      if (story.id === 'midnight-school') {
+        expect(story.rubyAll).toBeUndefined();
+      } else {
+        expect(story.rubyAll, story.id).toBe(true);
+      }
+    }
+  });
+
+  it('全文フリガナの冊では、繰り返し出る語にも場面をまたいで記法が付いている', () => {
+    // 『日曜日、井戸の底で』の「井戸」は多くの場面に出て、どの場面でもルビ記法がある
+    const sunday = STORIES.find((s) => s.id === 'sunday-well')!;
+    const withIdo = Object.values(sunday.nodes).filter((n) => stripRuby(n.text).includes('井戸'));
+    expect(withIdo.length).toBeGreaterThan(5);
+    for (const node of withIdo) {
+      expect(node.text, node.id).toContain('井戸《いど》');
+    }
+  });
+
+  it('人名・難読語の読みは、読み上げ用かな修正と一致する', () => {
+    const all = Object.fromEntries(STORIES.map((s) => [s.id, Object.values(s.nodes).map((n) => n.text).join('')]));
+    expect(all['moon-library']).toContain('森下栞《もりしたしおり》');
+    expect(all['moon-library']).toContain('篠宮《しのみや》');
+    expect(all['missing-trophy']).toContain('高嶺《たかみね》');
+    expect(all['missing-trophy']).toContain('潤《じゅん》');
+    expect(all['stardust-station']).toContain('子守唄《こもりうた》');
+    expect(all['cafe-tsubame']).toContain('床屋《とこや》');
+    expect(all['yubisaki']).toContain('律子《りつこ》');
+    expect(all['yubisaki']).toContain('圭介《けいすけ》');
+    expect(all['sunday-well']).toContain('真由《まゆ》');
+    expect(all['maou-diner']).toContain('灰谷誠一《はいたにせいいち》');
+    expect(all['maou-diner']).toContain('女将《おかみ》');
+    expect(all['maou-diner']).toContain('閑古鳥《かんこどり》');
+    expect(all['maou-diner']).toContain('明日《あした》');
   });
 });
 

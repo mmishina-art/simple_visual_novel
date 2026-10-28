@@ -110,8 +110,9 @@ function appendText(parent: HTMLElement, text: string): void {
 /**
  * 本文を縦書きで出す。本文の「漢字《よみ》」記法は、フリガナ設定がオンなら <ruby> に、
  * オフなら記法を取り除いた通常の文字にする。記法の無い本文は従来通り。
- * ルビは「初出だけ」：同じ語は作品の中で最初に出た場面（context = 場面ID）でのみ読みを添え、
+ * ルビは原則「初出だけ」：同じ語は作品の中で最初に出た場面（context = 場面ID）でのみ読みを添え、
  * 2回目以降の場面と、同じ場面の中の2回目以降は素の漢字だけにする。
+ * ただし作品に rubyAll が付いている場合は、初出に限らずすべての出現にルビを付ける（全文フリガナ）。
  */
 function buildSegment(text: string, className = 'segment', context = ''): HTMLSpanElement {
   const seg = document.createElement('span');
@@ -123,7 +124,7 @@ function buildSegment(text: string, className = 'segment', context = ''): HTMLSp
       const key = `${part.text}《${part.ruby}》`;
       const occurrence = seenInText.get(key) ?? 0;
       seenInText.set(key, occurrence + 1);
-      showRuby = rubyTracker.shouldShow(part, context, occurrence);
+      showRuby = story.rubyAll ? true : rubyTracker.shouldShow(part, context, occurrence);
     }
     if (part.ruby && showRuby) {
       const ruby = document.createElement('ruby');
