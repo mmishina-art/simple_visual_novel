@@ -175,21 +175,29 @@ function renderBacklog(): void {
   void document.fonts?.ready.then(toNewest);
 }
 
+/** トグルの状態表示をそろえる。スイッチ型（設定画面）は aria-checked も合わせる */
+function setToggle(el: HTMLElement, on: boolean): void {
+  el.setAttribute('aria-pressed', String(on));
+  if (el.classList.contains('switch')) el.setAttribute('aria-checked', String(on));
+}
+
 function renderTitle(): void {
-  // 音ボタンはタイトル画面と本編の画面の両方にあるので、表示をそろえる
+  // 音ボタンは設定画面（スイッチ型）と本編の画面（アイコン型）の両方にあるので、表示をそろえる
   for (const id of ['sound-button', 'sound-button-game']) {
     const sound = $(id);
-    sound.textContent = isSoundOn() ? '🔊' : '🔇';
-    sound.setAttribute('aria-pressed', String(isSoundOn()));
+    // アイコン型はオン/オフで絵を差し替えず、オフは斜線で示す（style.css の .icon-button[aria-pressed="false"]）。
+    // スイッチ型の中身（つまみ）は書き換えない
+    if (!sound.classList.contains('switch')) sound.textContent = '🔊';
+    setToggle(sound, isSoundOn());
   }
   for (const id of ['narration-button', 'narration-button-game']) {
-    $(id).setAttribute('aria-pressed', String(isNarrationOn()));
+    setToggle($(id), isNarrationOn());
   }
   // 朗読の速度ボタンは設定画面と本編の両方にあるので、表示をそろえる
   for (const id of ['speed-button', 'speed-button-game']) {
     $(id).textContent = formatNarrationSpeed();
   }
-  $('furigana-button').setAttribute('aria-pressed', String(isFuriganaOn()));
+  setToggle($('furigana-button'), isFuriganaOn());
 }
 
 /** 本棚の画面。STORIES の作品を単行本の装丁で並べ、選ぶと本編が始まる */

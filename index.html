@@ -47,14 +47,16 @@
           <button id="settings-back" type="button" class="btn-pill">タイトルに戻る</button>
         </header>
 
+        <!-- オン/オフ項目は形を統一: 先頭に小さな単色アイコン＋項目名、右端にトグルスイッチ。
+             アイコンは、読書画面と意味が共通のものは同じ絵を使う（音=🔊、読み上げ=🗣️） -->
         <div class="settings-row">
-          <span>音</span>
-          <button id="sound-button" type="button" class="icon-button" aria-label="音" aria-pressed="true">🔊</button>
+          <span class="settings-label"><span class="settings-icon" aria-hidden="true">🔊</span>音</span>
+          <button id="sound-button" type="button" class="switch" role="switch" aria-checked="true" aria-pressed="true" aria-label="音"><span class="switch-knob"></span></button>
         </div>
 
         <div class="settings-row">
-          <span>読み上げ（自動再生）</span>
-          <button id="narration-button" type="button" class="icon-button" aria-label="読み上げ" aria-pressed="false">🗣️</button>
+          <span class="settings-label"><span class="settings-icon" aria-hidden="true">🗣️</span>読み上げ（自動再生）</span>
+          <button id="narration-button" type="button" class="switch" role="switch" aria-checked="false" aria-pressed="false" aria-label="読み上げ"><span class="switch-knob"></span></button>
         </div>
 
         <div class="settings-row">
@@ -63,8 +65,8 @@
         </div>
 
         <div class="settings-row">
-          <span>フリガナ</span>
-          <button id="furigana-button" type="button" class="icon-button" aria-label="フリガナ" aria-pressed="false">🔤</button>
+          <span class="settings-label"><span class="settings-icon" aria-hidden="true">🔤</span>フリガナ</span>
+          <button id="furigana-button" type="button" class="switch" role="switch" aria-checked="false" aria-pressed="false" aria-label="フリガナ"><span class="switch-knob"></span></button>
         </div>
 
         <details class="backup">
@@ -93,12 +95,20 @@
       <!-- 本編の画面（タイトル画面とは分けた、独立した画面）。
            物語に必要なものだけを置き、タイトル画面の要素（バックアップ・インストール・バージョン）は出さない -->
       <section id="game-screen" class="screen" hidden>
+        <!-- ヘッダーは2段: 1段目はタイトル＋「本棚へ」（右端に固定し、長いタイトルでも見切れさせない）。
+             2段目は左に朗読のまとまり（読み上げオン/オフ→速度。親スイッチを先、付随する調整を後にし、
+             囲みでひとまとまりに見せる）、右に音を離して置く。
+             全部を1行に詰めると狭い画面で右端のアイコンが見切れるため -->
         <header class="game-header">
-          <span class="game-title">午前0時の校舎</span>
-          <span class="game-header-actions">
+          <div class="game-header-top">
+            <span class="game-title">午前0時の校舎</span>
             <button id="to-title-button" type="button" class="icon-button" aria-label="本棚へ">📚</button>
-            <button id="speed-button-game" type="button" class="btn-pill speed-button" aria-label="朗読の速度">1.0x</button>
-            <button id="narration-button-game" type="button" class="icon-button" aria-label="読み上げ" aria-pressed="false">🗣️</button>
+          </div>
+          <span class="game-header-actions">
+            <span class="narration-group">
+              <button id="narration-button-game" type="button" class="icon-button" aria-label="読み上げ" aria-pressed="false">🗣️</button>
+              <button id="speed-button-game" type="button" class="btn-pill speed-button" aria-label="朗読の速度">1.0x</button>
+            </span>
             <button id="sound-button-game" type="button" class="icon-button" aria-label="音" aria-pressed="true">🔊</button>
           </span>
         </header>
