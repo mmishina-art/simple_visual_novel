@@ -79,7 +79,7 @@ export const missingTrophy: Story = {
     },
     choice_photo: {
       id: 'choice_photo',
-      text: '時間《じかん》は限《かぎ》られている。写真《しゃしん》の現像《げんぞう》には、三十分《さんじゅうふん》かかる。',
+      text: '時間《じかん》は限《かぎ》られている。写真《しゃしん》の現像《げんぞう》には、三十分《さんじゅっぷん》かかる。',
       choices: [
         { label: '潤に現像を頼み、その間に聞き込みをする', to: 'photo1' },
         { label: '現像を待たず、実行委員長に話を聞く', to: 'chief1' },
