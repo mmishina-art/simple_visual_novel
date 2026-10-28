@@ -95,22 +95,15 @@
       <!-- 本編の画面（タイトル画面とは分けた、独立した画面）。
            物語に必要なものだけを置き、タイトル画面の要素（バックアップ・インストール・バージョン）は出さない -->
       <section id="game-screen" class="screen" hidden>
-        <!-- ヘッダーは2段: 1段目はタイトル＋「本棚へ」（右端に固定し、長いタイトルでも見切れさせない）。
-             2段目は左に朗読のまとまり（読み上げオン/オフ→速度。親スイッチを先、付随する調整を後にし、
-             囲みでひとまとまりに見せる）、右に音を離して置く。
-             全部を1行に詰めると狭い画面で右端のアイコンが見切れるため -->
+        <!-- ヘッダーは1段だけ: タイトル＋「本棚に戻る」「設定」のピル2つ。
+             音・読み上げ・速度の操作は設定画面に集約し、読書画面は本文に集中させる。
+             設定は本編からも開け、その場合の戻り先はタイトルではなく今の本になる -->
         <header class="game-header">
           <div class="game-header-top">
             <span class="game-title">午前0時の校舎</span>
-            <button id="to-title-button" type="button" class="icon-button" aria-label="本棚へ">📚</button>
+            <button id="to-title-button" type="button" class="btn-pill">本棚に戻る</button>
+            <button id="settings-button-game" type="button" class="btn-pill">設定</button>
           </div>
-          <span class="game-header-actions">
-            <span class="narration-group">
-              <button id="narration-button-game" type="button" class="icon-button" aria-label="読み上げ" aria-pressed="false">🗣️</button>
-              <button id="speed-button-game" type="button" class="btn-pill speed-button" aria-label="朗読の速度">1.0x</button>
-            </span>
-            <button id="sound-button-game" type="button" class="icon-button" aria-label="音" aria-pressed="true">🔊</button>
-          </span>
         </header>
 
         <!-- ステージ: 背景の上に、文章・選択肢・結末を重ねて表示する -->

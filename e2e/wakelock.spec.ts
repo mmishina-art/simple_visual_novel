@@ -34,7 +34,7 @@ test('本編に入ると Wake Lock を取り、本棚に戻ると手放す', asy
   );
   expect(inGame.requests).toBeGreaterThanOrEqual(1);
   expect(inGame.releases).toBe(0);
-  await page.getByRole('button', { name: /本棚へ/ }).click();
+  await page.getByRole('button', { name: '本棚に戻る' }).click();
   await page.waitForTimeout(300);
   const inShelf = await page.evaluate(
     () => (window as unknown as { __wakeLockLog: { requests: number; releases: number } }).__wakeLockLog,

@@ -242,11 +242,15 @@ test('BGMが本編で鳴り、音オフで止まり、本棚ではタイトルBG
   await page.goto('/');
   await beginStory(page);
   await expect(page.locator('body')).toHaveAttribute('data-bgm', 'on');
-  await page.locator('#sound-button-game').click();
+  // 音の操作は設定画面に集約されているので、本編から設定を開いて切り替える
+  await page.locator('#settings-button-game').click();
+  await page.locator('#sound-button').click();
   await expect(page.locator('body')).toHaveAttribute('data-bgm', 'off');
-  await page.locator('#sound-button-game').click();
+  await page.locator('#sound-button').click();
   await expect(page.locator('body')).toHaveAttribute('data-bgm', 'on');
-  await page.getByRole('button', { name: /本棚へ/ }).click();
+  await page.locator('#settings-back').click();
+  await expect(page.locator('#game-screen')).toBeVisible();
+  await page.getByRole('button', { name: '本棚に戻る' }).click();
   await expect(page.locator('body')).toHaveAttribute('data-bgm-theme', 'title');
 });
 
@@ -549,10 +553,18 @@ test('音のオン/オフを切り替えられる', async ({ page }) => {
   await expect(button).toHaveAttribute('aria-pressed', 'false');
 });
 
+/** 本編から設定を開き、読み上げをオンにして本編に戻る */
+async function enableNarrationFromGame(page: Page): Promise<void> {
+  await page.locator('#settings-button-game').click();
+  await page.locator('#narration-button').click();
+  await page.locator('#settings-back').click();
+  await expect(page.locator('#game-screen')).toBeVisible();
+}
+
 test('読み上げをオンにすると、その場面の音声が流れ、終わると自動で次へ進む', async ({ page }) => {
   await page.goto('/');
   await beginStory(page);
-  await page.locator('#narration-button-game').click();
+  await enableNarrationFromGame(page);
   const audio = page.locator('#narration-audio');
   await expect(audio).toHaveAttribute('src', /audio\/midnight-school\/start1\.mp3/);
   // 読み終わったことにして、自動で次の文章へ進むかを見る
@@ -582,7 +594,7 @@ test('選択肢は、文章が出たあとタッチで、直前の一文とセ�
 test('読み上げの自動再生は、選択肢の場面で止まる', async ({ page }) => {
   await page.goto('/');
   await beginStory(page);
-  await page.locator('#narration-button-game').click();
+  await enableNarrationFromGame(page);
   const audio = page.locator('#narration-audio');
   // 読み終わるたびに進めていき、選択肢まで自動で進む
   for (let i = 0; i < 15 && !(await page.locator('#choices').isVisible()); i++) {
