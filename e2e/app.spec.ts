@@ -323,10 +323,8 @@ test('読み返しは、いちばん新しい文章から表示される', async
   for (let i = 0; i < 4; i++) await page.locator('#message-window').click();
   await page.locator('#backlog-button').click();
   await expect(page.locator('#backlog-screen')).toBeVisible();
-  // 開いた直後はスクロール位置がまだ整っていないことがあるため、最終状態をポーリングで待つ
-  await expect
-    .poll(async () => page.evaluate(() => document.querySelector('#backlog-text')?.scrollLeft ?? 0))
-    .toBeLessThan(0);
+  // 「いちばん新しい文章が見えている」ことが本題。はみ出しが無い環境（フォント差で
+  // 全文が枠に収まる場合）ではスクロール自体が発生しないので、scrollLeft は見ない
   await expect
     .poll(async () =>
       page.evaluate(() => {
