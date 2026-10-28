@@ -74,8 +74,8 @@ test.describe('フリガナ表示', () => {
     await expect(ruby.locator('rt')).toHaveText('くぜはるか');
     // 明日《あした》のルビも付く。本文そのものは記法のない元本文どおり
     await expect(storyText.locator('ruby', { hasText: '明日' }).locator('rt')).toHaveText('あした');
-    await expect(storyText).toContainText('文化祭を明日');
-    await expect(storyText).toContainText('に控えた金曜日');
+    // 本文そのもの（ルビの読みを除いた並び）は、記法のない元本文どおり
+    expect(await storyPlainText(page)).toContain('文化祭を明日に控えた金曜日');
     await expect(storyText).not.toContainText('《');
   });
 
@@ -101,52 +101,40 @@ test.describe('フリガナ表示', () => {
     await expect(page.locator('#story-text')).toContainText('久瀬遥');
   });
 
-  test('同じ語のルビは初出の場面だけに付き、2回目以降は素の漢字になる', async ({ page }) => {
+  test('『午前0時の校舎』も全文フリガナで、同じ語の2回目以降にもルビが付く', async ({ page }) => {
     await page.goto('/');
     await toggleFuriganaFromSettings(page);
     await beginStory(page);
-    // 廊下の場面（corridor1）が上履きの初出。ルビ付きで出る
+    // 廊下の場面（corridor1）が上履きの初出。語幹（上履《うわば》）にルビが付く
     await playUntil(page, '自分の上履きの音が', [LIGHT_LABEL]);
     const storyText = page.locator('#story-text');
-    const firstRuby = storyText.locator('ruby', { hasText: '上履き' });
+    const firstRuby = storyText.locator('ruby', { hasText: '上履' });
     await expect(firstRuby).toHaveCount(1);
-    await expect(firstRuby.locator('rt')).toHaveText('うわばき');
-    // 読み返しを開いて閉じる（＝同じ場面の再描画）でも、初出のルビは消えたり増えたりしない。
-    // 読み返しの中でも、初出の場面にはルビが付く
+    await expect(firstRuby.locator('rt')).toHaveText('うわば');
+    // 読み返しを開いて閉じる（＝同じ場面の再描画）でも、ルビは消えたり増えたりしない
     await page.locator('#backlog-button').click();
-    const backlogRuby = page.locator('#backlog-text ruby', { hasText: '上履き' });
+    const backlogRuby = page.locator('#backlog-text ruby', { hasText: '上履' });
     await expect(backlogRuby).toHaveCount(1);
-    await expect(backlogRuby.locator('rt')).toHaveText('うわばき');
+    await expect(backlogRuby.locator('rt')).toHaveText('うわば');
     await page.locator('#backlog-close').click();
-    await expect(storyText.locator('ruby', { hasText: '上履き' })).toHaveCount(1);
-    // 音楽室の場面（music4）にも上履きが出るが、もうルビは付かない。本文には残る
+    await expect(storyText.locator('ruby', { hasText: '上履' })).toHaveCount(1);
+    // 音楽室の場面（music4）の上履き（2回目）にも、全文フリガナなのでルビが付く
     await playUntil(page, '濡れた片方だけの上履き', [MUSIC_LABEL]);
-    await expect(storyText).toContainText('濡れた片方だけの上履きが置いてあった');
-    await expect(storyText.locator('ruby', { hasText: '上履き' })).toHaveCount(0);
-    // 初出がこの場面の語（譜面台）には、きちんとルビが付く
-    const musicRuby = storyText.locator('ruby', { hasText: '譜面台' });
+    expect(await storyPlainText(page)).toContain('濡れた片方だけの上履きが置いてあった');
+    await expect(storyText.locator('ruby', { hasText: '上履' })).toHaveCount(1);
+    // その場面の他の語（譜面）にもルビが付く
+    const musicRuby = storyText.locator('ruby', { hasText: '譜面' });
     await expect(musicRuby).toHaveCount(1);
-    await expect(musicRuby.locator('rt')).toHaveText('ふめんだい');
+    await expect(musicRuby.locator('rt')).toHaveText('ふめん');
   });
 
-  test('作品を開き直すと初出の記録がリセットされ、また初出からルビが付く', async ({ page }) => {
+  test('『午前0時の校舎』も他作品と同じ密度でルビが付く', async ({ page }) => {
     await page.goto('/');
     await toggleFuriganaFromSettings(page);
     await beginStory(page);
-    // 上履きの2回目（music4）まで進め、ルビが付かないことを確認しておく
-    await playUntil(page, '自分の上履きの音が', [LIGHT_LABEL]);
-    await playUntil(page, '濡れた片方だけの上履き', [MUSIC_LABEL]);
-    await expect(page.locator('#story-text ruby', { hasText: '上履き' })).toHaveCount(0);
-    // タイトルへ戻り、同じ作品を最初から開き直すと、初出の場面でまたルビが付く
-    await page.locator('#to-title-button').click();
-    await page.locator('#shelf-back').click();
-    await page.getByRole('button', { name: 'はじめる' }).click();
-    await page.locator('.book-card').first().click();
-    await page.getByRole('button', { name: '最初から読む' }).click();
-    await playUntil(page, '自分の上履きの音が', [LIGHT_LABEL]);
-    const ruby = page.locator('#story-text ruby', { hasText: '上履き' });
-    await expect(ruby).toHaveCount(1);
-    await expect(ruby.locator('rt')).toHaveText('うわばき');
+    // 冒頭の場面だけで2桁のルビが付く（旧・選択的な付け方では数個だけだった）
+    const count = await page.locator('#story-text ruby').count();
+    expect(count).toBeGreaterThanOrEqual(10);
   });
 
   test('全文フリガナの作品では、同じ語の2回目以降にもルビが付く', async ({ page }) => {
