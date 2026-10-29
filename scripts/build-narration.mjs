@@ -22,7 +22,12 @@ const SPEED = '112';
 // 抑揚（intonationScale）は 0.2 に弱める（2026-10-28 ユーザーが試聴して正式採用。
 // 初期値 1.0 だと抑揚の付け方が不自然で聞き疲れするとの評価だった）。
 // 生成には AivisSpeech エンジン（http://127.0.0.1:10101）の起動が必要。
+// 『午前0時の校舎』は外部生成の音声（Gemini 2.5 Flash TTS、声 Leda、文分割合成＋
+// テンポ調整で分速300字、文字起こし検証済み。2026-10-29 ユーザーが試作版を正式採用）。
+// このスクリプトでは合成しない。音声ファイルは public/audio/midnight-school/ に
+// 手で置き、manifest のハッシュだけを合わせるときは NARRATION_ADOPT_EXTERNAL=1 で実行する。
 const VOICE_PROFILES = {
+  'midnight-school': { engine: 'external', tag: 'gemini25-leda' },
   'maou-diner': { engine: 'aivis', speaker: 1310138977, speedScale: 0.8, intonationScale: 0.2, tag: 'aivis-aida-calm-int02' },
   'sunday-well': { engine: 'aivis', speaker: 1310138977, speedScale: 0.8, intonationScale: 0.2, tag: 'aivis-aida-calm-int02' },
 };
@@ -260,6 +265,12 @@ const speakAivis = async (job) => {
 };
 
 const speak = async (job) => {
+  if (job.profile?.engine === 'external') {
+    // 外部生成の音声はここでは作らない。配置済みファイルの取り込み（ハッシュ合わせ）だけを、
+    // 明示フラグがあるときに行う。それ以外で対象になったら、誤って別の声で作り直さないよう止める。
+    if (process.env.NARRATION_ADOPT_EXTERNAL === '1' && existsSync(job.file)) return;
+    throw new Error(`${job.key}: 外部生成音声の場面です。このスクリプトでは再生成しません（配置済みファイルを取り込むときは NARRATION_ADOPT_EXTERNAL=1）`);
+  }
   if (job.profile?.engine === 'aivis') {
     try {
       await speakAivis(job);
