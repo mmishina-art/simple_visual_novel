@@ -69,14 +69,14 @@ describe('読み上げ音声', () => {
   // 物語ごとの語り手プロファイルの tag（scripts/build-narration.mjs の VOICE_PROFILES と合わせること）。
   // 声や後加工が違う本は、ハッシュに tag を混ぜて区別する
   const VOICE_PROFILE_TAGS: Record<string, string> = {
-    'midnight-school': 'gemini31-leda-v2',
+    'midnight-school': 'gemini25-leda-pilot-v1',
     'moon-library': 'gemini31-leda-v2',
-    'missing-trophy': 'gemini31-leda-v2',
-    'stardust-station': 'gemini31-leda-v2',
-    'cafe-tsubame': 'gemini31-leda-v2',
-    yubisaki: 'gemini31-leda-v2',
-    'sunday-well': 'gemini31-charon-v2',
-    'maou-diner': 'gemini31-charon-v2',
+    'missing-trophy': 'gemini38l-leda-v1',
+    'stardust-station': 'gemini38f-leda-v1',
+    'cafe-tsubame': 'gemini38f-leda-v1',
+    yubisaki: 'gemini38l-leda-v1',
+    'sunday-well': 'gemini38l-charon-v1',
+    'maou-diner': 'gemini38f-charon-v1',
   };
   // 文ごとに分割して合成する場面（scripts/build-narration.mjs の CHUNKED_NARRATION と合わせること）
   const CHUNKED_NARRATION = new Set([
@@ -85,29 +85,6 @@ describe('読み上げ音声', () => {
     'midnight-school/entrance1',
     'midnight-school/music1',
     'moon-library/silent2',
-    'missing-trophy/end_wrong',
-    'missing-trophy/photo1',
-    'sunday-well/nopre1',
-    'sunday-well/down3',
-    'sunday-well/climb_safe_a',
-    'sunday-well/climb_safe_b',
-    'sunday-well/sit_a',
-    'maou-diner/hero2',
-    'maou-diner/end_closed',
-    'maou-diner/refuse1',
-    'maou-diner/cook1',
-    'maou-diner/truth2',
-    'maou-diner/pro1',
-    'maou-diner/end_taste',
-    'yubisaki/visit1',
-    'yubisaki/night3',
-    'yubisaki/close1',
-    'yubisaki/end_dream',
-    'missing-trophy/end_truth',
-  'stardust-station/meet1',
-  'stardust-station/send1',
-    'yubisaki/past1',
-    'sunday-well/start6',
   ]);
   const expectedHash = (key: string, text: string): string => {
     const spoken = KANA_TEXTS[key] ?? spokenText(key, text);

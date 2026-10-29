@@ -1,120 +1,120 @@
 {
   "midnight-school/start3": {
-    "hash": "333e3e014a"
+    "hash": "7c3123f98a"
   },
   "midnight-school/start1": {
-    "hash": "a4201bdb65"
+    "hash": "1b8d3f461f"
   },
   "midnight-school/start2": {
-    "hash": "f7dbe4f9c4"
+    "hash": "ea740b641f"
   },
   "midnight-school/start4": {
-    "hash": "6b521fe307"
+    "hash": "bc8271374e"
   },
   "midnight-school/choice_light": {
-    "hash": "fb9d599a8c"
+    "hash": "5a9269a6c4"
   },
   "midnight-school/start5": {
-    "hash": "0288a054b7"
+    "hash": "3bc8d65979"
   },
   "midnight-school/light_take2": {
-    "hash": "f4579c979a"
+    "hash": "f0c1c5128b"
   },
   "midnight-school/light_leave2": {
-    "hash": "f4579c979a"
+    "hash": "f0c1c5128b"
   },
   "midnight-school/light_take1": {
-    "hash": "6fd4694aff"
+    "hash": "2006c88429"
   },
   "midnight-school/light_leave1": {
-    "hash": "a73f835dc7"
+    "hash": "04032660fd"
   },
   "midnight-school/corridor2": {
-    "hash": "45c8e8ded8"
+    "hash": "147f1f64a6"
   },
   "midnight-school/choice_music": {
-    "hash": "d9be3479f9"
+    "hash": "226267edbb"
   },
   "midnight-school/corridor1": {
-    "hash": "03873ae337"
+    "hash": "0ff01bd1be"
   },
   "midnight-school/corridor3": {
-    "hash": "60685da48e"
+    "hash": "9e3ef84d5c"
   },
   "midnight-school/music3": {
-    "hash": "8f63ab6a21"
+    "hash": "72c721b573"
   },
   "midnight-school/music2": {
-    "hash": "d3221989d5"
+    "hash": "36b18b98ac"
   },
   "midnight-school/music4": {
-    "hash": "b94456067e"
+    "hash": "a94c8b5658"
   },
   "midnight-school/music1": {
-    "hash": "bd82ab26aa"
+    "hash": "c1b2874cb9"
   },
   "midnight-school/stairs1": {
-    "hash": "7ec36e41f6"
+    "hash": "2f88e05d20"
   },
   "midnight-school/down1": {
-    "hash": "3b1945ca00"
+    "hash": "65facfba1d"
   },
   "midnight-school/down2": {
-    "hash": "80974097fb"
+    "hash": "2e0e2e3e6e"
   },
   "midnight-school/stairs2": {
-    "hash": "d5841afa78"
+    "hash": "f93ff7f225"
   },
   "midnight-school/choice_voice": {
-    "hash": "b5be401f4b"
+    "hash": "5aae600b92"
   },
   "midnight-school/voice1": {
-    "hash": "42141f5ac0"
+    "hash": "960484e467"
   },
   "midnight-school/answer1": {
-    "hash": "69173535a8"
+    "hash": "0fca17303f"
   },
   "midnight-school/answer2": {
-    "hash": "cc45af0883"
+    "hash": "98085db60c"
   },
   "midnight-school/silent1": {
-    "hash": "e277ecac7e"
+    "hash": "f7e716c206"
   },
   "midnight-school/silent2": {
-    "hash": "6488687b38"
+    "hash": "9a5af02921"
   },
   "midnight-school/end_voice": {
-    "hash": "0ae19c3119"
+    "hash": "14a9eb137d"
   },
   "midnight-school/entrance1": {
-    "hash": "4947ed79ec"
+    "hash": "c18f2250ef"
   },
   "midnight-school/entrance2": {
-    "hash": "4344635f45"
+    "hash": "5915147cad"
   },
   "midnight-school/entrance3": {
-    "hash": "752cb33932"
+    "hash": "a4e2c7bbf7"
   },
   "midnight-school/blackout1": {
-    "hash": "f1d445d61f"
+    "hash": "e64b252424"
   },
   "midnight-school/choice_final": {
-    "hash": "7e2bc5000c"
+    "hash": "8294595848"
   },
   "midnight-school/blackout2": {
-    "hash": "7824e94b18"
+    "hash": "26ec6f22f6"
   },
   "midnight-school/run_light1": {
-    "hash": "111c76e406"
+    "hash": "5206a901ce"
   },
   "midnight-school/lookback1": {
-    "hash": "935b9d1bbd"
+    "hash": "8826183298"
   },
   "midnight-school/run_dark1": {
-    "hash": "6bd73e223d"
+    "hash": "2b70c25a93"
   },
   "midnight-school/run_light2": {
-    "hash": "72b3633c1c"
+    "hash": "0ca3030d50"
   },
   "moon-library/start1": {
     "hash": "3e868c069d"
@@ -123,10 +123,10 @@
     "hash": "fc7b6768c7"
   },
   "midnight-school/end_happy": {
-    "hash": "fe7fd547d7"
+    "hash": "82572c05a9"
   },
   "midnight-school/end_caught": {
-    "hash": "e6e973d4ee"
+    "hash": "249d81e4e3"
   },
   "moon-library/choice_note": {
     "hash": "d0002c9de1"
