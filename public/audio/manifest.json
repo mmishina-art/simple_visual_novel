@@ -186,585 +186,585 @@
     "hash": "3bdebe4fbf"
   },
   "moon-library/pass1": {
-    "hash": "5e7c1b157e"
+    "hash": "b1b753c545"
   },
   "moon-library/choice_final": {
-    "hash": "c7b2244f61"
+    "hash": "7f94b6aa30"
   },
   "moon-library/last1": {
-    "hash": "459d912021"
+    "hash": "f4aafe1308"
   },
   "moon-library/last2": {
-    "hash": "84c6c57441"
+    "hash": "d046eab7e6"
   },
   "moon-library/meet1": {
-    "hash": "72afcdd458"
+    "hash": "21eb628208"
   },
   "moon-library/meet2": {
-    "hash": "00b37cf699"
+    "hash": "b5ed0b240e"
   },
   "moon-library/letter1": {
-    "hash": "6868a64c72"
+    "hash": "f8b0c43a0c"
   },
   "moon-library/wait_alone1": {
-    "hash": "93845733cb"
+    "hash": "e1d934d4fd"
   },
   "moon-library/end_happy": {
-    "hash": "32c31e2740"
+    "hash": "0914834934"
   },
   "moon-library/end_missed": {
-    "hash": "bccf7b156f"
+    "hash": "039e688cec"
   },
   "moon-library/end_letter": {
-    "hash": "f7bc474093"
+    "hash": "a7b6dd5152"
   },
   "missing-trophy/start1": {
-    "hash": "5747b57363"
+    "hash": "6f15003d38"
   },
   "missing-trophy/start2": {
-    "hash": "56dc444bfd"
+    "hash": "5bdcb8763a"
   },
   "missing-trophy/start3": {
-    "hash": "230b89b2ac"
+    "hash": "e07b4343b5"
   },
   "missing-trophy/choice_first": {
-    "hash": "d6bebdcb56"
+    "hash": "95281466e7"
   },
   "missing-trophy/start4": {
-    "hash": "6b37689c5c"
+    "hash": "a92734eee3"
   },
   "missing-trophy/mud1": {
-    "hash": "e77668e636"
+    "hash": "707bab1e41"
   },
   "missing-trophy/mud2": {
-    "hash": "d61d79764d"
+    "hash": "cecd6ebe17"
   },
   "missing-trophy/start5": {
-    "hash": "c3d8a12b89"
+    "hash": "ba90d8cd07"
   },
   "missing-trophy/key1": {
-    "hash": "189457673a"
+    "hash": "17b60f4566"
   },
   "missing-trophy/key2": {
-    "hash": "efae42cddc"
+    "hash": "4bc8714d62"
   },
   "missing-trophy/choice_photo": {
-    "hash": "acec0ca7c5"
+    "hash": "29ab6abe2a"
   },
   "missing-trophy/mid2": {
-    "hash": "1dbceeb4a8"
+    "hash": "e2df1459a5"
   },
   "missing-trophy/mid1": {
-    "hash": "209ee5532c"
+    "hash": "8f38914284"
   },
   "missing-trophy/photo2": {
-    "hash": "c175b6e6f1"
+    "hash": "42a935a31a"
   },
   "missing-trophy/chief1": {
-    "hash": "e90fd46dcb"
+    "hash": "7ae175cbab"
   },
   "missing-trophy/chief2": {
-    "hash": "5fffafe02a"
+    "hash": "ac4f59a342"
   },
   "missing-trophy/choice_window": {
-    "hash": "505b9c447b"
+    "hash": "fd071c3d5f"
   },
   "missing-trophy/win1": {
-    "hash": "033265f98b"
+    "hash": "928100b204"
   },
   "missing-trophy/photo1": {
-    "hash": "9441dc0b3f"
+    "hash": "ef61f041e9"
   },
   "missing-trophy/win_case1": {
-    "hash": "ccaede06ca"
+    "hash": "7393ad7fdf"
   },
   "missing-trophy/win_check1": {
-    "hash": "2103738df3"
+    "hash": "3bf7078342"
   },
   "missing-trophy/choice_final": {
-    "hash": "66137a663c"
+    "hash": "ae67502a4b"
   },
   "missing-trophy/last1": {
-    "hash": "0c40b8764e"
+    "hash": "c2c50cc312"
   },
   "missing-trophy/truth1": {
-    "hash": "24e49f6002"
+    "hash": "58bafad1c2"
   },
   "missing-trophy/truth2": {
-    "hash": "553ee6f6f2"
+    "hash": "f770e793cb"
   },
   "missing-trophy/deny1": {
-    "hash": "d05c21c5d0"
+    "hash": "8477b0b83e"
   },
   "missing-trophy/wrong1": {
-    "hash": "87daa527ed"
+    "hash": "49ae00d479"
   },
   "missing-trophy/end_truth": {
-    "hash": "8e80ab8094"
+    "hash": "45069b52f5"
   },
   "missing-trophy/end_wrong": {
-    "hash": "23a1683e60"
+    "hash": "7708d0ea63"
   },
   "missing-trophy/end_late": {
-    "hash": "0c97a58edf"
+    "hash": "743eb42174"
   },
   "stardust-station/choice_signal": {
-    "hash": "b35d7367e4"
+    "hash": "f5bb90dd98"
   },
   "stardust-station/start2": {
-    "hash": "2d989abe4d"
+    "hash": "d908e26819"
   },
   "stardust-station/start3": {
-    "hash": "71bee1267c"
+    "hash": "2553c7bbe3"
   },
   "stardust-station/start1": {
-    "hash": "ff435c3f1a"
+    "hash": "4b1a7a39e6"
   },
   "stardust-station/decode1": {
-    "hash": "ffb9def6c3"
+    "hash": "dc1bbad8be"
   },
   "stardust-station/locate2": {
-    "hash": "2215d83d16"
+    "hash": "47eaeba375"
   },
   "stardust-station/decode2": {
-    "hash": "385dda3cba"
+    "hash": "3fe7e5ef4f"
   },
   "stardust-station/locate1": {
-    "hash": "2822ab1b00"
+    "hash": "d62f241523"
   },
   "stardust-station/talk1": {
-    "hash": "af319e46f1"
+    "hash": "c5c6edf2c5"
   },
   "stardust-station/choice_report": {
-    "hash": "347092343a"
+    "hash": "59ea100224"
   },
   "stardust-station/talk2": {
-    "hash": "64c1a07592"
+    "hash": "c98a9faa07"
   },
   "stardust-station/report1": {
-    "hash": "d9d2e99d46"
+    "hash": "9560b201d9"
   },
   "stardust-station/report2": {
-    "hash": "935861b935"
+    "hash": "0561c690a4"
   },
   "stardust-station/stay2": {
-    "hash": "e352249c44"
+    "hash": "c158bb7436"
   },
   "stardust-station/mid2": {
-    "hash": "93b0bffa28"
+    "hash": "efd2dee705"
   },
   "stardust-station/stay1": {
-    "hash": "f368dd11c8"
+    "hash": "47105e17d5"
   },
   "stardust-station/choice_rescue": {
-    "hash": "8812a3ee89"
+    "hash": "60f4d5e80c"
   },
   "stardust-station/mid1": {
-    "hash": "cf4b105dad"
+    "hash": "9db13e2352"
   },
   "stardust-station/power2": {
-    "hash": "db772f03f9"
+    "hash": "49cb6d635e"
   },
   "stardust-station/power1": {
-    "hash": "f7746c9377"
+    "hash": "6bb3a55b52"
   },
   "stardust-station/transfer2": {
-    "hash": "71791eda1b"
+    "hash": "de70ef5856"
   },
   "stardust-station/transfer1": {
-    "hash": "8478bc44aa"
+    "hash": "bfe1d8d38f"
   },
   "stardust-station/choice_final": {
-    "hash": "f26070160e"
+    "hash": "42ad0d30b0"
   },
   "stardust-station/end_signal": {
-    "hash": "acdd2f0765"
+    "hash": "88f21134b6"
   },
   "stardust-station/final1": {
-    "hash": "21421af7eb"
+    "hash": "58282be51e"
   },
   "stardust-station/send2": {
-    "hash": "4e5fc6476b"
+    "hash": "b4f11e94ad"
   },
   "stardust-station/send1": {
-    "hash": "b07b87f9f5"
+    "hash": "8de38143d9"
   },
   "stardust-station/wait2": {
-    "hash": "35f880abca"
+    "hash": "831f4ef472"
   },
   "stardust-station/wait1": {
-    "hash": "f308bbc65b"
+    "hash": "859ee59c75"
   },
   "stardust-station/end_far": {
-    "hash": "8c71c66d3b"
+    "hash": "a608833c86"
   },
   "stardust-station/meet1": {
-    "hash": "25d08ee53a"
+    "hash": "254be6cfd4"
   },
   "stardust-station/meet3": {
-    "hash": "106c13b22a"
+    "hash": "9089a01f43"
   },
   "stardust-station/meet2": {
-    "hash": "4956ea498b"
+    "hash": "d47be0edb1"
   },
   "cafe-tsubame/start2": {
-    "hash": "c65764b54a"
+    "hash": "e40bc95310"
   },
   "cafe-tsubame/start3": {
-    "hash": "cfccb90ffa"
+    "hash": "07543b9251"
   },
   "cafe-tsubame/start1": {
-    "hash": "045af71e27"
+    "hash": "7365e220cb"
   },
   "stardust-station/end_happy": {
-    "hash": "cb1f076e5d"
+    "hash": "08a23d6339"
   },
   "cafe-tsubame/choice_parrot": {
-    "hash": "6cc9fd6cef"
+    "hash": "c548843b3f"
   },
   "cafe-tsubame/choice_order": {
-    "hash": "2d0cc8b5f8"
+    "hash": "5ec84d65a8"
   },
   "cafe-tsubame/feed1": {
-    "hash": "a184230a7a"
+    "hash": "2f829fd0dc"
   },
   "cafe-tsubame/open1": {
-    "hash": "63327377f9"
+    "hash": "1bf2df53d7"
   },
   "cafe-tsubame/prep1": {
-    "hash": "e1aeefd496"
+    "hash": "02771fefb1"
   },
   "cafe-tsubame/memo1": {
-    "hash": "5c10bc9d53"
+    "hash": "c7b22ba469"
   },
   "cafe-tsubame/rush1": {
-    "hash": "557da4e0db"
+    "hash": "e05983b8fc"
   },
   "cafe-tsubame/chase1": {
-    "hash": "4da0ca5c93"
+    "hash": "8a715bd6d8"
   },
   "cafe-tsubame/guess1": {
-    "hash": "d66c262079"
+    "hash": "5becc1d01a"
   },
   "cafe-tsubame/choice_power": {
-    "hash": "084d4e551a"
+    "hash": "904bb1c31e"
   },
   "cafe-tsubame/candle1": {
-    "hash": "cbd51052b2"
+    "hash": "b68cae1363"
   },
   "cafe-tsubame/calm1": {
-    "hash": "e9a0912e5d"
+    "hash": "0c90000f07"
   },
   "cafe-tsubame/call2": {
-    "hash": "af7f4c9405"
+    "hash": "952ad50813"
   },
   "cafe-tsubame/call1": {
-    "hash": "f66824095c"
+    "hash": "297ba45ded"
   },
   "cafe-tsubame/choice_final": {
-    "hash": "5872dfb63f"
+    "hash": "c997a7ac90"
   },
   "cafe-tsubame/end_chaos": {
-    "hash": "ed925e1626"
+    "hash": "81fd0031a0"
   },
   "cafe-tsubame/final1": {
-    "hash": "271781a13e"
+    "hash": "db2fb4ab54"
   },
   "cafe-tsubame/dusk1": {
-    "hash": "cc622b68c5"
+    "hash": "8b958cf557"
   },
   "cafe-tsubame/legend1": {
-    "hash": "a863d0207a"
+    "hash": "15ab85fbdf"
   },
   "cafe-tsubame/legend2": {
-    "hash": "fc806588a7"
+    "hash": "9c3ad4f046"
   },
   "cafe-tsubame/plain1": {
-    "hash": "86cdff95da"
+    "hash": "8525809d77"
   },
   "cafe-tsubame/end_pasta": {
-    "hash": "87ad230d5a"
+    "hash": "20ef57c762"
   },
   "cafe-tsubame/recipe1": {
-    "hash": "e28db73cc0"
+    "hash": "c9911d7cf6"
   },
   "cafe-tsubame/recipe2": {
-    "hash": "66d32c378e"
+    "hash": "83cf524005"
   },
   "cafe-tsubame/end_happy": {
-    "hash": "1c5866afa6"
+    "hash": "42c4d39d99"
   },
   "sunday-well/start4": {
-    "hash": "b53a60a6ae"
+    "hash": "463783d861"
   },
   "sunday-well/start2": {
-    "hash": "fb8cfe09ab"
+    "hash": "b85acba354"
   },
   "sunday-well/start3": {
-    "hash": "a5fcb84eda"
+    "hash": "ca3dcbcf86"
   },
   "sunday-well/start1": {
-    "hash": "c03e4d157d"
+    "hash": "edd8627c4b"
   },
   "sunday-well/choice_tools": {
-    "hash": "43c8180af4"
+    "hash": "b32829197a"
   },
   "sunday-well/pre1": {
-    "hash": "eb479875dd"
+    "hash": "379ed1f71d"
   },
   "sunday-well/start6": {
-    "hash": "054a70944e"
+    "hash": "8d8f0b179d"
   },
   "sunday-well/start5": {
-    "hash": "4b6de4c225"
+    "hash": "50f9266768"
   },
   "sunday-well/down2": {
-    "hash": "bb1a957a60"
+    "hash": "aead7305ac"
   },
   "sunday-well/nopre1": {
-    "hash": "9a2fa66c64"
+    "hash": "205b307933"
   },
   "sunday-well/down1": {
-    "hash": "866a127add"
+    "hash": "13cffa06d7"
   },
   "sunday-well/choice_read": {
-    "hash": "77be9c1f84"
+    "hash": "dbfdad6697"
   },
   "sunday-well/find1": {
-    "hash": "66efdec3a9"
+    "hash": "8d3cb5aef5"
   },
   "sunday-well/down3": {
-    "hash": "c81e66c2ab"
+    "hash": "4edea8d363"
   },
   "sunday-well/find2": {
-    "hash": "10c8ab754f"
+    "hash": "34ecb41748"
   },
   "sunday-well/defer1": {
-    "hash": "2ecd4188d8"
+    "hash": "200319fa84"
   },
   "sunday-well/letter1": {
-    "hash": "cd9d40a2ff"
+    "hash": "2a740734aa"
   },
   "sunday-well/letter2": {
-    "hash": "317d710941"
+    "hash": "3fd67e3891"
   },
   "sunday-well/letter3": {
-    "hash": "848ecf9f6d"
+    "hash": "39b71c0fce"
   },
   "sunday-well/sit_b": {
-    "hash": "b937931667"
+    "hash": "e90cd8c40e"
   },
   "sunday-well/sit_a": {
-    "hash": "979641831c"
+    "hash": "34cb537530"
   },
   "sunday-well/bad_mud": {
-    "hash": "bc430c57cd"
+    "hash": "c20341b305"
   },
   "sunday-well/climb_slip": {
-    "hash": "6d5de6847f"
+    "hash": "0e42ee89de"
   },
   "sunday-well/night1": {
-    "hash": "8e02ca8d6f"
+    "hash": "f6b4cb8fe3"
   },
   "sunday-well/eve_a": {
-    "hash": "2e36fafb3f"
+    "hash": "5e9e7d48aa"
   },
   "sunday-well/climb_safe_a": {
-    "hash": "572e37a033"
+    "hash": "a11acaf98c"
   },
   "sunday-well/climb_safe_b": {
-    "hash": "572e37a033"
+    "hash": "a11acaf98c"
   },
   "sunday-well/choice_cat_a": {
-    "hash": "b64272017e"
+    "hash": "ba2190061a"
   },
   "sunday-well/choice_cat_b": {
-    "hash": "b64272017e"
+    "hash": "ba2190061a"
   },
   "sunday-well/night2": {
-    "hash": "8472891732"
+    "hash": "9736f6fadf"
   },
   "sunday-well/end_filled": {
-    "hash": "dde1546f2f"
+    "hash": "a5e10cc042"
   },
   "sunday-well/end_happy": {
-    "hash": "74c54de85c"
+    "hash": "4a49e2a55a"
   },
   "sunday-well/happy1": {
-    "hash": "a1a0b74bdb"
+    "hash": "de1e3d1636"
   },
   "maou-diner/meet1": {
-    "hash": "fcdd2bafed"
+    "hash": "a3714148c4"
   },
   "maou-diner/pro2": {
-    "hash": "307e9747e6"
+    "hash": "24afcc049b"
   },
   "maou-diner/meet2": {
-    "hash": "26187ca909"
+    "hash": "5badb2d445"
   },
   "maou-diner/choice_menu": {
-    "hash": "b1ba6efd76"
+    "hash": "e6400d58e1"
   },
   "maou-diner/work1": {
-    "hash": "43ef4bb042"
+    "hash": "f278640437"
   },
   "maou-diner/dashi1": {
-    "hash": "9b95e57e7f"
+    "hash": "8e1e567aaf"
   },
   "maou-diner/pro1": {
-    "hash": "4516953515"
+    "hash": "60fef9cb8c"
   },
   "maou-diner/local1": {
-    "hash": "ba184ace22"
+    "hash": "0f0da4e23e"
   },
   "maou-diner/day1": {
-    "hash": "dcce9040cc"
+    "hash": "e54f521160"
   },
   "maou-diner/day2": {
-    "hash": "063e0a4a36"
+    "hash": "07aa082238"
   },
   "maou-diner/hero1": {
-    "hash": "3a790d48da"
+    "hash": "5ecd738730"
   },
   "maou-diner/choice_taste": {
-    "hash": "ab45cf7f16"
+    "hash": "2ede4d40fa"
   },
   "maou-diner/listen1": {
-    "hash": "3118c043a1"
+    "hash": "2b56d865e7"
   },
   "maou-diner/truth1": {
-    "hash": "3d4ac7555a"
+    "hash": "638831a0f4"
   },
   "maou-diner/choice_welcome": {
-    "hash": "d7c193315e"
+    "hash": "dd40c5ff9c"
   },
   "maou-diner/demon1": {
-    "hash": "cd714d0ac0"
+    "hash": "1bd998abaf"
   },
   "maou-diner/welcome1": {
-    "hash": "ad29eea853"
+    "hash": "8228063a6a"
   },
   "maou-diner/truth2": {
-    "hash": "beae42a3e8"
+    "hash": "2f835f77fa"
   },
   "maou-diner/choice_dish": {
-    "hash": "ee5ca3d59e"
+    "hash": "ecd0c062d7"
   },
   "maou-diner/fair1": {
-    "hash": "1a431867e8"
+    "hash": "5a61a77dfd"
   },
   "maou-diner/fair_fail": {
-    "hash": "9bd291b990"
+    "hash": "5d5e938b0c"
   },
   "maou-diner/refuse1": {
-    "hash": "946d968f0a"
+    "hash": "46be574078"
   },
   "maou-diner/porridge1": {
-    "hash": "3565a3ec8f"
+    "hash": "9baf7a7a9b"
   },
   "maou-diner/last2": {
-    "hash": "554c44d10d"
+    "hash": "e2ce2351e1"
   },
   "maou-diner/end_taste": {
-    "hash": "56859ff172"
+    "hash": "ad19c4fa54"
   },
   "maou-diner/end_closed": {
-    "hash": "1fabe1de08"
+    "hash": "161a2babeb"
   },
   "yubisaki/start2": {
-    "hash": "0c156529f7"
+    "hash": "4156619096"
   },
   "yubisaki/visit2": {
-    "hash": "b458739952"
+    "hash": "e1ddfd2f59"
   },
   "yubisaki/start1": {
-    "hash": "59cfc44fa1"
+    "hash": "1d217cbb4c"
   },
   "yubisaki/choice_stay": {
-    "hash": "bdcb654ebc"
+    "hash": "86b2816ecd"
   },
   "yubisaki/close1": {
-    "hash": "80030e45b2"
+    "hash": "6b05b2da72"
   },
   "yubisaki/stay1": {
-    "hash": "779d32ccb0"
+    "hash": "f9a2f24c2a"
   },
   "yubisaki/wine1": {
-    "hash": "60407a5c49"
+    "hash": "9a6686a320"
   },
   "yubisaki/choice_past": {
-    "hash": "99993ee12a"
+    "hash": "f6bc0e3aa1"
   },
   "yubisaki/wine2": {
-    "hash": "3898d06a85"
+    "hash": "99af79839e"
   },
   "yubisaki/now1": {
-    "hash": "e8ebb2ef45"
+    "hash": "2630194097"
   },
   "yubisaki/past1": {
-    "hash": "fe1d168ec3"
+    "hash": "5d7b152433"
   },
   "yubisaki/rain1": {
-    "hash": "0aabf05dc8"
+    "hash": "8002a7139d"
   },
   "yubisaki/choice_night": {
-    "hash": "7d4b5c2a53"
+    "hash": "315a1c573c"
   },
   "yubisaki/taxi1": {
-    "hash": "e329ffaea8"
+    "hash": "4d55a677df"
   },
   "yubisaki/end_door": {
-    "hash": "c57253fb83"
+    "hash": "82d176fd2b"
   },
   "yubisaki/room1": {
-    "hash": "e86d9c1e31"
+    "hash": "d036e0b13d"
   },
   "yubisaki/room2": {
-    "hash": "a722ea135c"
+    "hash": "ba47d13704"
   },
   "yubisaki/night1": {
-    "hash": "f0c65344fc"
+    "hash": "5d7a3453b7"
   },
   "yubisaki/night2": {
-    "hash": "43724029fe"
+    "hash": "814ecb370e"
   },
   "yubisaki/visit1": {
-    "hash": "108be65d39"
+    "hash": "b66c3a3501"
   },
   "yubisaki/dawn1": {
-    "hash": "80b4fb2094"
+    "hash": "ae2ed2f465"
   },
   "yubisaki/choice_morning": {
-    "hash": "b6cc8dcb11"
+    "hash": "f3a989bfee"
   },
   "yubisaki/farewell1": {
-    "hash": "1a58f4d70b"
+    "hash": "5a170e7025"
   },
   "yubisaki/end_happy": {
-    "hash": "48e50a8a30"
+    "hash": "14b719dba1"
   },
   "yubisaki/night3": {
-    "hash": "ed5966615b"
+    "hash": "1ac640dd55"
   },
   "yubisaki/end_dream": {
-    "hash": "b1ea731893"
+    "hash": "76734bb253"
   },
   "sunday-well/choice_climb_a": {
-    "hash": "714bd499ff"
+    "hash": "e6795cd5b5"
   },
   "sunday-well/choice_climb_b": {
-    "hash": "714bd499ff"
+    "hash": "e6795cd5b5"
   },
   "maou-diner/end_happy": {
-    "hash": "695abd5f56"
+    "hash": "023f27774b"
   },
   "maou-diner/last1": {
-    "hash": "859d65a350"
+    "hash": "9641577d3a"
   },
   "maou-diner/hero2": {
-    "hash": "9a88bd801c"
+    "hash": "82899286b2"
   },
   "maou-diner/cook1": {
-    "hash": "6dcbc09882"
+    "hash": "450309f850"
   }
 }

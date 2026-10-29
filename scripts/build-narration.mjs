@@ -450,20 +450,23 @@ const speak = async (job) => {
 };
 
 let done = 0;
-let budgetStopped = false;
+const exhaustedModels = new Set();
 const failures = [];
 const queue = [...jobs];
 const hasGemini = jobs.some((j) => j.profile?.engine === 'gemini' || j.profile?.engine === 'gemini38');
 const workers = Array.from({ length: hasGemini ? 1 : CONCURRENCY }, async () => {
   while (queue.length > 0) {
     const job = queue.shift();
+    // 枠（RPD）が尽きたモデルは、その日の残りジョブを飛ばして翌日に回す。
+    // モデルごとに別枠なので、尽きていないモデルの生成は続ける。
+    if (job.profile?.model && exhaustedModels.has(job.profile.model)) continue;
     try {
       await speak(job);
     } catch (err) {
       if (err instanceof BudgetStop) {
-        budgetStopped = true;
-        console.log(`  Gemini の上限/レート制限で停止: ${err.message}`);
-        return;
+        if (job.profile?.model) exhaustedModels.add(job.profile.model);
+        console.log(`  Gemini の上限/レート制限でこのモデルを停止: ${err.message}`);
+        continue;
       }
       failures.push(job.key);
       console.log(`  失敗（次回再試行）: ${job.key}: ${String(err.message).slice(0, 140)}`);
@@ -490,5 +493,5 @@ mkdirSync(OUT_DIR, { recursive: true });
 writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2) + '\n');
 const files = readdirSync(OUT_DIR, { recursive: true }).filter((f) => String(f).endsWith('.mp3'));
 console.log(`完了: ${files.length} ファイル（public/audio/）`);
-if (budgetStopped) console.log(`未生成が残っています（残り ${jobs.length - done} 件）。翌日に再実行すると続きから生成します。`);
+if (exhaustedModels.size > 0) console.log(`未生成が残っています（残り ${jobs.length - done - failures.length} 件、枠切れモデル: ${[...exhaustedModels].join(', ')}）。翌日に再実行すると続きから生成します。`);
 if (failures.length > 0) console.log(`失敗した場面（${failures.length}件）: ${failures.join(', ')}`);
