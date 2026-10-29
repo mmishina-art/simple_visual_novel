@@ -16,23 +16,31 @@ const SPEED = '112';
 // 物語ごとの語り手（既定は上の Lily C1）。声・速度・後加工が違う本はここに足す。
 // ハッシュには profile の tag を混ぜ、声や加工を変えたら作り直されるようにする
 // （tests/narration.test.ts にも同じ表がある。変えるときは両方を直すこと）。
-// 男性主人公の2冊は AivisSpeech「阿井田 茂 Calm」で生成する（2026-10-28 ユーザー選択。
-// それまでの G 声＋ピッチ加工から差し替え）。テンポは全場面で分速300字にそろえ、
-// speedScale を場面ごとに実測で補正する（ピッチ変更・EQ はしない）。
-// 抑揚（intonationScale）は 0.2 に弱める（2026-10-28 ユーザーが試聴して正式採用。
-// 初期値 1.0 だと抑揚の付け方が不自然で聞き疲れするとの評価だった）。
-// 生成には AivisSpeech エンジン（http://127.0.0.1:10101）の起動が必要。
-// 『午前0時の校舎』は外部生成の音声（Gemini 2.5 Flash TTS、声 Leda、文分割合成＋
+// 現在、全8冊とも外部生成の Gemini TTS 音声（このスクリプトでは合成しない）。
+// 『午前0時の校舎』は Gemini 2.5 Flash TTS（声 Leda、文分割合成＋
 // テンポ調整で分速300字、文字起こし検証済み。2026-10-29 ユーザーが試作版を正式採用）。
-// 『月夜の図書室』も外部生成の音声（Gemini 3.1 Flash TTS、声 Leda、atempo ×1.20、
+// 『月夜の図書室』は Gemini 3.1 Flash TTS（声 Leda、atempo ×1.20、
 // 全32場面を文字起こし検証済み。2026-10-29 取り込み）。
-// このスクリプトでは合成しない。音声ファイルは public/audio/<物語ID>/ に
-// 手で置き、manifest のハッシュだけを合わせるときは NARRATION_ADOPT_EXTERNAL=1 で実行する。
+// 残り6冊は Gemini 3.8 系（2026-10-29 取り込み。全場面を文字起こし検証済み、
+// テンポは実測 atempo で分速300字、音量は -17 LUFS に正規化）。
+// 冊ごとにモデルを固定し、混在させない：
+//   3.8 Flash（Leda）＝『星屑ステーション』『喫茶つばめの災難』、
+//   3.8 Flash（Charon 柔らかめ）＝『魔王のいない国の食堂』、
+//   3.8 Flash-Lite（Leda）＝『消えた優勝杯』『指先の温度』、
+//   3.8 Flash-Lite（Charon 柔らかめ）＝『日曜日、井戸の底で』。
+// 男性主人公の2冊は以前 AivisSpeech「阿井田 茂 Calm」だったが、
+// 2026-10-29 にユーザーの耳の判断（聞いていて心地よくない）で Gemini に差し替えた。
+// 音声ファイルは public/audio/<物語ID>/ に手で置き、manifest のハッシュだけを
+// 合わせるときは NARRATION_ADOPT_EXTERNAL=1 で実行する。
 const VOICE_PROFILES = {
   'midnight-school': { engine: 'external', tag: 'gemini25-leda' },
   'moon-library': { engine: 'external', tag: 'gemini31-leda-v2' },
-  'maou-diner': { engine: 'aivis', speaker: 1310138977, speedScale: 0.8, intonationScale: 0.2, tag: 'aivis-aida-calm-int02' },
-  'sunday-well': { engine: 'aivis', speaker: 1310138977, speedScale: 0.8, intonationScale: 0.2, tag: 'aivis-aida-calm-int02' },
+  'missing-trophy': { engine: 'external', tag: 'gemini38l-leda-v1' },
+  'stardust-station': { engine: 'external', tag: 'gemini38f-leda-v1' },
+  'cafe-tsubame': { engine: 'external', tag: 'gemini38f-leda-v1' },
+  yubisaki: { engine: 'external', tag: 'gemini38l-leda-v1' },
+  'sunday-well': { engine: 'external', tag: 'gemini38l-charon-v1' },
+  'maou-diner': { engine: 'external', tag: 'gemini38f-charon-v1' },
 };
 const profileOf = (key) => VOICE_PROFILES[key.split('/')[0]];
 const CONCURRENCY = 4;
@@ -124,35 +132,14 @@ const spokenText = (key, text) => READING_OVERRIDES.reduce((t, [re, yomi]) => t.
 // 文の組み合わせで合成が崩れる場面（2026-10-26、文字起こし点検で発覚）は、
 // 一文ずつ合成してつなぐ。長い一括合成だと途中で意味不明の音声に崩れるため。
 // ※ tests/narration.test.ts 側にも同じ表があるので、直すときは両方直すこと。
+// 3.8 の6冊は場面一括で生成したため、分割合成の対象は校舎（2.5 試作）と
+// 図書室（3.1）の下記場面だけが残っている（ハッシュ再現のために必要）。
 const CHUNKED_NARRATION = new Set([
   'midnight-school/stairs2',
   'midnight-school/answer2',
   'midnight-school/entrance1',
   'midnight-school/music1',
   'moon-library/silent2',
-  'missing-trophy/end_wrong',
-  'missing-trophy/photo1',
-  'sunday-well/nopre1',
-  'sunday-well/down3',
-  'sunday-well/climb_safe_a',
-  'sunday-well/climb_safe_b',
-  'sunday-well/sit_a',
-  'maou-diner/hero2',
-  'maou-diner/end_closed',
-  'maou-diner/refuse1',
-  'maou-diner/cook1',
-  'maou-diner/truth2',
-  'maou-diner/pro1',
-  'maou-diner/end_taste',
-  'yubisaki/visit1',
-  'yubisaki/night3',
-  'yubisaki/close1',
-  'yubisaki/end_dream',
-  'missing-trophy/end_truth',
-  'stardust-station/meet1',
-  'stardust-station/send1',
-  'yubisaki/past1',
-  'sunday-well/start6',
 ]);
 const splitSentences = (text) => text.match(/[^。！？]+[。！？]?/g)?.map((t) => t.trim()).filter(Boolean) ?? [text];
 
