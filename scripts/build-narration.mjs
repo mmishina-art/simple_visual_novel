@@ -24,10 +24,13 @@ const SPEED = '112';
 // 生成には AivisSpeech エンジン（http://127.0.0.1:10101）の起動が必要。
 // 『午前0時の校舎』は外部生成の音声（Gemini 2.5 Flash TTS、声 Leda、文分割合成＋
 // テンポ調整で分速300字、文字起こし検証済み。2026-10-29 ユーザーが試作版を正式採用）。
-// このスクリプトでは合成しない。音声ファイルは public/audio/midnight-school/ に
+// 『月夜の図書室』も外部生成の音声（Gemini 3.1 Flash TTS、声 Leda、atempo ×1.20、
+// 全32場面を文字起こし検証済み。2026-10-29 取り込み）。
+// このスクリプトでは合成しない。音声ファイルは public/audio/<物語ID>/ に
 // 手で置き、manifest のハッシュだけを合わせるときは NARRATION_ADOPT_EXTERNAL=1 で実行する。
 const VOICE_PROFILES = {
   'midnight-school': { engine: 'external', tag: 'gemini25-leda' },
+  'moon-library': { engine: 'external', tag: 'gemini31-leda-v2' },
   'maou-diner': { engine: 'aivis', speaker: 1310138977, speedScale: 0.8, intonationScale: 0.2, tag: 'aivis-aida-calm-int02' },
   'sunday-well': { engine: 'aivis', speaker: 1310138977, speedScale: 0.8, intonationScale: 0.2, tag: 'aivis-aida-calm-int02' },
 };
