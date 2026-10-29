@@ -75,7 +75,7 @@ describe('読み上げ音声', () => {
     'stardust-station': 'gemini38f-leda-v1',
     'cafe-tsubame': 'gemini38f-leda-v1',
     yubisaki: 'gemini38l-leda-v1',
-    'sunday-well': 'gemini38l-charon-v1',
+    'sunday-well': 'gemini38f-charon-v1',
     'maou-diner': 'gemini38f-charon-v1',
   };
   // 文ごとに分割して合成する場面（scripts/build-narration.mjs の CHUNKED_NARRATION と合わせること）

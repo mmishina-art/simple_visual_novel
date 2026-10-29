@@ -16,7 +16,8 @@ const SPEED = '112';
 // 物語ごとの語り手（既定は上の Lily C1）。声・速度・後加工が違う本はここに足す。
 // ハッシュには profile の tag を混ぜ、声や加工を変えたら作り直されるようにする
 // （tests/narration.test.ts にも同じ表がある。変えるときは両方を直すこと）。
-// 現在、全8冊とも外部生成の Gemini TTS 音声（このスクリプトでは合成しない）。
+// 現在、『日曜日、井戸の底で』以外は外部生成の Gemini TTS 音声（このスクリプトでは合成しない）。
+// 『日曜日、井戸の底で』だけは、このスクリプトの gemini38 エンジンで生成する。
 // 『午前0時の校舎』は Gemini 2.5 Flash TTS（声 Leda、文分割合成＋
 // テンポ調整で分速300字、文字起こし検証済み。2026-10-29 ユーザーが試作版を正式採用）。
 // 『月夜の図書室』は Gemini 3.1 Flash TTS（声 Leda、atempo ×1.20、
@@ -25,13 +26,16 @@ const SPEED = '112';
 // テンポは実測 atempo で分速300字、音量は -17 LUFS に正規化）。
 // 冊ごとにモデルを固定し、混在させない：
 //   3.8 Flash（Leda）＝『星屑ステーション』『喫茶つばめの災難』、
-//   3.8 Flash（Charon 柔らかめ）＝『魔王のいない国の食堂』、
-//   3.8 Flash-Lite（Leda）＝『消えた優勝杯』『指先の温度』、
-//   3.8 Flash-Lite（Charon 柔らかめ）＝『日曜日、井戸の底で』。
+//   3.8 Flash（Charon 柔らかめ）＝『魔王のいない国の食堂』『日曜日、井戸の底で』、
+//   3.8 Flash-Lite（Leda）＝『消えた優勝杯』『指先の温度』。
+// 『日曜日、井戸の底で』は当初 3.8 Flash-Lite（Charon）だったが、2026-10-29 に
+// ユーザー指示で『魔王のいない国の食堂』と同じ 3.8 Flash（Charon）に作り替えた。
 // 男性主人公の2冊は以前 AivisSpeech「阿井田 茂 Calm」だったが、
 // 2026-10-29 にユーザーの耳の判断（聞いていて心地よくない）で Gemini に差し替えた。
 // 音声ファイルは public/audio/<物語ID>/ に手で置き、manifest のハッシュだけを
 // 合わせるときは NARRATION_ADOPT_EXTERNAL=1 で実行する。
+const CHARON_STYLE = '小説の朗読です。やわらかく穏やかな男性の声で読んでください。強さや格好よさは抑えて、親しみやすく、静かに寄り添うような語り口で読んでください';
+const GEMINI38_MODEL = 'gemini-3.8-flash-tts';
 const VOICE_PROFILES = {
   'midnight-school': { engine: 'external', tag: 'gemini25-leda' },
   'moon-library': { engine: 'external', tag: 'gemini31-leda-v2' },
@@ -39,7 +43,7 @@ const VOICE_PROFILES = {
   'stardust-station': { engine: 'external', tag: 'gemini38f-leda-v1' },
   'cafe-tsubame': { engine: 'external', tag: 'gemini38f-leda-v1' },
   yubisaki: { engine: 'external', tag: 'gemini38l-leda-v1' },
-  'sunday-well': { engine: 'external', tag: 'gemini38l-charon-v1' },
+  'sunday-well': { engine: 'gemini38', voice: 'Charon', model: GEMINI38_MODEL, style: CHARON_STYLE, tag: 'gemini38f-charon-v1' },
   'maou-diner': { engine: 'external', tag: 'gemini38f-charon-v1' },
 };
 const profileOf = (key) => VOICE_PROFILES[key.split('/')[0]];
@@ -254,7 +258,119 @@ const speakAivis = async (job) => {
   console.log(`    ${job.key}: ${best.cpm.toFixed(0)}字/分（speedScale ${best.scale.toFixed(3)}）`);
 };
 
+// Gemini 3.8 系 TTS（ヘルパー経由）。API キーはヘルパー側で差し込まれる。
+// 3.8 系はスタイルを本文に混ぜられない（読み上げられてしまう）ため、speechMetadata で
+// 渡す専用ヘルパー scripts/gemini38_tts.py を使う。
+// 予算は環境変数 GEMINI38_BUDGET で変更可（既定 85 回）。上限到達や 429 では例外
+// BudgetStop でその日の生成を打ち切り、manifest は場面ごとに保存するので翌日に続きから再開できる。
+const GEMINI38_HELPER = '/home/hatch/workspace/simple_visual_novel/scripts/gemini38_tts.py';
+const GEMINI_MIN_INTERVAL_MS = 8_000;
+const GEMINI38_BUDGET = Number(process.env.GEMINI38_BUDGET ?? 85);
+class BudgetStop extends Error {}
+const geminiState = new Map();
+const geminiSynth = async (text, profile, outWav) => {
+  const model = profile.model;
+  const st = geminiState.get(model) ?? { calls: 0, lastCall: 0 };
+  geminiState.set(model, st);
+  if (st.calls >= GEMINI38_BUDGET) throw new BudgetStop(`Gemini 呼び出し上限に到達 (${model})`);
+  const txtFile = `${outWav}.txt`;
+  writeFileSync(txtFile, text);
+  try {
+    // プレビューモデルはまれに中身のない応答を返すことがある。
+    // クォータ系以外の失敗は少し待って最大3回まで再試行する
+    let lastErr = null;
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const wait = st.lastCall + GEMINI_MIN_INTERVAL_MS - Date.now();
+      if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+      st.lastCall = Date.now();
+      st.calls += 1;
+      try {
+        await new Promise((resolve, reject) => {
+          execFile('python3', [GEMINI38_HELPER, txtFile, profile.voice, outWav, profile.model, profile.style], { timeout: 300_000 }, (err, _out, stderr) =>
+            err ? reject(new Error(stderr?.toString().slice(-300) || err.message)) : resolve(),
+          );
+        });
+        return;
+      } catch (err) {
+        if (/429|RESOURCE_EXHAUSTED|quota/i.test(err.message)) throw new BudgetStop(`Gemini レート制限 (${model}): ${err.message.slice(0, 120)}`);
+        lastErr = err;
+      }
+    }
+    throw lastErr;
+  } finally {
+    rmSync(txtFile, { force: true });
+  }
+};
+
+const concatWavs = (parts, output) =>
+  new Promise((resolve, reject) => {
+    const args = ['-v', 'error', '-y'];
+    for (const p of parts) args.push('-i', p);
+    if (parts.length === 1) {
+      args.push('-ar', '24000', '-ac', '1', output);
+    } else {
+      const pads = parts.map((_, i) => (i < parts.length - 1 ? `[${i}:a]apad=pad_dur=0.1[p${i}]` : `[${i}:a]anull[p${i}]`)).join(';');
+      const ins = parts.map((_, i) => `[p${i}]`).join('');
+      args.push('-filter_complex', `${pads};${ins}concat=n=${parts.length}:v=0:a=1[out]`, '-map', '[out]', '-ar', '24000', '-ac', '1', output);
+    }
+    execFile('ffmpeg', args, { timeout: 60_000 }, (err) => (err ? reject(err) : resolve()));
+  });
+
+// 音量正規化（-17 LUFS。他の Gemini 冊の実測に合わせる）
+const TARGET_LUFS = -17;
+const loudnormMeasure = (file) =>
+  new Promise((resolve) => {
+    execFile('ffmpeg', ['-i', file, '-af', `loudnorm=I=${TARGET_LUFS}:TP=-1.5:LRA=11:print_format=json`, '-f', 'null', '-'], { timeout: 120_000 }, (_err, _out, stderr) => {
+      const m = String(stderr).match(/\{[^{}]*"input_i"[^{}]*\}/s);
+      if (!m) return resolve(null);
+      try {
+        return resolve(JSON.parse(m[0]));
+      } catch {
+        return resolve(null);
+      }
+    });
+  });
+
+// Gemini 3.8 系の生成。基本は場面一括（長文テストで場面長では安定を確認）。
+// 文字起こし検証で崩れが見つかった場面だけ、環境変数 GEMINI38_CHUNK_KEYS=key1,key2 で
+// 文分割に切り替えて作り直す（対象場面の manifest エントリと MP3 を消してから再実行すること）。
+// 後処理：テンポは実測（字数÷長さ）から atempo で分速300字に寄せ、音量は loudnorm で
+// -17 LUFS に正規化する（『魔王のいない国の食堂』など他の 3.8 冊と同条件）。
+const GEMINI38_CHUNK_KEYS = new Set((process.env.GEMINI38_CHUNK_KEYS ?? '').split(',').map((s) => s.trim()).filter(Boolean));
+const speakGemini38 = async (job) => {
+  mkdirSync(dirname(job.file), { recursive: true });
+  const units = GEMINI38_CHUNK_KEYS.has(job.key) ? splitSentences(job.text) : [job.text];
+  const wavs = [];
+  for (let i = 0; i < units.length; i += 1) {
+    const wav = `${job.file}.g${i}.wav`;
+    await geminiSynth(units[i], job.profile, wav);
+    wavs.push(wav);
+  }
+  const joined = `${job.file}.joined.wav`;
+  await concatWavs(wavs, joined);
+  for (const w of wavs) rmSync(w, { force: true });
+  // テンポ補正（実測 → 300字/分）
+  const dur = probeDuration(joined);
+  const cpm = (job.text.length / dur) * 60;
+  const factor = Math.min(2.0, Math.max(0.5, TARGET_CPM / cpm));
+  const tempoOut = `${job.file}.tempo.wav`;
+  execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', joined, '-af', `atempo=${factor.toFixed(4)}`, '-ar', '24000', '-ac', '1', tempoOut]);
+  rmSync(joined, { force: true });
+  // 音量正規化（2パス loudnorm。測定できない場合は1パスに落とす）
+  const measured = await loudnormMeasure(tempoOut);
+  const ln = measured
+    ? `loudnorm=I=${TARGET_LUFS}:TP=-1.5:LRA=11:measured_I=${measured.input_i}:measured_TP=${measured.input_tp}:measured_LRA=${measured.input_lra}:measured_thresh=${measured.input_thresh}:offset=${measured.target_offset}:linear=true`
+    : `loudnorm=I=${TARGET_LUFS}:TP=-1.5:LRA=11`;
+  execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', tempoOut, '-af', ln, '-ar', '24000', '-ac', '1', '-b:a', '64k', job.file]);
+  rmSync(tempoOut, { force: true });
+  console.log(`    ${job.key}: 実測 ${cpm.toFixed(0)}字/分 → atempo ${factor.toFixed(3)}、音量 ${TARGET_LUFS} LUFS 正規化`);
+};
+
 const speak = async (job) => {
+  if (job.profile?.engine === 'gemini38') {
+    await speakGemini38(job);
+    return;
+  }
   if (job.profile?.engine === 'external') {
     // 外部生成の音声はここでは作らない。配置済みファイルの取り込み（ハッシュ合わせ）だけを、
     // 明示フラグがあるときに行う。それ以外で対象になったら、誤って別の声で作り直さないよう止める。
@@ -297,12 +413,31 @@ const speak = async (job) => {
 };
 
 let done = 0;
+const exhaustedModels = new Set();
+const failures = [];
 const queue = [...jobs];
-const workers = Array.from({ length: CONCURRENCY }, async () => {
+const hasGemini = jobs.some((j) => j.profile?.engine === 'gemini38');
+const workers = Array.from({ length: hasGemini ? 1 : CONCURRENCY }, async () => {
   while (queue.length > 0) {
     const job = queue.shift();
-    await speak(job);
+    // 枠（RPD）が尽きたモデルは、その日の残りジョブを飛ばして翌日に回す。
+    if (job.profile?.model && exhaustedModels.has(job.profile.model)) continue;
+    try {
+      await speak(job);
+    } catch (err) {
+      if (err instanceof BudgetStop) {
+        if (job.profile?.model) exhaustedModels.add(job.profile.model);
+        console.log(`  Gemini の上限/レート制限でこのモデルを停止: ${err.message}`);
+        continue;
+      }
+      failures.push(job.key);
+      console.log(`  失敗（次回再試行）: ${job.key}: ${String(err.message).slice(0, 140)}`);
+      continue;
+    }
     manifest[job.key] = { hash: job.hash };
+    // 途中経過を都度保存する（上限や障害で止まっても、済んだ場面は作り直さない）
+    mkdirSync(OUT_DIR, { recursive: true });
+    writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2) + '\n');
     done += 1;
     console.log(`  ${done}/${jobs.length} ${job.key}`);
   }
@@ -320,3 +455,5 @@ mkdirSync(OUT_DIR, { recursive: true });
 writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2) + '\n');
 const files = readdirSync(OUT_DIR, { recursive: true }).filter((f) => String(f).endsWith('.mp3'));
 console.log(`完了: ${files.length} ファイル（public/audio/）`);
+if (exhaustedModels.size > 0) console.log(`未生成が残っています（残り ${jobs.length - done - failures.length} 件、枠切れモデル: ${[...exhaustedModels].join(', ')}）。翌日に再実行すると続きから生成します。`);
+if (failures.length > 0) console.log(`失敗した場面（${failures.length}件）: ${failures.join(', ')}`);
