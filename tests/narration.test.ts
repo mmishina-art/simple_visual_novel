@@ -68,7 +68,16 @@ describe('読み上げ音声', () => {
     READING_OVERRIDES.reduce((x, [re, yomi]) => x.replace(re, yomi), SPOKEN_TEXT_OVERRIDES[key] ?? stripRuby(text));
   // 物語ごとの語り手プロファイルの tag（scripts/build-narration.mjs の VOICE_PROFILES と合わせること）。
   // 声や後加工が違う本は、ハッシュに tag を混ぜて区別する
-  const VOICE_PROFILE_TAGS: Record<string, string> = { 'sunday-well': 'aivis-aida-calm-int02', 'maou-diner': 'aivis-aida-calm-int02' };
+  const VOICE_PROFILE_TAGS: Record<string, string> = {
+    'midnight-school': 'gemini31-leda-v2',
+    'moon-library': 'gemini31-leda-v2',
+    'missing-trophy': 'gemini31-leda-v2',
+    'stardust-station': 'gemini31-leda-v2',
+    'cafe-tsubame': 'gemini31-leda-v2',
+    yubisaki: 'gemini31-leda-v2',
+    'sunday-well': 'gemini31-charon-v2',
+    'maou-diner': 'gemini31-charon-v2',
+  };
   // 文ごとに分割して合成する場面（scripts/build-narration.mjs の CHUNKED_NARRATION と合わせること）
   const CHUNKED_NARRATION = new Set([
     'midnight-school/stairs2',

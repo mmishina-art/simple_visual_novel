@@ -1,189 +1,189 @@
 {
   "midnight-school/start3": {
-    "hash": "9d8474e2f5"
+    "hash": "333e3e014a"
   },
   "midnight-school/start1": {
-    "hash": "d5b334d0d2"
+    "hash": "a4201bdb65"
   },
   "midnight-school/start2": {
-    "hash": "132a8f308b"
+    "hash": "f7dbe4f9c4"
   },
   "midnight-school/start4": {
-    "hash": "6aa29154fb"
+    "hash": "6b521fe307"
   },
   "midnight-school/choice_light": {
-    "hash": "6604d097fd"
+    "hash": "fb9d599a8c"
   },
   "midnight-school/start5": {
-    "hash": "b2cc670f96"
+    "hash": "0288a054b7"
   },
   "midnight-school/light_take2": {
-    "hash": "cb3e0dfdd0"
+    "hash": "f4579c979a"
   },
   "midnight-school/light_leave2": {
-    "hash": "cb3e0dfdd0"
+    "hash": "f4579c979a"
   },
   "midnight-school/light_take1": {
-    "hash": "d493807b25"
+    "hash": "6fd4694aff"
   },
   "midnight-school/light_leave1": {
-    "hash": "be2646981b"
+    "hash": "a73f835dc7"
   },
   "midnight-school/corridor2": {
-    "hash": "e9e1aafee7"
+    "hash": "45c8e8ded8"
   },
   "midnight-school/choice_music": {
-    "hash": "dfe240cbc7"
+    "hash": "d9be3479f9"
   },
   "midnight-school/corridor1": {
-    "hash": "32013e7128"
+    "hash": "03873ae337"
   },
   "midnight-school/corridor3": {
-    "hash": "2d1be30c59"
+    "hash": "60685da48e"
   },
   "midnight-school/music3": {
-    "hash": "12be107ad6"
+    "hash": "8f63ab6a21"
   },
   "midnight-school/music2": {
-    "hash": "9b33788212"
+    "hash": "d3221989d5"
   },
   "midnight-school/music4": {
-    "hash": "763c3e64f4"
+    "hash": "b94456067e"
   },
   "midnight-school/music1": {
-    "hash": "844c967841"
+    "hash": "bd82ab26aa"
   },
   "midnight-school/stairs1": {
-    "hash": "fe4ff5af6c"
+    "hash": "7ec36e41f6"
   },
   "midnight-school/down1": {
-    "hash": "138c4fba74"
+    "hash": "3b1945ca00"
   },
   "midnight-school/down2": {
-    "hash": "427d87b516"
+    "hash": "80974097fb"
   },
   "midnight-school/stairs2": {
-    "hash": "79a6d6baae"
+    "hash": "d5841afa78"
   },
   "midnight-school/choice_voice": {
-    "hash": "4afd7c6bbb"
+    "hash": "b5be401f4b"
   },
   "midnight-school/voice1": {
-    "hash": "ae030fd822"
+    "hash": "42141f5ac0"
   },
   "midnight-school/answer1": {
-    "hash": "832b82bfed"
+    "hash": "69173535a8"
   },
   "midnight-school/answer2": {
-    "hash": "01c6e60b8f"
+    "hash": "cc45af0883"
   },
   "midnight-school/silent1": {
-    "hash": "291ed3d65e"
+    "hash": "e277ecac7e"
   },
   "midnight-school/silent2": {
-    "hash": "4f09ca7b3e"
+    "hash": "6488687b38"
   },
   "midnight-school/end_voice": {
-    "hash": "e515af5cd6"
+    "hash": "0ae19c3119"
   },
   "midnight-school/entrance1": {
-    "hash": "e4ceb224e0"
+    "hash": "4947ed79ec"
   },
   "midnight-school/entrance2": {
-    "hash": "4b72c0b639"
+    "hash": "4344635f45"
   },
   "midnight-school/entrance3": {
-    "hash": "a4ac2ef9a8"
+    "hash": "752cb33932"
   },
   "midnight-school/blackout1": {
-    "hash": "26e83dce43"
+    "hash": "f1d445d61f"
   },
   "midnight-school/choice_final": {
-    "hash": "fcaffc2834"
+    "hash": "7e2bc5000c"
   },
   "midnight-school/blackout2": {
-    "hash": "81b72cd8af"
+    "hash": "7824e94b18"
   },
   "midnight-school/run_light1": {
-    "hash": "816e47d81f"
+    "hash": "111c76e406"
   },
   "midnight-school/lookback1": {
-    "hash": "09833df0fb"
+    "hash": "935b9d1bbd"
   },
   "midnight-school/run_dark1": {
-    "hash": "aa2692273a"
+    "hash": "6bd73e223d"
   },
   "midnight-school/run_light2": {
-    "hash": "6df59a8080"
+    "hash": "72b3633c1c"
   },
   "moon-library/start1": {
-    "hash": "fb39098be0"
+    "hash": "3e868c069d"
   },
   "moon-library/start2": {
-    "hash": "6008862f71"
+    "hash": "fc7b6768c7"
   },
   "midnight-school/end_happy": {
-    "hash": "32fb0c8d67"
+    "hash": "fe7fd547d7"
   },
   "midnight-school/end_caught": {
-    "hash": "b1d915b0f3"
+    "hash": "e6e973d4ee"
   },
   "moon-library/choice_note": {
-    "hash": "018d8a992c"
+    "hash": "d0002c9de1"
   },
   "moon-library/start4": {
-    "hash": "5180be6c1d"
+    "hash": "fbb0d13c22"
   },
   "moon-library/start3": {
-    "hash": "5cf8e6cd2d"
+    "hash": "51d6b9010e"
   },
   "moon-library/start5": {
-    "hash": "226890e367"
+    "hash": "8662b907f6"
   },
   "moon-library/reply2": {
-    "hash": "989d469bc2"
+    "hash": "d4a1c02b62"
   },
   "moon-library/reply1": {
-    "hash": "f2db542e9e"
+    "hash": "67c0bd570e"
   },
   "moon-library/silent1": {
-    "hash": "4bc7c45869"
+    "hash": "da73240c82"
   },
   "moon-library/week1": {
-    "hash": "fd699c0cab"
+    "hash": "ecbc19d337"
   },
   "moon-library/choice_book": {
-    "hash": "551d2dc8ed"
+    "hash": "44b74478c5"
   },
   "moon-library/silent2": {
-    "hash": "0e8b61c3a8"
+    "hash": "aa16667def"
   },
   "moon-library/week2": {
-    "hash": "b516b7610e"
+    "hash": "6fb0183650"
   },
   "moon-library/book_talk1": {
-    "hash": "1494245aa3"
+    "hash": "d0b92fda48"
   },
   "moon-library/rain1": {
-    "hash": "c41880db81"
+    "hash": "8cb99887d0"
   },
   "moon-library/book_rec1": {
-    "hash": "82bcb02760"
+    "hash": "476141e535"
   },
   "moon-library/rain2": {
-    "hash": "10d386677e"
+    "hash": "c1e8f9a8b1"
   },
   "moon-library/choice_rain": {
-    "hash": "43e060ccf2"
+    "hash": "27d8fe914b"
   },
   "moon-library/rain3": {
-    "hash": "9ec263ec7a"
+    "hash": "9105d10589"
   },
   "moon-library/lend2": {
-    "hash": "ab2c586422"
+    "hash": "c19a8b751a"
   },
   "moon-library/lend1": {
-    "hash": "4712a45ac2"
+    "hash": "3bdebe4fbf"
   },
   "moon-library/pass1": {
     "hash": "5e7c1b157e"

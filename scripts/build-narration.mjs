@@ -22,9 +22,22 @@ const SPEED = '112';
 // 抑揚（intonationScale）は 0.2 に弱める（2026-10-28 ユーザーが試聴して正式採用。
 // 初期値 1.0 だと抑揚の付け方が不自然で聞き疲れするとの評価だった）。
 // 生成には AivisSpeech エンジン（http://127.0.0.1:10101）の起動が必要。
+// 2026-10-28: 全冊の語り手を Gemini 3.1 Flash TTS に差し替え（ユーザー承認済みサンプルで決定）。
+// 女性・性別不詳の語り手は Leda、男性主人公の2冊は Charon（柔らかめ指示）。
+// テンポは atempo で調整する（Leda ×1.20 ≒ 300字/分、Charon ×1.30 ≒ 280字/分。どちらもユーザー試聴で決定）。
+// 文のつなぎ目（分割合成時）は 0.1 秒（concatChunks の apad と一致）。
+const LEDA_STYLE = '小説の朗読です。透明感のある、儚げで柔らかい声で読んでください。澄んだ静けさを保ち、囁かずに自然な声量で、穏やかに読んでください';
+const CHARON_STYLE = '小説の朗読です。やわらかく穏やかな男性の声で読んでください。強さや格好よさは抑えて、親しみやすく、静かに寄り添うような語り口で読んでください';
+const GEMINI_MODEL = 'gemini-3.1-flash-tts-preview';
 const VOICE_PROFILES = {
-  'maou-diner': { engine: 'aivis', speaker: 1310138977, speedScale: 0.8, intonationScale: 0.2, tag: 'aivis-aida-calm-int02' },
-  'sunday-well': { engine: 'aivis', speaker: 1310138977, speedScale: 0.8, intonationScale: 0.2, tag: 'aivis-aida-calm-int02' },
+  'midnight-school': { engine: 'gemini', voice: 'Leda', model: GEMINI_MODEL, style: LEDA_STYLE, post: 'atempo=1.2', tag: 'gemini31-leda-v2' },
+  'moon-library': { engine: 'gemini', voice: 'Leda', model: GEMINI_MODEL, style: LEDA_STYLE, post: 'atempo=1.2', tag: 'gemini31-leda-v2' },
+  'missing-trophy': { engine: 'gemini', voice: 'Leda', model: GEMINI_MODEL, style: LEDA_STYLE, post: 'atempo=1.2', tag: 'gemini31-leda-v2' },
+  'stardust-station': { engine: 'gemini', voice: 'Leda', model: GEMINI_MODEL, style: LEDA_STYLE, post: 'atempo=1.2', tag: 'gemini31-leda-v2' },
+  'cafe-tsubame': { engine: 'gemini', voice: 'Leda', model: GEMINI_MODEL, style: LEDA_STYLE, post: 'atempo=1.2', tag: 'gemini31-leda-v2' },
+  yubisaki: { engine: 'gemini', voice: 'Leda', model: GEMINI_MODEL, style: LEDA_STYLE, post: 'atempo=1.2', tag: 'gemini31-leda-v2' },
+  'sunday-well': { engine: 'gemini', voice: 'Charon', model: GEMINI_MODEL, style: CHARON_STYLE, post: 'atempo=1.3', tag: 'gemini31-charon-v2' },
+  'maou-diner': { engine: 'gemini', voice: 'Charon', model: GEMINI_MODEL, style: CHARON_STYLE, post: 'atempo=1.3', tag: 'gemini31-charon-v2' },
 };
 const profileOf = (key) => VOICE_PROFILES[key.split('/')[0]];
 const CONCURRENCY = 4;
@@ -259,7 +272,74 @@ const speakAivis = async (job) => {
   console.log(`    ${job.key}: ${best.cpm.toFixed(0)}字/分（speedScale ${best.scale.toFixed(3)}）`);
 };
 
+// Gemini TTS（コネクタのヘルパー経由）。API キーはヘルパー側で差し込まれる。
+// 無料/低枠のレート制限に配慮し、呼び出し間隔を空け、1回の実行での上限を設ける
+// （環境変数 GEMINI_BUDGET で変更可。既定 85 回）。上限到達や 429 では例外 BudgetStop で
+// その日の生成を打ち切り、manifest は場面ごとに保存するので翌日に続きから再開できる。
+const GEMINI_HELPER = '/home/hatch/workspace/custom-connectors/custom.google-gemini-api/bin/gemini_tts.py';
+const GEMINI_MIN_INTERVAL_MS = 8_000;
+const GEMINI_BUDGET = Number(process.env.GEMINI_BUDGET ?? 85);
+class BudgetStop extends Error {}
+let geminiCalls = 0;
+let geminiLastCall = 0;
+const geminiSynth = async (text, profile, outWav) => {
+  if (geminiCalls >= GEMINI_BUDGET) throw new BudgetStop('Gemini 呼び出し上限に到達');
+  const txtFile = `${outWav}.txt`;
+  writeFileSync(txtFile, text);
+  try {
+    // プレビューモデルはまれに中身のない応答を返すことがある（2026-10-28 実測）。
+    // クォータ系以外の失敗は少し待って最大3回まで再試行する
+    let lastErr = null;
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const wait = geminiLastCall + GEMINI_MIN_INTERVAL_MS - Date.now();
+      if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+      geminiLastCall = Date.now();
+      geminiCalls += 1;
+      try {
+        await new Promise((resolve, reject) => {
+          execFile('python3', [GEMINI_HELPER, txtFile, profile.voice, outWav, profile.model, profile.style], { timeout: 120_000 }, (err, _out, stderr) =>
+            err ? reject(new Error(stderr?.toString().slice(-300) || err.message)) : resolve(),
+          );
+        });
+        return;
+      } catch (err) {
+        if (/429|RESOURCE_EXHAUSTED|quota/i.test(err.message)) throw new BudgetStop(`Gemini レート制限: ${err.message.slice(0, 120)}`);
+        lastErr = err;
+      }
+    }
+    throw lastErr;
+  } finally {
+    rmSync(txtFile, { force: true });
+  }
+};
+
+const speakGemini = async (job) => {
+  mkdirSync(dirname(job.file), { recursive: true });
+  const units = job.chunked ? splitSentences(job.text) : [job.text];
+  const wavs = [];
+  for (let i = 0; i < units.length; i += 1) {
+    const wav = `${job.file}.g${i}.wav`;
+    await geminiSynth(units[i], job.profile, wav);
+    wavs.push(wav);
+  }
+  const rawOut = job.profile?.post ? `${job.file}.raw.mp3` : job.file;
+  if (wavs.length === 1) {
+    execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', wavs[0], '-ar', '24000', '-ac', '1', '-b:a', '64k', rawOut]);
+  } else {
+    await concatChunks(wavs, rawOut);
+  }
+  for (const w of wavs) rmSync(w, { force: true });
+  if (job.profile?.post) {
+    await applyPost(rawOut, job.file, job.profile);
+    rmSync(rawOut, { force: true });
+  }
+};
+
 const speak = async (job) => {
+  if (job.profile?.engine === 'gemini') {
+    await speakGemini(job);
+    return;
+  }
   if (job.profile?.engine === 'aivis') {
     try {
       await speakAivis(job);
@@ -296,12 +376,29 @@ const speak = async (job) => {
 };
 
 let done = 0;
+let budgetStopped = false;
+const failures = [];
 const queue = [...jobs];
-const workers = Array.from({ length: CONCURRENCY }, async () => {
+const hasGemini = jobs.some((j) => j.profile?.engine === 'gemini');
+const workers = Array.from({ length: hasGemini ? 1 : CONCURRENCY }, async () => {
   while (queue.length > 0) {
     const job = queue.shift();
-    await speak(job);
+    try {
+      await speak(job);
+    } catch (err) {
+      if (err instanceof BudgetStop) {
+        budgetStopped = true;
+        console.log(`  Gemini の上限/レート制限で停止: ${err.message}`);
+        return;
+      }
+      failures.push(job.key);
+      console.log(`  失敗（次回再試行）: ${job.key}: ${String(err.message).slice(0, 140)}`);
+      continue;
+    }
     manifest[job.key] = { hash: job.hash };
+    // 途中経過を都度保存する（上限や障害で止まっても、済んだ場面は作り直さない）
+    mkdirSync(OUT_DIR, { recursive: true });
+    writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2) + '\n');
     done += 1;
     console.log(`  ${done}/${jobs.length} ${job.key}`);
   }
@@ -319,3 +416,5 @@ mkdirSync(OUT_DIR, { recursive: true });
 writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2) + '\n');
 const files = readdirSync(OUT_DIR, { recursive: true }).filter((f) => String(f).endsWith('.mp3'));
 console.log(`完了: ${files.length} ファイル（public/audio/）`);
+if (budgetStopped) console.log(`未生成が残っています（残り ${jobs.length - done} 件）。翌日に再実行すると続きから生成します。`);
+if (failures.length > 0) console.log(`失敗した場面（${failures.length}件）: ${failures.join(', ')}`);
