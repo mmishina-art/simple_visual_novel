@@ -1,13 +1,15 @@
-// 読み上げ音声の一括生成。物語の文章を、Muse の読み上げと同じ声（Lily、C1設定）で
-// 場面ごとに MP3 化し、public/audio/<物語ID>/<場面ID>.mp3 に置く。
+// 読み上げ音声の一括生成。物語の文章を場面ごとに MP3 化し、
+// public/audio/<物語ID>/<場面ID>.mp3 に置く。
 // 使い方: npm run narration
 // 文章が変わった場面だけ作り直す（本文のハッシュを manifest.json に持ち、一致したら飛ばす）。
-// 声の正は TOOLS.md の C1 プリセット（avocado_v2:Lily、ja_JP、速度112）。
+// 現在の声は全冊 Gemini TTS（冊ごとの割り当ては下の VOICE_PROFILES と docs/HANDOVER.md）。
+// 旧来の Lily / AivisSpeech は 2026-10-29 に全冊 Gemini へ差し替え済み（経緯は HANDOVER.md）。
 import { execFile, execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const VOICE = 'avocado_v2:Lily';
 const LANGUAGE = 'ja_JP';
@@ -263,7 +265,7 @@ const speakAivis = async (job) => {
 // 渡す専用ヘルパー scripts/gemini38_tts.py を使う。
 // 予算は環境変数 GEMINI38_BUDGET で変更可（既定 85 回）。上限到達や 429 では例外
 // BudgetStop でその日の生成を打ち切り、manifest は場面ごとに保存するので翌日に続きから再開できる。
-const GEMINI38_HELPER = '/home/hatch/workspace/simple_visual_novel/scripts/gemini38_tts.py';
+const GEMINI38_HELPER = join(dirname(fileURLToPath(import.meta.url)), 'gemini38_tts.py');
 const GEMINI_MIN_INTERVAL_MS = 8_000;
 const GEMINI38_BUDGET = Number(process.env.GEMINI38_BUDGET ?? 85);
 class BudgetStop extends Error {}

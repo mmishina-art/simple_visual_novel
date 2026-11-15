@@ -8,16 +8,29 @@ Usage: gemini38_tts.py <text_file> <voice_name> <out_wav> [model] [style]
 （公式の作法。旧来の gemini_tts.py の「本文への前置」とは違う）。
 応答は WAV が直接返るのでそのまま保存する（PCM で返った場合だけ 24kHz/16bit/mono
 としてラップする）。
-API キーは Muse の資格情報プロキシ（dynamic_credentials）経由で差し込まれる。
+API キーの渡し方（どちらか）:
+- 環境変数 GEMINI_API_KEY があれば、それを x-goog-api-key ヘッダーで直接使う
+  （通常の開発環境はこちら。Google AI Studio の API キーを Paid tier で用意すること）。
+- なければ Muse の資格情報プロキシ（dynamic_credentials）経由で差し込む
+  （Muse の実行環境専用の経路）。
 """
 import base64
 import json
+import os
 import sys
 import urllib.request
 import wave
 
-sys.path.insert(0, "/opt/muse/skills/custom-connector-setup/bin")
-from dynamic_credentials import add_surrogate_to_request, read_json_response
+API_KEY = os.environ.get("GEMINI_API_KEY", "")
+if not API_KEY:
+    # Muse の実行環境では資格情報プロキシ経由でキーを差し込む
+    sys.path.insert(0, "/opt/muse/skills/custom-connector-setup/bin")
+    from dynamic_credentials import add_surrogate_to_request, read_json_response
+else:
+    add_surrogate_to_request = None  # type: ignore
+
+    def read_json_response(response):  # type: ignore
+        return json.loads(response.read().decode("utf-8"))
 
 HOST = "generativelanguage.googleapis.com"
 DEFAULT_MODEL = "gemini-3.8-flash-tts"
@@ -44,13 +57,17 @@ def synthesize(text: str, voice: str, model: str, style: str) -> tuple[bytes, st
             },
         },
     }
+    headers = {"Content-Type": "application/json"}
+    if API_KEY:
+        headers["x-goog-api-key"] = API_KEY
     request = urllib.request.Request(
         url,
         data=json.dumps(body).encode("utf-8"),
-        headers={"Content-Type": "application/json"},
+        headers=headers,
         method="POST",
     )
-    add_surrogate_to_request(request, "custom.google-gemini-api", allowed_hosts=[HOST])
+    if not API_KEY:
+        add_surrogate_to_request(request, "custom.google-gemini-api", allowed_hosts=[HOST])
     with urllib.request.build_opener(NoRedirect()).open(request, timeout=300) as response:
         payload = read_json_response(response)
     parts = payload["candidates"][0]["content"]["parts"]
